@@ -1,0 +1,224 @@
+
+/* =============================================================================
+   Primary styles
+   Author: 
+   ========================================================================== */
+body {
+  background: #ebebeb;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Show and affix the side nav when space allows it */
+@media screen and (min-width: 992px) {
+  .bs-sidebar .nav > .active > ul {
+    display: block;
+  }
+  /* Widen the fixed sidebar */
+  .bs-sidebar.affix,
+  .bs-sidebar.affix-bottom {
+    width: 213px;
+  }
+  .bs-sidebar.affix {
+    position: fixed; /* Undo the static from mobile first approach */
+    top: 80px;
+  }
+  .bs-sidebar.affix-bottom {
+    position: absolute; /* Undo the static from mobile first approach */
+  }
+  .bs-sidebar.affix-bottom .bs-sidenav,
+  .bs-sidebar.affix .bs-sidenav {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+@media screen and (min-width: 1200px) {
+  /* Widen the fixed sidebar again */
+  .bs-sidebar.affix-bottom,
+  .bs-sidebar.affix {
+    width: 263px;
+  }
+}
+
+
+.projectContainer {
+/*    border: 1px solid #aaa;*/
+/*    width: 60%;*/
+/*    height: 130px;*/
+    background-color: #fff;
+/*    float: left;*/
+    margin: 5px;
+    padding: 10px 0px 10px;
+}
+.projectContainer img {
+    float: left;
+/*    margin: 10px;*/
+}
+.projectContainer ul {
+    list-style-type: none;
+    margin-bottom: 0;
+}
+.projectContainer button {
+    float:right;
+    margin:10px;
+}
+
+.packageContainer {
+    border: 1px solid #aaa;
+    width: 75%;
+/*    height: 130px;*/
+    background-color: #fff;
+/*    float: left;*/
+    margin: 5px;
+    padding: 10px 0px 10px;
+}
+.packageContainer img {
+/*    float: left;*/
+    margin-left: 10px;
+}
+.packageContainer ul {
+    list-style-type: none;
+    margin-bottom: 0;
+}
+.packageContainer button {
+/*    float:right;*/
+/*    margin:10px; */
+}
+
+
+/* Sticky footer styles
+    -------------------------------------------------- */
+
+    html,
+    body {
+      height: 100%;
+      /* The html and body elements cannot have any padding or margin. */
+    }
+
+    /* Wrapper for page content to push down footer */
+    #wrap {
+      min-height: 100%;
+      height: auto !important;
+      height: 100%;
+      /* Negative indent footer by it's height */
+      margin: 0 auto -40px;
+    }
+
+    /* Set the fixed height of the footer here */
+    #push,
+    #footer {
+      height: 40px;
+    }
+    #footer {
+      background-color: #f5f5f5;
+    }
+
+    /* Lastly, apply responsive CSS fixes as necessary */
+    @media (max-width: 767px) {
+      #footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+    #wrap > .container {
+      padding-top: 60px;
+    }
+
+
+
+/**
+ * Extra large button extensions. Extends `.btn`.
+-------------------------------------------------- */
+    .btn-xlarge {
+      padding: 18px 28px;
+      font-size: 22px;
+      line-height: normal;
+      -webkit-border-radius: 8px;
+         -moz-border-radius: 8px;
+              border-radius: 8px;
+    }
+
+
+
+/* POP hover code
+    -------------------------------------------------- */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+/*      font-family: 'Merriweather', serif;
+      padding: 20px;*/
+    }
+
+    a {
+      color: #f06d06;
+      text-decoration: none;
+    }
+
+    .box {
+      padding: 1.1em 0em 1.1em 1.1em;
+      border: 1px solid #ccc;
+      display: block;
+      width: 100%;
+      /*height: 170px;*/
+      float: left;
+      margin: 5px 0 0 -1px;
+      color: black;
+      background: linear-gradient(
+         white, white 50%, #333 50%, #333
+      );
+      background-size: 100% 202%;
+/*      transition: all 0.2s ease;*/
+/*      animation: down-bump 0.4s ease;*/
+
+    }
+    .box h2 {
+      font-weight: 400;
+      letter-spacing: -1.5px;
+      line-height: 1.2;
+    }
+    .box h3 {
+      font: 1.1em "Lucida Grande", serif;
+      margin-left:10px;
+    }
+
+    .box:hover {
+      background-position: 100% 100%;
+/*      animation: up-bump 0.4s ease;*/
+    }
+    .box:hover h2 {
+      color: #48ad26;
+    }
+    .box:hover h2 span {
+      color: white;
+    }
+    .box:hover h3 {
+      color: #999;
+    }
+/*
+    @keyframes up-bump {
+      0% { padding-top: 2em; }
+      50% { padding-top: 1.5em; }
+      100% { padding-top: 2em; }
+    }
+    @keyframes down-bump {
+      0% { padding-top: 2em; }
+      50% { padding-top: 2.5em; }
+      100% { padding-top: 2em; }
+    }
+*/
+
+
+
+/* For store buttons. Aligning image on left and text on right
+    -------------------------------------------------- */
+    .post-thumb {
+        float: left;
+        margin-right:18px;
+    }
+    .post-content .hidden-desktop {
+        margin-left: 210px
+    }
