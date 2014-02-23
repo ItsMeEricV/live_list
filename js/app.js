@@ -7,8 +7,9 @@ define([
   'myapp',
   'router',
   'vent',
+  'bootstrap',
   'views/home/HomeView'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, HomeView){
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, HomeView){
 
   var that = this;
 
@@ -76,6 +77,7 @@ define([
         app_router.navigate(href, true);
       }
     });
+  });
 
 
   //DEFINE ROUTES

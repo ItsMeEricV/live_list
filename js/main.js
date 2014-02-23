@@ -3,37 +3,24 @@
 require.config({
   waitSeconds: 200,
   paths: {
-    jquery: 'libs/jquery/jquery-1.10.2.min',
-    jqueryUI: 'libs/jquery/jquery-ui-min',
-    underscore: 'libs/underscore/underscore-min',
-    backbone: 'libs/backbone/backbone-min',
-    marionette: 'libs/marionette/backbone.marionette.min',
-    'backbone.wreqr' : 'libs/marionette/backbone.wreqr.min',
-    'backbone.babysitter' : 'libs/marionette/backbone.babysitter.min',
-    syphon: 'libs/syphon/backbone.syphon.min',
-    json2: 'libs/json2/json2',
-    dateFormat: 'libs/jquery/jquery.dateFormat-1.0',
-    bootstrap: 'libs/bootstrap/bootstrap-min',
-    footable: 'libs/footable/footable',
-    fancybox: 'libs/fancybox/jquery.fancybox.pack',
-    jplayer: 'libs/jplayer/jquery.jplayer.min',
-    jqueryDownload: 'libs/jquery/jquery.fileDownload',
-    jqueryScrollTo: 'libs/jquery/jquery-scrollto',
-    circleplayer: 'libs/jplayer/circle.player',
-    grab: 'libs/jplayer/jquery.grab',
-    transform2d: 'libs/jplayer/jquery.transform2d',
-
+    jquery: 'libs/jquery/dist/jquery',
+    backbone: 'libs/backbone-amd/backbone',
+    underscore: 'libs/underscore-amd/underscore',
+    marionette: 'libs/marionette/lib/core/amd/backbone.marionette',
+    'backbone.wreqr' : 'libs/backbone.wreqr/lib/amd/backbone.wreqr',
+    'backbone.babysitter' : 'libs/backbone.babysitter/lib/amd/backbone.babysitter',
+    bootstrap: 'libs/bootstrap/dist/js/bootstrap',
     templates: '../templates'
   },
   shim: {
-        'bootstrap' : ['jquery'],
-    }
+    'bootstrap' : ['jquery'],
+  }
 
 });
 
 require([
   // Load our app module and pass it to our definition function
-  'app','jquery', 'jqueryUI', 'bootstrap'
+  'app','jquery','bootstrap'
 
 ], function(App){
 

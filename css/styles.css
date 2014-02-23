@@ -1,13 +1,2 @@
-@import url('style.css');
-/*@import url('bootstrap-min.css'); 
-@import url('footable/footable-0.1.css');
-@import url('jplayer/circle.player.css');
-@import url('jplayer/midnightBlack/jplayer.midnight.black.css');
-@import url('videojs/videojs.min.css');
-@import url('fancybox/jquery.fancybox.css');
-@import url('ace/font-awesome.min.css');
-@import url('ace/ace-fonts.css');
-@import url('ace/ace.min.css');
-@import url('ace/ace-rtl.min.css');
-@import url('ace/ace-skins.min.css');
-@import url('ace/jquery-ui-1.10.3.custom.min.css');*/
+/*@import url('style.css');*/
+@import url('../js/libs/bootstrap/dist/css/bootstrap.css');

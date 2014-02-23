@@ -5,7 +5,7 @@
     // paths: {
     //     jquery: 'js/libs/jquery/jquery-1.10.2.min'
     // },
-    dir: '/Users/evier/built',
+    dir: '~/built',
     modules: [
         {
             name: "main"
