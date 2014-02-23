@@ -4,16 +4,19 @@ require.config({
   waitSeconds: 200,
   paths: {
     jquery: 'libs/jquery/dist/jquery',
+    jqueryui: 'libs/jqueryui/ui/jquery-ui',
     backbone: 'libs/backbone-amd/backbone',
     underscore: 'libs/underscore-amd/underscore',
     marionette: 'libs/marionette/lib/core/amd/backbone.marionette',
     'backbone.wreqr' : 'libs/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.babysitter' : 'libs/backbone.babysitter/lib/amd/backbone.babysitter',
     bootstrap: 'libs/bootstrap/dist/js/bootstrap',
+    'backbone.collectionView' : 'libs/backbone.collectionView/dist/backbone.collectionView',
     templates: '../templates'
   },
   shim: {
     'bootstrap' : ['jquery'],
+    'backbone.collectionView' : ['backbone']
   }
 
 });

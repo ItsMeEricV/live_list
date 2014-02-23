@@ -151,9 +151,6 @@ define([
   /******************************************/
 
 
-
-
-
   //start the app. 
   //TODO This should be in main.js as "App.start()" but it's not working and returns an error.
   app.start();

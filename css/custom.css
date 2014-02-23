@@ -1,0 +1,55 @@
+ul.collection-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  outline: none;
+  cursor: pointer;
+  color: #000;
+}
+
+ul.collection-list li {
+  margin: 10px 0;
+  padding: 10px;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #F7F7F7), color-stop(100%, #E8E8E8));
+  background: -webkit-linear-gradient(#F7F7F7, #E8E8E8);
+  background:    -moz-linear-gradient(#F7F7F7, #E8E8E8);
+  background:      -o-linear-gradient(#F7F7F7, #E8E8E8);
+  background:         linear-gradient(#F7F7F7, #E8E8E8);
+  border: 1px solid #C9C9C9;
+  background: #F0F0F0;
+  border-radius: 4px;   /* may need vendor varients */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);   /* may need vendor varients */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+ul.collection-list li.selected {
+  border: 1px solid #2659D9;
+  color: #FFF;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+  background: #678BE4;
+}
+
+
+table.collection-list {
+/*  border-collapse: collapse;
+  width: 350px;
+  border: 1px solid #AAA;
+  font-family: "Helvetica Neue", Helvetica, arial;*/
+  cursor: pointer;
+}
+
+/*
+table.collection-list tr:nth-child(even) {
+  background: #EBF0FF;
+}
+*/
+
+table.collection-list tr.selected {
+  color: #FFF;
+  background-color: #678BE4;
+}
+
+table.collection-list tr td {
+  padding: 10px 20px;
+  border-right: 1px solid #AAA;
+}
