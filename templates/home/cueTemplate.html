@@ -1,10 +1,26 @@
 <script id="cueTemplate" type="text/template">
 
-  <strong>
-    <%= cue_number %> : 
-  </strong>
-  <span id="description">
-    <%= description %>
-  </span>
+
+    <% if(type === "cue") { %>
+      <div class="dd-handle dd3-handle">
+        Drag
+      </div>
+      <div class="cue-description dd3-content">
+        <strong>
+          <%= index %> : 
+        </strong>
+        <span id="description" style="color:#000">
+          <%= description %>
+        </span>
+      </div>
+
+    <% } else { %>
+      <div class="dd-handle dd3-section-handle">
+        Drag
+      </div>
+      <div class="cue-description dd3-section-content">
+        <%= index %> : <%= description %>
+      </div>
+    <% } %>
 
 </script>

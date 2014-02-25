@@ -12,11 +12,13 @@ require.config({
     'backbone.babysitter' : 'libs/backbone.babysitter/lib/amd/backbone.babysitter',
     bootstrap: 'libs/bootstrap/dist/js/bootstrap',
     'backbone.collectionView' : 'libs/backbone.collectionView/dist/backbone.collectionView',
+    'nestable' : 'libs/nestable/jquery.nestable',
     templates: '../templates'
   },
   shim: {
     'bootstrap' : ['jquery'],
-    'backbone.collectionView' : ['backbone']
+    'backbone.collectionView' : ['backbone'],
+    'nestable' : ['jquery']
   }
 
 });

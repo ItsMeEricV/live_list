@@ -8,6 +8,26 @@ define([
 
   var CueView = Marionette.ItemView.extend({
     template: cueTemplate,
+    tagName: "li",
+    attributes: function() {
+      return {
+        "data-id": this.model.get("id"),
+        "data-index" : this.model.get("index")
+      };
+    },
+    className: function() {
+      // if(this.model.get("type") === "cue") {
+        return "dd-item dd3-item";
+      // }
+      // else {
+      //   return "dd-item";
+      // }
+    },
+    defaults: {
+      index: 0,
+      description: "Description"
+    },
+
     events: {
 
     },
