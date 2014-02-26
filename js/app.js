@@ -14,6 +14,9 @@ define([
   var that = this;
 
 
+
+
+
   var BrowserDetect = 
   {
       init: function () 

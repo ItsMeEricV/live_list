@@ -12,7 +12,9 @@ define([
     attributes: function() {
       return {
         "data-id": this.model.get("id"),
-        "data-index" : this.model.get("index")
+        "data-index" : this.model.get("index"),
+        "data-type" : this.model.get("type"),
+        "data-order" : this.model.get("order")
       };
     },
     className: function() {

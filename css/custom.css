@@ -176,8 +176,8 @@ table.collection-list tr td {
 * Nestable "section" CSS 
 ***********/
 
-.dd3-section-content { display: block; height: 40px; margin: 5px 0; padding: 0px 0px 0px 40px; color: #FFF; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
-    background: #4879CF;
+.dd3-section-content { display: block; height: 41px; margin: 5px 0; padding: 0px 0px 0px 40px; color: #FFF; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
+    background: #505358;
 /*    background: -webkit-linear-gradient(top, #BBB4FD 0%, #eee 100%);
     background:    -moz-linear-gradient(top, #BBB4FD 0%, #eee 100%);
     background:         linear-gradient(top, #BBB4FD 0%, #eee 100%);
