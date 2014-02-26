@@ -15,6 +15,7 @@ require.config({
     nestable : 'libs/nestable/jquery.nestable',
     modernizr: 'libs/modernizr/modernizr',
     autosize: 'libs/jquery-autosize/jquery.autosize',
+    localstorage: 'libs/backbone.localstorage/backbone.localStorage',
     templates: '../templates'
   },
   shim: {
