@@ -216,8 +216,6 @@ define([
           }
         }
 
-
-
         item.save();
 
       });

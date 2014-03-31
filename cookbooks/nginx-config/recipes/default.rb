@@ -12,6 +12,10 @@ include_recipe 'nginx'
 include_recipe 'git'
 include_recipe 'vim'
 include_recipe 'nodejs'
+include_recipe 'rvm::vagrant'
+include_recipe 'rvm::system'
+include_recipe 'redisio::install'
+include_recipe 'redisio::enable'
  
  
 begin

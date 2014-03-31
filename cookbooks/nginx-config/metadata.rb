@@ -11,6 +11,8 @@ depends 'nginx'
 depends 'git'
 depends 'vim'
 depends 'nodejs'
+depends 'rvm'
+depends 'redisio'
 # depends 'php'
 # depends 'php-fpm'
 
