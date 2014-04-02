@@ -16,6 +16,13 @@ require.config({
     modernizr: 'libs/modernizr/modernizr',
     autosize: 'libs/jquery-autosize/jquery.autosize',
     localstorage: 'libs/backbone.localstorage/backbone.localStorage',
+    'bootstrap-switch' : 'libs/bootstrap-switch/dist/js/bootstrap-switch',
+    fh : 'coffee_compiled/fh',
+    // fh_base: 'coffee_compiled/base.js',
+    // fh_consumer: 'coffee_compiled/consumer.js',
+    // fh_long_poll: 'coffee_compiled/long_poll.js',
+    // fh_transport: 'coffee_compiled/transport.js',
+    // fh_web_socket: 'coffee_compiled/web_socket.js',
     templates: '../templates'
   },
   shim: {

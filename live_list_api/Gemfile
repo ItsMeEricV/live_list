@@ -1,8 +1,16 @@
 source 'https://rubygems.org'
 
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '4.0.4'
+
 gem 'rails-api'
 
-gem 'thin'
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3'
+
+gem 'rainbows', '4.4.3'
+
+gem 'firehose'
 
 group :development, :test do
   gem 'rspec-rails'

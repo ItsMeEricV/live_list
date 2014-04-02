@@ -9,9 +9,11 @@ define([
   'modernizr',
   'autosize',
   'localstorage',
+  'bootstrap-switch',
   'views/home/CueView',
-  'text!templates/home/homeTemplate.html'
-], function($, jqueryui, _, Backbone, Marionette, vent, nestable, modernizr, autosize, localstorage, CueView, homeTemplate){
+  'text!templates/home/homeTemplate.html',
+  'fh'
+], function($, jqueryui, _, Backbone, Marionette, vent, nestable, modernizr, autosize, localstorage, bootstrapSwitch, CueView, homeTemplate){
 
   // CueView = Backbone.Marionette.ItemView.extend({
   //   tagName: "tr",
@@ -29,7 +31,9 @@ define([
       "click .newSection" : "newSection",
       "focus .descriptionTextarea" : "selectCue",
       "blur .cue-description" : "blurCue",
-      "keydown .form-control" : "checkKeyDown"
+      "keydown .form-control" : "checkKeyDown",
+      "mouseup .bootstrap-switch" : "switchMouseUp"
+      //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
       //"keyup .cue-description" : "descriptionSize"
       //"click .dd3-content" : "toggleCue",
       //"click .dd3-section-content" : "toggleCue"
@@ -42,11 +46,43 @@ define([
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
+      var Cue = Backbone.Model.extend({
+        url: '/cue'
+      });
+
+      var cue = new Cue({
+        id: 1,
+        wisdom: 'heloo there'
+      });
+
+      new Firehose.Consumer({
+        //uri: '//localhost:7474/squirrels/' + cue.id,
+        uri: '//192.168.60.20:7474/hello2',
+        message: function(json){
+          //cue.set(json);
+          console.log(json);
+          console.log("IN FIREHOSE CONSUMER");
+        },
+        connected: function(){
+          console.log("Great Scotts!! We're connected!");
+        },
+        disconnected: function(){
+          console.log("Well shucks, we're not connected anymore");
+        },
+        error: function(){
+          console.log("Well then, something went horribly wrong.");
+        }
+      }).connect();
+
       var CueCollection = Backbone.Collection.extend({
-        localStorage: new Backbone.LocalStorage("CueCollection")
+        //localStorage: new Backbone.LocalStorage("CueCollection")
+        url: '/cue'
       });
 
       this.collection = new CueCollection();
+
+      this.switchIsDrawn = false;
+      this.switchState = false;
 
       //this.collection = new Backbone.Collection([
       // this.collection.add([
@@ -62,11 +98,13 @@ define([
         reset: true
       });
 
-      this.listenTo(this.collection, "render", this.render, this);
+      //this.listenTo(this.collection, "reset", this.render, this);
 
       this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
+
+
 
     },
 
@@ -77,8 +115,10 @@ define([
     },
 
     onShow: function(){
-
+      
       var that = this;
+
+
 
       $('.dd').nestable({ 
         
@@ -165,8 +205,11 @@ define([
 
           that.render();
           that.onShow();
+          that.showSwitch();
 
         }
+
+        
 
       });
 
@@ -177,6 +220,22 @@ define([
         }
       });
 
+      this.showSwitch();
+
+    },
+    showSwitch: function() {
+
+      var that = this;
+      console.log(this.switchState);
+        $('#live-edit-switch').bootstrapSwitch('state',this.switchState);
+        $('.bootstrap-switch').addClass('pull-right');
+        this.switchIsDrawn = true;
+
+        $('#live-edit-switch').on('switchChange.bootstrapSwitch', function(event, state) {
+          console.log(event);
+          that.switchState = state;
+          that.productionState();
+        })
     },
 
     //add a new cue to the list
@@ -386,6 +445,9 @@ define([
     },
     br2nl: function(str) {
       return str.replace(/<br>/g, "\r");
+    },
+    productionState: function() {
+
     }
 
 
