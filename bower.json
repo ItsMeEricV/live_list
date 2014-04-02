@@ -16,7 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "1.11.0",
+    "jquery": "~1.11.0",
     "backbone-amd": "~1.1.0",
     "underscore-amd": "~1.5.2",
     "bootstrap": "~3.1.1",
@@ -29,7 +29,6 @@
     "jquery-autosize": "~1.18.4"
   },
   "resolutions": {
-    "jquery": "1.11.0",
-    "jqueryui": "~1.10.4"
+    "jquery": ">= 1.9.0"
   }
 }
