@@ -106,7 +106,9 @@ define([
       //prefilter all Ajax requests with the API prefix
       $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         
-        //options.url = '/api/v1' + options.url;
+        if(options.url.indexOf('7474/live_list') == -1) {
+          options.url = '/api/v1' + options.url;
+        }
         
       });
 

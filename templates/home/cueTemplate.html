@@ -1,14 +1,14 @@
 <script id="cueTemplate" type="text/template">
 
 
-    <% if(type === "cue") { %>
+    <% if(list_type === "item") { %>
       <div class="dd-handle dd3-handle">
         Drag
       </div>
       <div class="cue-description dd3-content">
       <h5>
         <strong><%= index %> :</strong>
-        <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px;"><%= description %></textarea>
+        <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px;"><%= title %></textarea>
       </h5>
       </div>
 
@@ -18,7 +18,7 @@
       </div>
       <div class="cue-description dd3-section-content">
         <h5>
-          <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -11px; background-color: #505358; height: 37px; color: #FFF"><%= description %></textarea>
+          <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -11px; background-color: #505358; height: 37px; color: #FFF"><%= title %></textarea>
         </h5>
       </div>
     <% } %>

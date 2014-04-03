@@ -42,26 +42,34 @@ define([
 
     initialize: function() {
 
+      var that = this;
+
       // this.listenTo(vent, "goToKeyUp", this.checkKeyUp, this);
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
-      var Cue = Backbone.Model.extend({
-        url: '/cue'
+      var ListItem = Backbone.Model.extend({
+        url: '/list_item'
       });
 
-      var cue = new Cue({
+      var listItem = new ListItem({
         id: 1,
-        wisdom: 'heloo there'
+        //numerical display for items. This number is not used for sections.
+        index: 0,
+        //absolute order in the list. Is not used for display, only for ordering on screen
+        order: 0,
+        //text that shows in the item text body
+        title: "Unknown",
+        //can be item or section
+        list_type: "item"
       });
 
       new Firehose.Consumer({
-        //uri: '//localhost:7474/squirrels/' + cue.id,
-        uri: '//192.168.60.20:7474/hello2',
+        uri: '//192.168.60.20:7474/live_list',
         message: function(json){
-          //cue.set(json);
           console.log(json);
-          console.log("IN FIREHOSE CONSUMER");
+          console.log(that.collection);
+          that.collection.add(json);
         },
         connected: function(){
           console.log("Great Scotts!! We're connected!");
@@ -74,23 +82,15 @@ define([
         }
       }).connect();
 
-      var CueCollection = Backbone.Collection.extend({
+      var ListItems = Backbone.Collection.extend({
         //localStorage: new Backbone.LocalStorage("CueCollection")
-        url: '/cue'
+        url: '/list_items'
       });
 
-      this.collection = new CueCollection();
+      this.collection = new ListItems();
 
       this.switchIsDrawn = false;
       this.switchState = false;
-
-      //this.collection = new Backbone.Collection([
-      // this.collection.add([
-      //     {id: 1, index: 1, order: 0, selected: false, type: "cue", description: "Tim"},
-      //     {id: 2, index: 2, order: 1, selected: false, type: "cue", description: "Ida"},
-      //     {id: 3, index: 0, order: 2, selected: false, type: "section", description: "Act I - Scene II"},
-      //     {id: 4, index: 3, order: 3, selected: false, type: "cue", description: "Rob"}
-      // ]);
 
       this.collection.comparator = "order"; 
 
@@ -98,19 +98,15 @@ define([
         reset: true
       });
 
-      //this.listenTo(this.collection, "reset", this.render, this);
+      //this.listenTo(this.collection, "add", this.render, this);
 
       this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
 
-
-
     },
 
     onRender: function() {
-
-
 
     },
 
@@ -129,12 +125,12 @@ define([
           cues = $('.dd').nestable('serialize');
 
           idThatMoved = e.data('id');
-          typeThatMoved = e.data('type');
+          typeThatMoved = e.data('list_type');
 
           cueIndexTracker = 0;
           for (var key in cues) {
-            console.log(key);
-            if(cues[key].type === "cue") {
+            // console.log(key);
+            if(cues[key].list_type === "item") {
               cueIndexTracker += 1;
             }
             
@@ -144,10 +140,14 @@ define([
               oldIndex = parseInt(cues[key].index);
               newOrder = parseInt(key);
               oldOrder = parseInt(cues[key].order);
+
+              console.log("newIndex: "+newIndex);
+              console.log("oldIndex: "+oldIndex);
             }
           }
 
           moveDirection = (newOrder > oldOrder) ? "higher" : "lower";
+          console.log(moveDirection);
           count = 0;
           
           $.each(that.collection.models,function(i,item) {
@@ -159,8 +159,8 @@ define([
                 item.set("order",item.get("order") + 1)
               }
 
-              //if item is a cue and a cue was moved
-              if(item.get("type") === "cue" && typeThatMoved === "cue") {
+              //if item is a item and a item was moved
+              if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 //if item isn't the cue that moved and it's within the reindexing range then change it
                 if(item.get("id") !== idThatMoved && item.get("index") >= newIndex && item.get("index") < oldIndex ) {
                   item.set("index",item.get("index") + 1)
@@ -181,7 +181,7 @@ define([
                 item.set("order",item.get("order") - 1)
               }
 
-              if(item.get("type") === "cue" && typeThatMoved === "cue") {
+              if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 if(item.get("id") !== idThatMoved && item.get("index") <= newIndex && item.get("index") > oldIndex ) {
                   item.set("index",item.get("index") - 1)
                 }
@@ -213,6 +213,7 @@ define([
 
       });
 
+        //console.log(this.collection.toJSON());
       //autosize the textarea and its container
       $('textarea').autosize({
         callback: function() {
@@ -226,7 +227,6 @@ define([
     showSwitch: function() {
 
       var that = this;
-      console.log(this.switchState);
         $('#live-edit-switch').bootstrapSwitch('state',this.switchState);
         $('.bootstrap-switch').addClass('pull-right');
         this.switchIsDrawn = true;
@@ -241,12 +241,12 @@ define([
     //add a new cue to the list
     newCue: function() {
 
-      cueCount = this.collection.where({type:"cue"}).length;
+      cueCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      cue = new Backbone.Model({index: cueCount+1, order: this.collection.length, type: "cue", selected: false, description: ""});
+      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, description: ""});
 
-      newCue = this.collection.create(cue);
+      newCue = this.collection.create(item);
 
       this.render();
       this.onShow();
@@ -260,7 +260,7 @@ define([
 
       //model = this.collection.where({selected: true})[0];
       orderToBeDeleted = this.prevSelectedModel.get("order");
-      typeToBeDeleted = this.prevSelectedModel.get("type");
+      typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
       console.log(orderToBeDeleted);
       this.prevSelectedModel.destroy();
@@ -270,7 +270,7 @@ define([
         if(item.get("order") > orderToBeDeleted) {
           item.set("order", item.get("order") - 1);
 
-          if(typeToBeDeleted === "cue" && item.get("type") === "cue") {
+          if(typeToBeDeleted === "item" && item.get("list_type") === "item") {
             item.set("index", item.get("index") - 1);
           }
         }
@@ -284,10 +284,10 @@ define([
 
 
     },
-    //add a new cue to the list
+    //add a new item to the list
     newSection: function() {
 
-      section = new Backbone.Model({index: 0, order: this.collection.length, type: "section", selected: false, description: ""});
+      section = new Backbone.Model({index: 0, order: this.collection.length, list_type: "section", selected: false, description: ""});
 
       newSection = this.collection.create(section);
 

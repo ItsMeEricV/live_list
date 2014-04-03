@@ -8,9 +8,13 @@ gem 'rails-api'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 
-gem 'rainbows', '4.4.3'
+#gem 'rainbows', '4.4.3'
+gem 'thin'
 
 gem 'firehose'
+
+# gem 'mysql2'
+# gem 'foreigner'
 
 group :development, :test do
   gem 'rspec-rails'
@@ -24,7 +28,7 @@ group :development, :test do
   # seed dump allows us to dump our DB data to the db/seeds.rb file
   gem 'seed_dump'
   #for selenium testing
-  gem 'selenium-webdriver'
-  gem 'selenium-client'
+  # gem 'selenium-webdriver'
+  # gem 'selenium-client'
 
 end

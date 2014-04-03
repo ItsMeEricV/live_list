@@ -13,7 +13,7 @@ define([
       return {
         "data-id": this.model.get("id"),
         "data-index" : this.model.get("index"),
-        "data-type" : this.model.get("type"),
+        "data-list_type" : this.model.get("list_type"),
         "data-order" : this.model.get("order")
       };
     },
