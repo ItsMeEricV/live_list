@@ -8,11 +8,12 @@ class API::V1::ListItemsController < ApplicationController
 
   # POST /list_item
   def create
-    @list_item = ListItem.new(list_item_params)
+    @list = List.find(params[:list_id])
+    #@list.list_items_attributes = [ { title: "Title here", index: 0, order: 1, list_type: "item" } ]
+    #@list.list_items_attributes = [ list_item_params ]
+    @list_item = @list.list_items.build(list_item_params)
 
-    #render json: @list_item
-
-    if @list_item.save
+    if @list.save
 
       #firehose pub
       json = @list_item.to_json
@@ -21,7 +22,7 @@ class API::V1::ListItemsController < ApplicationController
 
       render json: @list_item, status: :created
     else
-      render json: @list_item.errors, status: :unprocessable_entity
+      render json: @list.errors, status: :unprocessable_entity
     end
   end
 
@@ -31,7 +32,7 @@ class API::V1::ListItemsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def list_item_params
-      params.permit(:index, :title, :list_type, :list_id)
+      params.permit(:index, :order, :title, :list_type)
     end
 
 

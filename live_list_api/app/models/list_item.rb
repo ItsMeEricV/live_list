@@ -1,2 +1,13 @@
-class ListItem < ActiveRecord::Base
+class ListItem
+
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  belongs_to :list
+
+  field :title, type: String
+  field :index, type: Integer
+  field :order, type: Integer
+  field :list_type, type: String
+
 end

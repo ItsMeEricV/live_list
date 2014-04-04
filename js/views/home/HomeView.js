@@ -40,7 +40,7 @@ define([
 
     },
 
-    initialize: function() {
+    initialize: function(data) {
 
       var that = this;
 
@@ -48,9 +48,7 @@ define([
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
-      var ListItem = Backbone.Model.extend({
-        url: '/list_item'
-      });
+      var ListItem = Backbone.Model.extend({});
 
       var listItem = new ListItem({
         id: 1,
@@ -62,6 +60,16 @@ define([
         title: "Unknown",
         //can be item or section
         list_type: "item"
+      });
+
+
+      var ListItems = Backbone.Collection.extend({
+        //localStorage: new Backbone.LocalStorage("CueCollection")
+        url: '/lists/' + data.id,
+        model: ListItem,
+        parse: function(response) {
+          return response.list_items
+        }
       });
 
       new Firehose.Consumer({
@@ -82,10 +90,7 @@ define([
         }
       }).connect();
 
-      var ListItems = Backbone.Collection.extend({
-        //localStorage: new Backbone.LocalStorage("CueCollection")
-        url: '/list_items'
-      });
+
 
       this.collection = new ListItems();
 

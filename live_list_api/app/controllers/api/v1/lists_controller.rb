@@ -1,5 +1,6 @@
 class API::V1::ListsController < ApplicationController
 
+  # GET /lists
   def index
 
     @lists = List.all
@@ -8,6 +9,15 @@ class API::V1::ListsController < ApplicationController
 
   end
 
+  # GET /lists/1
+  def show
+
+    @list = List.find(params[:id])
+    render json: @list
+
+  end
+
+  # POST /list
   def create
 
     @list = List.new(title: params[:title])
