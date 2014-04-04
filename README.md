@@ -1,4 +1,14 @@
-cue_tracker
+Live List
 ===========
 
-Track any type of cues (e.g. for stage productions) and keep data about them
+- Keep lists in sync in real time across multiple viewers
+- Tracking timing and action cues across multiple viewers
+
+Ingredients
+----------------
+
+- Backbone.js
+- Rails
+- Redis
+- Firehose
+- MongoDB
