@@ -15,8 +15,9 @@ require.config({
     nestable : 'libs/nestable/jquery.nestable',
     modernizr: 'libs/modernizr/modernizr',
     autosize: 'libs/jquery-autosize/jquery.autosize',
-    localstorage: 'libs/backbone.localstorage/backbone.localStorage',
+    //localstorage: 'libs/backbone.localstorage/backbone.localStorage',
     'bootstrap-switch' : 'libs/bootstrap-switch/dist/js/bootstrap-switch',
+    utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
     // fh_base: 'coffee_compiled/base.js',
     // fh_consumer: 'coffee_compiled/consumer.js',
@@ -27,7 +28,7 @@ require.config({
   },
   shim: {
     'bootstrap' : ['jquery'],
-    'backbone.collectionView' : ['backbone'],
+    //'backbone.collectionView' : ['backbone'],
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery']

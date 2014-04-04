@@ -59,6 +59,7 @@ define([
   BrowserDetect.init();
 
   app.BrowserDetect = BrowserDetect;
+  app.uuid = guid();
 
 
 
@@ -107,7 +108,7 @@ define([
       $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         
         if(options.url.indexOf('7474/live_list') == -1) {
-          options.url = '/api/v1' + options.url;
+          options.url = '/api/v1' + options.url + '?cid=' + app.uuid;
         }
         
       });
@@ -151,7 +152,15 @@ define([
           });
       };
 
-
+    function guid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+                   .toString(16)
+                   .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+             s4() + '-' + s4() + s4() + s4();
+    }
 
   /******************************************/
 

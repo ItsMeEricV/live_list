@@ -5,15 +5,16 @@ define([
   'backbone',
   'marionette',
   'vent',
+  'myapp',
   'nestable',
   'modernizr',
   'autosize',
-  'localstorage',
   'bootstrap-switch',
+  'utility',
   'views/home/CueView',
   'text!templates/home/homeTemplate.html',
   'fh'
-], function($, jqueryui, _, Backbone, Marionette, vent, nestable, modernizr, autosize, localstorage, bootstrapSwitch, CueView, homeTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, CueView, homeTemplate){
 
   // CueView = Backbone.Marionette.ItemView.extend({
   //   tagName: "tr",
@@ -48,7 +49,14 @@ define([
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
-      var ListItem = Backbone.Model.extend({});
+      var ListItem = Backbone.Model.extend({
+        urlRoot: '/lists/533e526f7072652764010000/',
+        parse: function(response) {
+          response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
+          delete response._id;
+          return response;
+        }
+      });
 
       var listItem = new ListItem({
         id: 1,
@@ -68,6 +76,11 @@ define([
         url: '/lists/' + data.id,
         model: ListItem,
         parse: function(response) {
+          // list_items = response.list_items;
+          // for (var key in list_items) {
+          //   list_items[key]._id = list_items[key]._id['$oid'];
+          // }
+          // console.log(response.list_items);
           return response.list_items
         }
       });
@@ -76,8 +89,33 @@ define([
         uri: '//192.168.60.20:7474/live_list',
         message: function(json){
           console.log(json);
-          console.log(that.collection);
-          that.collection.add(json);
+          // console.log(that.collection);
+          if(json.cid !== app.uuid) {
+            switch(json.action) {
+
+              case "select":
+                //set all items to white
+                $('li').find('textarea').css("background-color","white");
+                //show the selected one
+                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
+                break;
+
+              case "update":
+                // that.collection.add(json);
+                console.log(json);
+                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
+                $('li[data-id="' + json.id + '"]').find('textarea').val(json.title);
+
+                break;
+
+              case "add":
+                that.collection.add(json);
+                break;
+
+            }
+
+            
+          }
         },
         connected: function(){
           console.log("Great Scotts!! We're connected!");
@@ -99,9 +137,8 @@ define([
 
       this.collection.comparator = "order"; 
 
-      this.collection.fetch({
-        reset: true
-      });
+      this.collection.fetch({});
+      console.log(this.collection);
 
       //this.listenTo(this.collection, "add", this.render, this);
 
@@ -119,13 +156,13 @@ define([
       
       var that = this;
 
-
-
       $('.dd').nestable({ 
         
         callback: function(l,e) {
           // l is the main container
           // e is the element that was moved
+
+          console.log("in nestable callback");
 
           cues = $('.dd').nestable('serialize');
 
@@ -327,12 +364,13 @@ define([
     },
     selectCue: function(e) {
       
-      cue = $(e.currentTarget);
-      cueId = cue.closest("li").data("id");
-      cue.addClass('nestable-selected');
-      model = this.collection.where({id: cueId})[0];
+      item = $(e.currentTarget);
+      itemId = item.closest("li").data("id");
+      item.addClass('nestable-selected');
+      model = this.collection.where({id: itemId})[0];
       this.prevSelectedModel = model;
-      this.setModelById({"id": cueId, values: [{"key": "selected", "value": true}]});
+      //this.setModelById({"id": cueId, values: [{"key": "selected", "value": true}]});
+      this.setModelById(itemId,{"selected": true});
 
       // cue.val(model.get("description"));
 
@@ -360,6 +398,8 @@ define([
     },
     blurCue: function(e) {
 
+      console.log("on blur");
+
       $('.nestable-selected').removeClass("nestable-selected");
 
       if(this.wasEscKey === "no") {
@@ -368,7 +408,8 @@ define([
         blurredCueValue = blurredCue.find('.form-control').val();
         blurredCueId = blurredCue.closest('li').data('id');
         blurredCueIndex = blurredCue.closest('li').data('index');
-        this.setModelById({"id": blurredCueId, "values" : [{"key": "selected", "value": false},{"key": "description", "value": blurredCueValue}]});
+        //this.setModelById({"id": blurredCueId, "values" : [{"key": "selected", "value": false},{"key": "description", "value": blurredCueValue}]});
+        this.setModelById(blurredCueId,{"selected":false, "title":blurredCueValue});
 
         blurredCue.removeClass("nestable-selected");
 
@@ -415,15 +456,16 @@ define([
 
     },
     //set a model's options based on it's ID
-    setModelById: function(options) {
+    setModelById: function(id,attrs) {
 
       //find the model that matches the currently selected cue
-      model = this.collection.where({id: options.id})[0];
+      model = this.collection.where({id: id})[0];
       //set new attributes and merge back to the collection. Using remove: false so we don't remove the unmodified models
-      for (var newValue in options.values) {
-        model.set(options.values[newValue].key, options.values[newValue].value);
-      }
-      model.save();
+      // for (var newValue in options.values) {
+      //   model.set(options.values[newValue].key, options.values[newValue].value);
+      // }
+      // console.log(model);
+      model.save(attrs, {patch: true});
       this.collection.set(model,{remove: false});
 
     },

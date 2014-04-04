@@ -3,7 +3,7 @@ class ListItem
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  belongs_to :list
+  embedded_in :list
 
   field :title, type: String
   field :index, type: Integer

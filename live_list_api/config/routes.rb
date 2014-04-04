@@ -8,6 +8,8 @@ LiveListApi::Application.routes.draw do
 
 
       resources :lists
+
+      patch 'lists/:list_id/:list_item_id' => 'list_items#update'
       resources :list_items
     end
   end
