@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
     
     cue.berkshelf.enabled = true
 
-    cue.vm.synced_folder "~/code/cue_tracker/", "/srv/website"
+    cue.vm.synced_folder ".", "/srv/website"
  
     #cue.vm.provision :shell, :inline => "aptitude install ruby1.9.1-dev"
     #cue.vm.provision :shell, :inline => "gem install chef --version 11.8.2 --no-rdoc --no-ri --conservative"

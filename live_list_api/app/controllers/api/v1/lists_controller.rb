@@ -1,4 +1,4 @@
-class ListsController < ApplicationController
+class API::V1::ListsController < ApplicationController
 
   def index
 
@@ -10,9 +10,13 @@ class ListsController < ApplicationController
 
   def create
 
-    @list = List.new
-    @list.name = "New list"
-    @list.save
+    @list = List.new(title: params[:title])
+    if @list.save
+      render json: @list, status: :created
+    else
+      render json: @list.errors, status: :unprocessable_entity
+    end
+
   end
 
 end

@@ -16,6 +16,7 @@ include_recipe 'rvm::vagrant'
 include_recipe 'rvm::system'
 include_recipe 'redisio::install'
 include_recipe 'redisio::enable'
+include_recipe "mongodb::default"
  
  
 begin

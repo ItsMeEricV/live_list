@@ -13,6 +13,7 @@ depends 'vim'
 depends 'nodejs'
 depends 'rvm'
 depends 'redisio'
+depends 'mongodb'
 # depends 'php'
 # depends 'php-fpm'
 

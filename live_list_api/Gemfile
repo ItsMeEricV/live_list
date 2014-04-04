@@ -6,15 +6,18 @@ gem 'rails', '4.0.4'
 gem 'rails-api'
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+#gem 'sqlite3'
 
 #gem 'rainbows', '4.4.3'
 gem 'thin'
 
+# for real time io
 gem 'firehose'
 
-# gem 'mysql2'
-# gem 'foreigner'
+# our database
+gem 'mongoid', git: 'https://github.com/mongoid/mongoid.git'
+# improve MongoDB performance
+gem 'bson_ext'
 
 group :development, :test do
   gem 'rspec-rails'
