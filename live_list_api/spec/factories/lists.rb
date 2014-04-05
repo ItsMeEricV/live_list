@@ -2,6 +2,8 @@
 
 FactoryGirl.define do
   factory :list do
-    title "MyString"
+    id 1
+    title "One great list!"
+    
   end
 end

@@ -17,6 +17,7 @@ require.config({
     autosize: 'libs/jquery-autosize/jquery.autosize',
     //localstorage: 'libs/backbone.localstorage/backbone.localStorage',
     'bootstrap-switch' : 'libs/bootstrap-switch/dist/js/bootstrap-switch',
+    'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
     // fh_base: 'coffee_compiled/base.js',

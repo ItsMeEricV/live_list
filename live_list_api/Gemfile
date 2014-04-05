@@ -19,6 +19,8 @@ gem 'mongoid', git: 'https://github.com/mongoid/mongoid.git'
 # improve MongoDB performance
 gem 'bson_ext'
 
+gem 'active_model_serializers'
+
 group :development, :test do
   gem 'rspec-rails'
   # Factory Girl gem for testing

@@ -11,10 +11,11 @@ define([
   'autosize',
   'bootstrap-switch',
   'utility',
+  'jquery-cookie',
   'views/home/CueView',
   'text!templates/home/homeTemplate.html',
   'fh'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, CueView, homeTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, CueView, homeTemplate){
 
   // CueView = Backbone.Marionette.ItemView.extend({
   //   tagName: "tr",
@@ -102,14 +103,26 @@ define([
 
               case "update":
                 // that.collection.add(json);
-                console.log(json);
                 $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
-                $('li[data-id="' + json.id + '"]').find('textarea').val(json.title);
+                // $('li[data-id="' + json.id + '"]').find('textarea').val(json.title);
+                model = that.collection.where({id: json.id})[0];
+                console.log(model);
+                model.set(json);
+                
+                that.render();
 
                 break;
 
               case "add":
                 that.collection.add(json);
+                break;
+
+              case "delete":
+
+                //$('li[data-id="' + json.id + '"]')
+                model = that.collection.where({id:json.id})[0];
+                that.collection.remove(model);
+
                 break;
 
             }
@@ -132,13 +145,13 @@ define([
 
       this.collection = new ListItems();
 
+      this.newCueWasMade = false;
       this.switchIsDrawn = false;
       this.switchState = false;
 
       this.collection.comparator = "order"; 
 
       this.collection.fetch({});
-      console.log(this.collection);
 
       //this.listenTo(this.collection, "add", this.render, this);
 
@@ -147,7 +160,6 @@ define([
       this.wasEscKey = "no";
 
     },
-
     onRender: function() {
 
     },
@@ -155,6 +167,8 @@ define([
     onShow: function(){
       
       var that = this;
+
+      console.log("onShow");
 
       $('.dd').nestable({ 
         
@@ -185,12 +199,17 @@ define([
 
               console.log("newIndex: "+newIndex);
               console.log("oldIndex: "+oldIndex);
+              console.log("newOrder: "+newOrder);
+              console.log("oldOrder: "+oldOrder);
+              console.log("idThatMoved: "+idThatMoved);
+              console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
           moveDirection = (newOrder > oldOrder) ? "higher" : "lower";
           console.log(moveDirection);
           count = 0;
+          attrs = {};
           
           $.each(that.collection.models,function(i,item) {
             if(moveDirection === "lower") {
@@ -198,48 +217,61 @@ define([
               //the "reordering range" is if it's (1) greater than or equal to the new order spot of the moved item
               //                                  (2) less than the old order spot of the moved item
               if(item.get("id") !== idThatMoved && item.get("order") >= newOrder && item.get("order") < oldOrder) {
-                item.set("order",item.get("order") + 1)
+                attrs["order"] = (item.get("order") + 1);
+                item.set("order",item.get("order") + 1);
               }
 
               //if item is a item and a item was moved
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 //if item isn't the cue that moved and it's within the reindexing range then change it
                 if(item.get("id") !== idThatMoved && item.get("index") >= newIndex && item.get("index") < oldIndex ) {
-                  item.set("index",item.get("index") + 1)
+                  attrs["index"] = (item.get("index") + 1);
+                  item.set("index",item.get("index") + 1);
                 }
                 else if(item.get("id") === idThatMoved) {  //if it is the one that moved then set it to the new values reported by netstable's callback
                   item.set("index",newIndex);
                   item.set("order",newOrder);
+                  attrs = {"index" : newIndex,"order":newOrder};
                 }
               }
               else { //if a section moved
                 if(item.get("id") === idThatMoved) {
                   item.set("order",newOrder);
+                  attrs["order"] = newOrder;
                 }
               }
             }
-            else {
+            else { // moveDirection is higher
               if(item.get("id") !== idThatMoved && item.get("order") <= newOrder && item.get("order") > oldOrder) {
-                item.set("order",item.get("order") - 1)
+                item.set("order",item.get("order") - 1);
+                attrs["order"] = (item.get("order") - 1);
               }
 
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 if(item.get("id") !== idThatMoved && item.get("index") <= newIndex && item.get("index") > oldIndex ) {
-                  item.set("index",item.get("index") - 1)
+                  item.set("index",item.get("index") - 1);
+                  attrs["index"] = (item.get("index") - 1);
                 }
                 else if(item.get("id") === idThatMoved) {
                   item.set("index",newIndex);
                   item.set("order",newOrder);
+                  attrs = {"index" : newIndex,"order":newOrder};
                 }
               }
               else { //if a section moved
                 if(item.get("id") === idThatMoved) {
                   item.set("order",newOrder);
+                  attrs["order"] = newOrder;
                 }
               }
             }
 
-            item.save();
+            //update model if it needs updating
+            if(!utility.isEmpty(attrs)) {
+              item.save(attrs,{patch:true});
+              console.log("TITLE IS: " +item.get("title"));
+              console.log(attrs);
+            }
 
           });
 
@@ -255,7 +287,6 @@ define([
 
       });
 
-        //console.log(this.collection.toJSON());
       //autosize the textarea and its container
       $('textarea').autosize({
         callback: function() {
@@ -283,18 +314,25 @@ define([
     //add a new cue to the list
     newCue: function() {
 
+      var that = this;
+
       cueCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, description: ""});
+      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, title: ""});
 
-      newCue = this.collection.create(item);
+      this.collection.create(item,{
+        success: function(item) {
 
-      this.render();
-      this.onShow();
+          that.render();
+          that.onShow();
 
-      $("li[data-id=" + newCue.get("id") + "]").find('.form-control').focus();
-      console.log("li[data-id=" + newCue.get("id") + "]");
+          that.newCueWasMade = true;
+          $("li[data-id=" + item.id + "]").find('.form-control').focus();
+        }
+      });
+
+
 
     }, 
     //delete a cue
@@ -310,14 +348,23 @@ define([
       $.each(this.collection.models,function(i,item) {
 
         if(item.get("order") > orderToBeDeleted) {
-          item.set("order", item.get("order") - 1);
+          newOrder = item.get("order") - 1
+          //item.set("order", item.get("order") - 1);
+
+          attrs = {"order":newOrder};
 
           if(typeToBeDeleted === "item" && item.get("list_type") === "item") {
-            item.set("index", item.get("index") - 1);
+            newIndex = item.get("index") - 1
+            //item.set("index", item.get("index") - 1);
+            attrs = {"order":newOrder, "index": newIndex};
           }
+
+          item.save(attrs, {patch: true});
         }
 
-        item.save();
+
+        //item.save();
+        
 
       });
       
@@ -370,30 +417,12 @@ define([
       model = this.collection.where({id: itemId})[0];
       this.prevSelectedModel = model;
       //this.setModelById({"id": cueId, values: [{"key": "selected", "value": true}]});
-      this.setModelById(itemId,{"selected": true});
-
-      // cue.val(model.get("description"));
-
-      //if cue is not already focused then open text box for editing the description
-      // if(!$(e.currentTarget).closest(".dd3-content").find(".form-control").is(":visible")) { 
-      //   description = $(e.currentTarget).find("#description");
-      //   descriptionValue = $(e.currentTarget).find("#description").html();
-      //   cueField = $(e.currentTarget).closest(".dd3-content");
-
-        //set textarea value
-        // model = this.collection.where({id: cueId})[0];
-        // cueField.html('<textarea class="form-control" rows="1">' + model.get("description") + '</textarea>');
-        // cueField.find('textarea').autosize({
-        //     callback: function() {
-        //       cueField.css("height", cueField.find('textarea').css("height"));
-        //     }
-        //   });
-
-        //cueField.find('.form-control').focus();
-
-
-        //this.setModelById({"id": cueId, values: [{"key": "selected", "value": true}]);
-      // }
+      if(this.newCueWasMade) {
+        this.newCueWasMade = false;
+      }
+      else {
+        this.setModelById(itemId,{"selected": true});
+      }
       
     },
     blurCue: function(e) {
@@ -492,9 +521,6 @@ define([
     },
     br2nl: function(str) {
       return str.replace(/<br>/g, "\r");
-    },
-    productionState: function() {
-
     }
 
 

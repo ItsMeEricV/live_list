@@ -16,12 +16,19 @@ class API::V1::ListItemsController < ApplicationController
     if @list.save
 
       #firehose pub
-      @list_item["cid"] = params[:cid]
-      json = @list_item.to_json
+      #rely on AMS to create our JSON response properly. Since we need AMS outside of the render: json call we use the Serializer call directly
+      json = ListItemSerializer.new(@list_item).to_json
+      json = JSON.parse(json)
+      #can't figure out how to get AMS to remove the root (i.e. root: false) when calling the Serializer method directly. Brute force remove the root here
+      json = json["list_item"]
+      #add our customer attributes that are only used by the Firehose clients
+      json["action"] = "add"
+      json["cid"] = params[:cid]
+      json = json.to_json
       firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
       firehose.publish(json).to("/live_list")
 
-      render json: @list_item, status: :created
+      render json: json, status: :created
     else
       render json: @list.errors, status: :unprocessable_entity
     end
@@ -61,9 +68,31 @@ class API::V1::ListItemsController < ApplicationController
 
   end
 
+  # DELETE /list/:list_id/:list_item_id
+  def delete
+
+    @list = List.find(params[:list_id])
+    p = list_item_params
+    p[:id] = params[:list_item_id]
+    p[:_destroy] = 1
+
+    @list.list_items_attributes = [ p ]
+
+    if @list.save
+      p[:cid] = params[:cid]
+      p[:action] = "delete"
+      json = p.to_json
+      firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
+      firehose.publish(json).to("/live_list")
+
+      head :no_content
+    else
+      render json: {response: "error"}, status: :unprocessable_entity
+    end
+  end
+
   private
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def list_item_params
       params.permit(:index, :order, :title, :list_type, :id)
     end
