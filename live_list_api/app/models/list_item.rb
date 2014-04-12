@@ -9,5 +9,6 @@ class ListItem
   field :index, type: Integer
   field :order, type: Integer
   field :list_type, type: String
+  field :action_id, type: String
 
 end

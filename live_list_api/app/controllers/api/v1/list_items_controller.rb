@@ -34,11 +34,12 @@ class API::V1::ListItemsController < ApplicationController
     end
   end
 
-  # PATCH /list/:list_id/:list_item_id
+  # PATCH /lists/:list_id/:list_item_id
   def update
 
     @list = List.find(params[:list_id])
     p = list_item_params
+    action_id = SecureRandom.uuid
 
     # hack to not update the "selected" attribute in the DB, just communicate it to the clients
     if(params[:selected])
@@ -48,6 +49,8 @@ class API::V1::ListItemsController < ApplicationController
       firehose.publish(json).to("/live_list")
     else
       p[:id] = params[:list_item_id]
+      #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
+      p[:action_id] = action_id
       @list.list_items_attributes = [p]
       
       if @list.save
@@ -56,8 +59,6 @@ class API::V1::ListItemsController < ApplicationController
         json = p.to_json
         firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
         firehose.publish(json).to("/live_list")
-
-
 
         render json: p, status: :created
       else

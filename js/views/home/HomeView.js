@@ -102,14 +102,18 @@ define([
                 break;
 
               case "update":
-                // that.collection.add(json);
                 $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
                 // $('li[data-id="' + json.id + '"]').find('textarea').val(json.title);
-                model = that.collection.where({id: json.id})[0];
-                console.log(model);
-                model.set(json);
                 
-                that.render();
+                //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
+                model = that.collection.where({id: json.id})[0];
+                
+                if(json.action !== model.get("action_id")) {
+                  console.log(model);
+                  model.set(json);
+                  that.render();
+                }
+
 
                 break;
 
@@ -151,7 +155,14 @@ define([
 
       this.collection.comparator = "order"; 
 
-      this.collection.fetch({});
+      this.collection.fetch({
+        success: function() {
+          console.log(that.collection);
+          that.collection.sort();
+          that.render();
+          that.onShow();
+        }
+      });
 
       //this.listenTo(this.collection, "add", this.render, this);
 
