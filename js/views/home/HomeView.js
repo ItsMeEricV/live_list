@@ -223,21 +223,23 @@ define([
           attrs = {};
           
           $.each(that.collection.models,function(i,item) {
+            currentOrder = item.get("order");
+            currentIndex = item.get("index");
             if(moveDirection === "lower") {
               //if item isn't the one that moved but it's within the reordering range then set new order
               //the "reordering range" is if it's (1) greater than or equal to the new order spot of the moved item
               //                                  (2) less than the old order spot of the moved item
               if(item.get("id") !== idThatMoved && item.get("order") >= newOrder && item.get("order") < oldOrder) {
-                attrs["order"] = (item.get("order") + 1);
-                item.set("order",item.get("order") + 1);
+                attrs["order"] = (currentOrder + 1);
+                item.set("order",currentOrder + 1);
               }
 
               //if item is a item and a item was moved
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 //if item isn't the cue that moved and it's within the reindexing range then change it
                 if(item.get("id") !== idThatMoved && item.get("index") >= newIndex && item.get("index") < oldIndex ) {
-                  attrs["index"] = (item.get("index") + 1);
-                  item.set("index",item.get("index") + 1);
+                  attrs["index"] = (currentIndex + 1);
+                  item.set("index",currentIndex + 1);
                 }
                 else if(item.get("id") === idThatMoved) {  //if it is the one that moved then set it to the new values reported by netstable's callback
                   item.set("index",newIndex);
@@ -254,14 +256,15 @@ define([
             }
             else { // moveDirection is higher
               if(item.get("id") !== idThatMoved && item.get("order") <= newOrder && item.get("order") > oldOrder) {
-                item.set("order",item.get("order") - 1);
-                attrs["order"] = (item.get("order") - 1);
+                item.set("order",currentOrder - 1);
+                attrs["order"] = (currentOrder - 1);
+                console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
               }
 
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 if(item.get("id") !== idThatMoved && item.get("index") <= newIndex && item.get("index") > oldIndex ) {
-                  item.set("index",item.get("index") - 1);
-                  attrs["index"] = (item.get("index") - 1);
+                  item.set("index",currentIndex - 1);
+                  attrs["index"] = (currentIndex - 1);
                 }
                 else if(item.get("id") === idThatMoved) {
                   item.set("index",newIndex);
