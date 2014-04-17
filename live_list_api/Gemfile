@@ -8,8 +8,9 @@ gem 'rails-api'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3'
 
-#gem 'rainbows', '4.4.3'
-gem 'thin'
+gem 'rainbows', '4.4.3'
+gem 'puma'
+#gem 'thin'
 
 # for real time io
 gem 'firehose'

@@ -1,7 +1,8 @@
 upstream myapp {
-  server 127.0.0.1:3000;
-  server 127.0.0.1:3001;
-  server 127.0.0.1:3002;
+  #server 127.0.0.1:3000;
+  #server 127.0.0.1:3001;
+  #server 127.0.0.1:3002;
+  server unix:///home/vagrant/live_list.sock;
 }
 
 server {
@@ -26,15 +27,16 @@ server {
 
 
   location /api {
-    try_files $uri $uri/ @ruby;
+    #try_files $uri $uri/ @ruby;
+    proxy_pass http://myapp;
   }
 
   location /  {
     try_files $uri $uri/ /index.html;
   }
 
-  location @ruby {
-    proxy_pass http://myapp;
-  }
+  #location @ruby {
+  #  proxy_pass http://myapp;
+  #}
 
 }

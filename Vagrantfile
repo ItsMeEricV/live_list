@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
     cue.vm.box = "precise64"
     #cue.vm.box_url = "http://files.vagrantup.com/precise64.box"
    
-    cue.vm.network :private_network, ip: "192.168.60.20"
-    #cue.vm.network :public_network
+    #cue.vm.network :private_network, ip: "192.168.60.20"
+    cue.vm.network :public_network
     
     cue.berkshelf.enabled = true
 

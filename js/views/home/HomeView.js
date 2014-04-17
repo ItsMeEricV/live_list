@@ -87,7 +87,7 @@ define([
       });
 
       new Firehose.Consumer({
-        uri: '//192.168.60.20:7474/live_list',
+        uri: '//192.168.1.14:7474/live_list',
         message: function(json){
           console.log(json);
           // console.log(that.collection);
@@ -103,15 +103,15 @@ define([
 
               case "update":
                 $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
-                // $('li[data-id="' + json.id + '"]').find('textarea').val(json.title);
                 
                 //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
                 model = that.collection.where({id: json.id})[0];
                 
                 if(json.action !== model.get("action_id")) {
-                  console.log(model);
                   model.set(json);
+                  that.collection.sort();
                   that.render();
+                  that.onShow();
                 }
 
 
@@ -220,9 +220,10 @@ define([
           moveDirection = (newOrder > oldOrder) ? "higher" : "lower";
           console.log(moveDirection);
           count = 0;
-          attrs = {};
+          
           
           $.each(that.collection.models,function(i,item) {
+            attrs = {};
             currentOrder = item.get("order");
             currentIndex = item.get("index");
             if(moveDirection === "lower") {
@@ -231,7 +232,11 @@ define([
               //                                  (2) less than the old order spot of the moved item
               if(item.get("id") !== idThatMoved && item.get("order") >= newOrder && item.get("order") < oldOrder) {
                 attrs["order"] = (currentOrder + 1);
-                item.set("order",currentOrder + 1);
+                //item.set("order",currentOrder + 1);
+                if(item.get("title") == "carrot") {
+                  console.log("IT'S A CARROT!");
+                }
+                console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
               }
 
               //if item is a item and a item was moved
@@ -239,42 +244,45 @@ define([
                 //if item isn't the cue that moved and it's within the reindexing range then change it
                 if(item.get("id") !== idThatMoved && item.get("index") >= newIndex && item.get("index") < oldIndex ) {
                   attrs["index"] = (currentIndex + 1);
-                  item.set("index",currentIndex + 1);
+                  //item.set("index",currentIndex + 1);
                 }
                 else if(item.get("id") === idThatMoved) {  //if it is the one that moved then set it to the new values reported by netstable's callback
-                  item.set("index",newIndex);
-                  item.set("order",newOrder);
+                  //item.set("index",newIndex);
+                  //item.set("order",newOrder);
                   attrs = {"index" : newIndex,"order":newOrder};
                 }
               }
               else { //if a section moved
                 if(item.get("id") === idThatMoved) {
-                  item.set("order",newOrder);
+                  //item.set("order",newOrder);
                   attrs["order"] = newOrder;
                 }
               }
             }
             else { // moveDirection is higher
               if(item.get("id") !== idThatMoved && item.get("order") <= newOrder && item.get("order") > oldOrder) {
-                item.set("order",currentOrder - 1);
                 attrs["order"] = (currentOrder - 1);
+                //item.set("order",currentOrder - 1);
+                if(item.get("title") == "carrot") {
+                  console.log("IT'S A CARROT!");
+                }
                 console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
               }
 
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
                 if(item.get("id") !== idThatMoved && item.get("index") <= newIndex && item.get("index") > oldIndex ) {
-                  item.set("index",currentIndex - 1);
                   attrs["index"] = (currentIndex - 1);
+                  //item.set("index",currentIndex - 1);
                 }
                 else if(item.get("id") === idThatMoved) {
-                  item.set("index",newIndex);
-                  item.set("order",newOrder);
+                  //item.set("index",newIndex);
+                  //item.set("order",newOrder);
                   attrs = {"index" : newIndex,"order":newOrder};
                 }
               }
               else { //if a section moved
                 if(item.get("id") === idThatMoved) {
-                  item.set("order",newOrder);
+                  //item.set("order",newOrder);
                   attrs["order"] = newOrder;
                 }
               }
@@ -283,8 +291,8 @@ define([
             //update model if it needs updating
             if(!utility.isEmpty(attrs)) {
               item.save(attrs,{patch:true});
-              console.log("TITLE IS: " +item.get("title"));
-              console.log(attrs);
+              // console.log("TITLE IS: " +item.get("title"));
+              // console.log(attrs);
             }
 
           });
