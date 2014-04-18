@@ -14,7 +14,8 @@ define([
   'jquery-cookie',
   'views/home/CueView',
   'text!templates/home/homeTemplate.html',
-  'fh'
+  'fh',
+  'tock'
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, CueView, homeTemplate){
 
   // CueView = Backbone.Marionette.ItemView.extend({
@@ -34,7 +35,8 @@ define([
       "focus .descriptionTextarea" : "selectCue",
       "blur .cue-description" : "blurCue",
       "keydown .form-control" : "checkKeyDown",
-      "mouseup .bootstrap-switch" : "switchMouseUp"
+      "mouseup .bootstrap-switch" : "switchMouseUp",
+      "click .toggleTimer" : "toggleTimer"
       //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
       //"keyup .cue-description" : "descriptionSize"
       //"click .dd3-content" : "toggleCue",
@@ -51,7 +53,7 @@ define([
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        urlRoot: '/lists/533e526f7072652764010000/',
+        urlRoot: '/lists/535164067072651d55010000/',
         parse: function(response) {
           response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
           delete response._id;
@@ -82,6 +84,7 @@ define([
           //   list_items[key]._id = list_items[key]._id['$oid'];
           // }
           // console.log(response.list_items);
+          that.timer = response.timer;
           return response.list_items
         }
       });
@@ -152,13 +155,15 @@ define([
       this.newCueWasMade = false;
       this.switchIsDrawn = false;
       this.switchState = false;
+      this.timer = new Object();
+      this.timer.state = "stopped";
 
       this.collection.comparator = "order"; 
 
       this.collection.fetch({
         success: function() {
-          console.log(that.collection);
           that.collection.sort();
+
           that.render();
           that.onShow();
         }
@@ -179,7 +184,23 @@ define([
       
       var that = this;
 
-      console.log("onShow");
+      console.log(typeof $('#clock').val());
+      console.log(typeof "00:00:01");
+
+      //handle timer state
+      if(this.timer.state === "stopped") {
+        $('#toggleTimer').addClass('btn-success').html('GO!!');
+      }
+      else {
+        $('#toggleTimer').addClass('btn-danger').html('Pause');
+        var tock = new Tock({
+          callback: function () {
+            $('#clock').val(tock.msToSimpleTime(tock.lap() + tock.timeToMS("00:00:01")));
+          }
+        });
+
+        tock.start($('#clock').val());
+      }
 
       $('.dd').nestable({ 
         
@@ -518,6 +539,28 @@ define([
       // console.log(model);
       model.save(attrs, {patch: true});
       this.collection.set(model,{remove: false});
+
+    },
+    toggleTimer: function(e) {
+
+      e.preventDefault();
+      var that = this;
+
+      if($(e.currentTarget).hasClass('btn-success')) {
+
+        $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
+        startTime = $('#clock').val();
+        var tock1 = new Tock({
+          callback: function () {
+            $('#clock').val(tock1.msToSimpleTime(tock1.lap() + tock1.timeToMS(startTime)));
+          }
+        });
+
+        tock1.start($('#clock').val());
+      }
+      else if($(e.currentTarget).hasClass('btn-danger')) {
+        console.log("OFF");
+      }
 
     },
     nl2br: function (str, is_xhtml) {

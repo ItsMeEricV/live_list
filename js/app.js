@@ -94,7 +94,7 @@ define([
 
 
     // We have no matching route, lets display the home page and home navbar
-    var homeView = new HomeView({id: "533e526f7072652764010000"});
+    var homeView = new HomeView({id: "535164067072651d55010000"});
     app.content.show(homeView);
 
 

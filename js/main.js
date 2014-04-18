@@ -20,11 +20,7 @@ require.config({
     'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
-    // fh_base: 'coffee_compiled/base.js',
-    // fh_consumer: 'coffee_compiled/consumer.js',
-    // fh_long_poll: 'coffee_compiled/long_poll.js',
-    // fh_transport: 'coffee_compiled/transport.js',
-    // fh_web_socket: 'coffee_compiled/web_socket.js',
+    tock: 'libs/tock/tock',
     templates: '../templates'
   },
   shim: {
@@ -32,7 +28,8 @@ require.config({
     //'backbone.collectionView' : ['backbone'],
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
-    'autosize' : ['jquery']
+    'autosize' : ['jquery'],
+    'tock' : ['jquery']
   }
 
 });

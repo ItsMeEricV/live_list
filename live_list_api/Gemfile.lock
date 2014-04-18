@@ -229,3 +229,4 @@ DEPENDENCIES
   rainbows (= 4.4.3)
   rspec-rails
   seed_dump
+  timers
