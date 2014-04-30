@@ -8,14 +8,11 @@ define([
   'router',
   'vent',
   'bootstrap',
-  'views/home/HomeView'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, HomeView){
+  'views/home/ListsView',
+  'views/home/ListItemsView'
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, ListsView, ListItemsView){
 
   var that = this;
-
-
-
-
 
   var BrowserDetect = 
   {
@@ -62,8 +59,6 @@ define([
   app.uuid = guid();
 
 
-
-
   app.on("initialize:before", function(){
 
     //if Backbone history has not already been start it then start it
@@ -85,18 +80,23 @@ define([
 
 
   //DEFINE ROUTES
-  var app_router = new AppRouter;
+  var app_router = new AppRouter();
 
+
+  app_router.on('route:listItemsView', function (id) {
     
+    var listItemsView = new ListItemsView({id: id});
+    
+    app.content.show(listItemsView);
 
+
+  });
 
   app_router.on('route:defaultAction', function (actions,params) {
 
-
     // We have no matching route, lets display the home page and home navbar
-    var homeView = new HomeView({id: "535164067072651d55010000"});
-    app.content.show(homeView);
-
+    var listsView = new ListsView();
+    app.content.show(listsView);
 
   });
 

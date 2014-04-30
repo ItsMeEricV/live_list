@@ -12,17 +12,17 @@ define([
   'bootstrap-switch',
   'utility',
   'jquery-cookie',
-  'views/home/CueView',
-  'text!templates/home/homeTemplate.html',
+  'views/home/ItemView',
+  'text!templates/home/listItemsTemplate.html',
   'fh',
   'tock',
   'flippy'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, CueView, homeTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, ItemView, listItemsTemplate){
 
-  var HomeView = Marionette.CompositeView.extend({
-    itemView: CueView,
+  var ListItemsView = Marionette.CompositeView.extend({
+    itemView: ItemView,
     itemViewContainer: ".dd-list",
-    template: homeTemplate,
+    template: listItemsTemplate,
     events: {
 
       "click .newCue" : "newCue",
@@ -32,7 +32,9 @@ define([
       "blur .cue-description" : "blurCue",
       "keydown .form-control" : "checkKeyDown",
       "mouseup .bootstrap-switch" : "switchMouseUp",
-      "click .toggleTimer" : "toggleTimer"
+      "click .toggleTimer" : "toggleTimer",
+      "mouseenter .live-item" : "buttonHoverOn",
+      "mouseleave .live-item" : "buttonHoverOff"
       //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
       //"keyup .cue-description" : "descriptionSize"
       //"click .dd3-content" : "toggleCue",
@@ -49,7 +51,7 @@ define([
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        urlRoot: '/lists/535164067072651d55010000/',
+        urlRoot: '/lists/' + data.id,
         parse: function(response) {
           response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
           delete response._id;
@@ -356,8 +358,8 @@ define([
         $.each(this.collection.models, function(i,item){
 
           setTimeout(function() {
-            $("li[data-id=" + item.id + "]").flippy({
-            verso: '<div class="panel panel-default live-item" id="' + item.id + '" style="height:30px"><div class="panel-body">Basic panel example</div></div>',
+            $("li[data-id=" + item.get("id") + "]").flippy({
+            verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
             direction: "TOP",
             duration: "200"
             //depth:"0.09"
@@ -367,8 +369,6 @@ define([
 
         });
 
-
-        //$('.dd-item').removeClass('dd-item');
       }
       else {
         $.each(this.collection.models, function(i,item){
@@ -377,9 +377,18 @@ define([
           },100 + (i * 160));
         });
       }
+
+        //optionally remove nestable classes here
         // $('.dd').removeClass('dd');
         // $('.dd-list').removeClass('dd-list');
       
+    },
+    buttonHoverOn: function(e) {
+      console.log('sdf');
+      $(e.currentTarget).find('button').css("background-color","#A8A8A8");
+    },
+    buttonHoverOff: function(e) {
+      $(e.currentTarget).find('button').css("background-color","#858585");
     },
 
     //add a new cue to the list
@@ -619,6 +628,6 @@ define([
 
   });
 
-  return HomeView;
+  return ListItemsView;
   
 });

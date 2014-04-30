@@ -3,11 +3,11 @@ define([
   'underscore',
   'backbone',
   'marionette',
-  'text!templates/home/cueTemplate.html'
-], function($, _, Backbone, Marionette, cueTemplate){
+  'text!templates/home/itemTemplate.html'
+], function($, _, Backbone, Marionette, itemTemplate){
 
-  var CueView = Marionette.ItemView.extend({
-    template: cueTemplate,
+  var ItemView = Marionette.ItemView.extend({
+    template: itemTemplate,
     tagName: "li",
     attributes: function() {
       return {
@@ -42,6 +42,6 @@ define([
 
   });
 
-  return CueView;
+  return ItemView;
   
 });
