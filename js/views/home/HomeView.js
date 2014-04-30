@@ -15,13 +15,9 @@ define([
   'views/home/CueView',
   'text!templates/home/homeTemplate.html',
   'fh',
-  'tock'
+  'tock',
+  'flippy'
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, CueView, homeTemplate){
-
-  // CueView = Backbone.Marionette.ItemView.extend({
-  //   tagName: "tr",
-  //   template: "#row-template"
-  // });
 
   var HomeView = Marionette.CompositeView.extend({
     itemView: CueView,
@@ -90,7 +86,7 @@ define([
       });
 
       new Firehose.Consumer({
-        uri: '//192.168.1.14:7474/live_list',
+        uri: '//192.168.60.20:7474/live_list',
         message: function(json){
           console.log(json);
           // console.log(that.collection);
@@ -348,10 +344,42 @@ define([
         this.switchIsDrawn = true;
 
         $('#live-edit-switch').on('switchChange.bootstrapSwitch', function(event, state) {
-          console.log(event);
           that.switchState = state;
-          that.productionState();
-        })
+          that.toggleState(state);
+        });
+    },
+    toggleState: function(state) {
+      //state == true then we are in "live" mode
+      //state == false then we are in "edit" mode
+
+      if(state) {
+        $.each(this.collection.models, function(i,item){
+
+          setTimeout(function() {
+            $("li[data-id=" + item.id + "]").flippy({
+            verso: '<div class="panel panel-default live-item" id="' + item.id + '" style="height:30px"><div class="panel-body">Basic panel example</div></div>',
+            direction: "TOP",
+            duration: "200"
+            //depth:"0.09"
+          });
+          },100 + (i * 160));
+
+
+        });
+
+
+        //$('.dd-item').removeClass('dd-item');
+      }
+      else {
+        $.each(this.collection.models, function(i,item){
+          setTimeout(function() {
+            $("li[data-id=" + item.id + "]").flippyReverse();
+          },100 + (i * 160));
+        });
+      }
+        // $('.dd').removeClass('dd');
+        // $('.dd-list').removeClass('dd-list');
+      
     },
 
     //add a new cue to the list

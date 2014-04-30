@@ -21,6 +21,7 @@ require.config({
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
     tock: 'libs/tock/tock',
+    flippy: 'libs/flippy/jquery.flippy',
     templates: '../templates'
   },
   shim: {
@@ -29,7 +30,8 @@ require.config({
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
-    'tock' : ['jquery']
+    'tock' : ['jquery'],
+    'flippy' : ['jquery']
   }
 
 });
