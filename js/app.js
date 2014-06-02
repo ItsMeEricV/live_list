@@ -14,9 +14,6 @@ define([
   var that = this;
 
 
-
-
-
   var BrowserDetect = 
   {
       init: function () 
@@ -85,10 +82,7 @@ define([
 
 
   //DEFINE ROUTES
-  var app_router = new AppRouter;
-
-    
-
+  var app_router = new AppRouter();
 
   app_router.on('route:defaultAction', function (actions,params) {
 
