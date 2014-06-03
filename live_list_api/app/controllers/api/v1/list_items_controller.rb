@@ -9,8 +9,6 @@ class API::V1::ListItemsController < ApplicationController
   # POST /lists/:list_id
   def create
     @list = List.find(params[:list_id])
-    #@list.list_items_attributes = [ { title: "Title here", index: 0, order: 1, list_type: "item" } ]
-    #@list.list_items_attributes = [ list_item_params ]
     @list_item = @list.list_items.build(list_item_params)
 
     if @list.save
@@ -25,8 +23,10 @@ class API::V1::ListItemsController < ApplicationController
       json["action"] = "add"
       json["cid"] = params[:cid]
       json = json.to_json
+      #configure the Firehose Producer
       firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
-      firehose.publish(json).to("/live_list")
+      #fire the pub to the specific list using the list_id. The JS clients will only sub to this specific list_id (i.e. channel)
+      firehose.publish(json).to("/live_list/"+params[:list_id])
 
       render json: json, status: :created
     else
@@ -46,7 +46,7 @@ class API::V1::ListItemsController < ApplicationController
       message = {cid: params[:cid], action: "select", id: params[:list_item_id]}
       json = message.to_json
       firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
-      firehose.publish(json).to("/live_list")
+      firehose.publish(json).to("/live_list/"+params[:list_id])
     else
       p[:id] = params[:list_item_id]
       #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
@@ -58,7 +58,7 @@ class API::V1::ListItemsController < ApplicationController
         p[:action] = "update"
         json = p.to_json
         firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
-        firehose.publish(json).to("/live_list")
+        firehose.publish(json).to("/live_list/"+params[:list_id])
 
         render json: p, status: :created
       else
@@ -84,7 +84,7 @@ class API::V1::ListItemsController < ApplicationController
       p[:action] = "delete"
       json = p.to_json
       firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
-      firehose.publish(json).to("/live_list")
+      firehose.publish(json).to("/live_list/"+params[:list_id])
 
       head :no_content
     else

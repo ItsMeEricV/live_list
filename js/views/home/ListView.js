@@ -38,6 +38,9 @@ define([
 
     initialize: function() {
 
+    },
+    newList: function() {
+
     }
 
   });

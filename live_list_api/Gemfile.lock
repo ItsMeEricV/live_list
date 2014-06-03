@@ -90,7 +90,6 @@ GEM
       json
       thor
     formatador (0.2.4)
-    growl (1.0.3)
     guard (2.6.0)
       formatador (>= 0.2.4)
       listen (~> 2.7)
@@ -130,7 +129,7 @@ GEM
       mini_portile (~> 0.5.0)
     optionable (0.2.0)
     origin (2.1.1)
-    polyglot (0.3.4)
+    polyglot (0.3.5)
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -185,7 +184,7 @@ GEM
       activerecord
       activesupport
     slop (3.5.0)
-    sprockets (2.12.0)
+    sprockets (2.12.1)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
@@ -218,9 +217,9 @@ DEPENDENCIES
   active_model_serializers
   bson_ext
   capybara
+  celluloid
   factory_girl_rails
   firehose
-  growl
   guard-rspec
   mongoid!
   puma

@@ -29,4 +29,10 @@ ActiveRecord::Schema.define(version: 20140403063523) do
     t.datetime "updated_at"
   end
 
+  create_table "timer", force: true do |t|
+    t.string   "state"
+    t.datetime "start_time"
+    t.time     "duration"
+  end
+
 end

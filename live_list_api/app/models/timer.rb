@@ -5,5 +5,6 @@ class Timer
   embedded_in :list
 
   field :state, type: String
-  field :current_timecode, type: String
+  field :start_time, type: Datetime
+  field :duration, type: Time
 end

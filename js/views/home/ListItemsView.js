@@ -82,13 +82,29 @@ define([
           //   list_items[key]._id = list_items[key]._id['$oid'];
           // }
           // console.log(response.list_items);
-          that.timer = response.timer;
+
+          //if timer data has been stored for this list then use the stored data. Otherwise we assume a stopped timer starting at the default value.
+          if(!utility.isEmpty(response.timer)) that.timer = response.timer;
           return response.list_items
         }
       });
 
-      new Firehose.Consumer({
-        uri: '//192.168.60.20:7474/live_list',
+      this.collection = new ListItems();
+
+      //setup defaults
+      this.newCueWasMade = false;
+      this.switchIsDrawn = false;
+      this.switchState = false;
+      this.timer = {};
+      this.timer.state = "stopped";
+      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
+      this.defaultDescHeight = 40;
+      this.wasEscKey = "no";
+
+      
+      //set up the Firehose Consumer
+      this.firehose_consumer = new Firehose.Consumer({
+        uri: '//192.168.60.20:7474/live_list/'+data.id,
         message: function(json){
           console.log(json);
           // console.log(that.collection);
@@ -144,18 +160,14 @@ define([
         error: function(){
           console.log("Well then, something went horribly wrong.");
         }
-      }).connect();
+      });
+
+      //connect the Firehose Consumer to the Firehose Server
+      this.firehose_consumer.connect();
 
 
 
-      this.collection = new ListItems();
-
-      this.newCueWasMade = false;
-      this.switchIsDrawn = false;
-      this.switchState = false;
-      this.timer = new Object();
-      this.timer.state = "stopped";
-
+      //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
       this.collection.fetch({
@@ -167,23 +179,22 @@ define([
         }
       });
 
-      //this.listenTo(this.collection, "add", this.render, this);
-
-      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
-      this.defaultDescHeight = 40;
-      this.wasEscKey = "no";
 
     },
     onRender: function() {
 
+    },
+    onClose: function(arg1, arg2){
+      //stop the Firehose Consumer so we don't have multiple consumer running at the same time
+      this.firehose_consumer.stop();
     },
 
     onShow: function(){
       
       var that = this;
 
-      console.log(typeof $('#clock').val());
-      console.log(typeof "00:00:01");
+      // console.log(typeof $('#clock').val());
+      // console.log(typeof "00:00:01");
 
       //handle timer state
       if(this.timer.state === "stopped") {
@@ -206,7 +217,7 @@ define([
           // l is the main container
           // e is the element that was moved
 
-          console.log("in nestable callback");
+          //console.log("in nestable callback");
 
           cues = $('.dd').nestable('serialize');
 
@@ -227,17 +238,17 @@ define([
               newOrder = parseInt(key);
               oldOrder = parseInt(cues[key].order);
 
-              console.log("newIndex: "+newIndex);
-              console.log("oldIndex: "+oldIndex);
-              console.log("newOrder: "+newOrder);
-              console.log("oldOrder: "+oldOrder);
-              console.log("idThatMoved: "+idThatMoved);
-              console.log("typeThatMoved: "+typeThatMoved);
+              // console.log("newIndex: "+newIndex);
+              // console.log("oldIndex: "+oldIndex);
+              // console.log("newOrder: "+newOrder);
+              // console.log("oldOrder: "+oldOrder);
+              // console.log("idThatMoved: "+idThatMoved);
+              // console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
           moveDirection = (newOrder > oldOrder) ? "higher" : "lower";
-          console.log(moveDirection);
+          //console.log(moveDirection);
           count = 0;
           
           
@@ -253,9 +264,9 @@ define([
                 attrs["order"] = (currentOrder + 1);
                 //item.set("order",currentOrder + 1);
                 if(item.get("title") == "carrot") {
-                  console.log("IT'S A CARROT!");
+                  //console.log("IT'S A CARROT!");
                 }
-                console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
+                //console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
               }
 
               //if item is a item and a item was moved
@@ -283,9 +294,9 @@ define([
                 attrs["order"] = (currentOrder - 1);
                 //item.set("order",currentOrder - 1);
                 if(item.get("title") == "carrot") {
-                  console.log("IT'S A CARROT!");
+                  //console.log("IT'S A CARROT!");
                 }
-                console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
+                //console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
               }
 
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
@@ -384,7 +395,7 @@ define([
       
     },
     buttonHoverOn: function(e) {
-      console.log('sdf');
+      //console.log('sdf');
       $(e.currentTarget).find('button').css("background-color","#A8A8A8");
     },
     buttonHoverOff: function(e) {
@@ -422,7 +433,7 @@ define([
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
-      console.log(orderToBeDeleted);
+      //console.log(orderToBeDeleted);
       this.prevSelectedModel.destroy();
 
       $.each(this.collection.models,function(i,item) {
@@ -473,7 +484,7 @@ define([
 
       descLength = cueDescription.find('.form-control').val().length;
       desc = cueDescription.find('.form-control');
-      console.log("descLength is: " + descLength);
+      //console.log("descLength is: " + descLength);
       currentDescHeight = parseInt(desc.css("height"));
 
       switch(this.windowWidth) {
@@ -507,7 +518,7 @@ define([
     },
     blurCue: function(e) {
 
-      console.log("on blur");
+      //console.log("on blur");
 
       $('.nestable-selected').removeClass("nestable-selected");
 
@@ -596,7 +607,7 @@ define([
         tock1.start($('#clock').val());
       }
       else if($(e.currentTarget).hasClass('btn-danger')) {
-        console.log("OFF");
+        //console.log("OFF");
       }
 
     },
