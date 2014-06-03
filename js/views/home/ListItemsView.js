@@ -12,20 +12,17 @@ define([
   'bootstrap-switch',
   'utility',
   'jquery-cookie',
-  'views/home/CueView',
-  'text!templates/home/homeTemplate.html',
-  'fh'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, CueView, homeTemplate){
+  'views/home/ItemView',
+  'text!templates/home/listItemsTemplate.html',
+  'fh',
+  'tock',
+  'flippy'
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, ItemView, listItemsTemplate){
 
-  // CueView = Backbone.Marionette.ItemView.extend({
-  //   tagName: "tr",
-  //   template: "#row-template"
-  // });
-
-  var HomeView = Marionette.CompositeView.extend({
-    itemView: CueView,
+  var ListItemsView = Marionette.CompositeView.extend({
+    itemView: ItemView,
     itemViewContainer: ".dd-list",
-    template: homeTemplate,
+    template: listItemsTemplate,
     events: {
 
       "click .newCue" : "newCue",
@@ -34,7 +31,10 @@ define([
       "focus .descriptionTextarea" : "selectCue",
       "blur .cue-description" : "blurCue",
       "keydown .form-control" : "checkKeyDown",
-      "mouseup .bootstrap-switch" : "switchMouseUp"
+      "mouseup .bootstrap-switch" : "switchMouseUp",
+      "click .toggleTimer" : "toggleTimer",
+      "mouseenter .live-item" : "buttonHoverOn",
+      "mouseleave .live-item" : "buttonHoverOff"
       //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
       //"keyup .cue-description" : "descriptionSize"
       //"click .dd3-content" : "toggleCue",
@@ -51,7 +51,7 @@ define([
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        urlRoot: '/lists/533e526f7072652764010000/',
+        urlRoot: '/lists/' + data.id,
         parse: function(response) {
           response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
           delete response._id;
@@ -82,12 +82,29 @@ define([
           //   list_items[key]._id = list_items[key]._id['$oid'];
           // }
           // console.log(response.list_items);
+
+          //if timer data has been stored for this list then use the stored data. Otherwise we assume a stopped timer starting at the default value.
+          if(!utility.isEmpty(response.timer)) that.timer = response.timer;
           return response.list_items
         }
       });
 
-      new Firehose.Consumer({
-        uri: '//192.168.1.14:7474/live_list',
+      this.collection = new ListItems();
+
+      //setup defaults
+      this.newCueWasMade = false;
+      this.switchIsDrawn = false;
+      this.switchState = false;
+      this.timer = {};
+      this.timer.state = "stopped";
+      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
+      this.defaultDescHeight = 40;
+      this.wasEscKey = "no";
+
+      
+      //set up the Firehose Consumer
+      this.firehose_consumer = new Firehose.Consumer({
+        uri: '//192.168.60.20:7474/live_list/'+data.id,
         message: function(json){
           console.log(json);
           // console.log(that.collection);
@@ -143,43 +160,56 @@ define([
         error: function(){
           console.log("Well then, something went horribly wrong.");
         }
-      }).connect();
+      });
+
+      //connect the Firehose Consumer to the Firehose Server
+      this.firehose_consumer.connect();
 
 
 
-      this.collection = new ListItems();
-
-      this.newCueWasMade = false;
-      this.switchIsDrawn = false;
-      this.switchState = false;
-
+      //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
       this.collection.fetch({
         success: function() {
-          console.log(that.collection);
           that.collection.sort();
+
           that.render();
           that.onShow();
         }
       });
 
-      //this.listenTo(this.collection, "add", this.render, this);
-
-      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
-      this.defaultDescHeight = 40;
-      this.wasEscKey = "no";
 
     },
     onRender: function() {
 
+    },
+    onClose: function(arg1, arg2){
+      //stop the Firehose Consumer so we don't have multiple consumer running at the same time
+      this.firehose_consumer.stop();
     },
 
     onShow: function(){
       
       var that = this;
 
-      console.log("onShow");
+      // console.log(typeof $('#clock').val());
+      // console.log(typeof "00:00:01");
+
+      //handle timer state
+      if(this.timer.state === "stopped") {
+        $('#toggleTimer').addClass('btn-success').html('GO!!');
+      }
+      else {
+        $('#toggleTimer').addClass('btn-danger').html('Pause');
+        var tock = new Tock({
+          callback: function () {
+            $('#clock').val(tock.msToSimpleTime(tock.lap() + tock.timeToMS("00:00:01")));
+          }
+        });
+
+        tock.start($('#clock').val());
+      }
 
       $('.dd').nestable({ 
         
@@ -187,7 +217,7 @@ define([
           // l is the main container
           // e is the element that was moved
 
-          console.log("in nestable callback");
+          //console.log("in nestable callback");
 
           cues = $('.dd').nestable('serialize');
 
@@ -208,17 +238,17 @@ define([
               newOrder = parseInt(key);
               oldOrder = parseInt(cues[key].order);
 
-              console.log("newIndex: "+newIndex);
-              console.log("oldIndex: "+oldIndex);
-              console.log("newOrder: "+newOrder);
-              console.log("oldOrder: "+oldOrder);
-              console.log("idThatMoved: "+idThatMoved);
-              console.log("typeThatMoved: "+typeThatMoved);
+              // console.log("newIndex: "+newIndex);
+              // console.log("oldIndex: "+oldIndex);
+              // console.log("newOrder: "+newOrder);
+              // console.log("oldOrder: "+oldOrder);
+              // console.log("idThatMoved: "+idThatMoved);
+              // console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
           moveDirection = (newOrder > oldOrder) ? "higher" : "lower";
-          console.log(moveDirection);
+          //console.log(moveDirection);
           count = 0;
           
           
@@ -234,9 +264,9 @@ define([
                 attrs["order"] = (currentOrder + 1);
                 //item.set("order",currentOrder + 1);
                 if(item.get("title") == "carrot") {
-                  console.log("IT'S A CARROT!");
+                  //console.log("IT'S A CARROT!");
                 }
-                console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
+                //console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
               }
 
               //if item is a item and a item was moved
@@ -264,9 +294,9 @@ define([
                 attrs["order"] = (currentOrder - 1);
                 //item.set("order",currentOrder - 1);
                 if(item.get("title") == "carrot") {
-                  console.log("IT'S A CARROT!");
+                  //console.log("IT'S A CARROT!");
                 }
-                console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
+                //console.log("TITLE IS: " +item.get("title") + " and I'm in the order subtract one if");
               }
 
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
@@ -327,10 +357,49 @@ define([
         this.switchIsDrawn = true;
 
         $('#live-edit-switch').on('switchChange.bootstrapSwitch', function(event, state) {
-          console.log(event);
           that.switchState = state;
-          that.productionState();
-        })
+          that.toggleState(state);
+        });
+    },
+    toggleState: function(state) {
+      //state == true then we are in "live" mode
+      //state == false then we are in "edit" mode
+
+      if(state) {
+        $.each(this.collection.models, function(i,item){
+
+          setTimeout(function() {
+            $("li[data-id=" + item.get("id") + "]").flippy({
+            verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
+            direction: "TOP",
+            duration: "200"
+            //depth:"0.09"
+          });
+          },100 + (i * 160));
+
+
+        });
+
+      }
+      else {
+        $.each(this.collection.models, function(i,item){
+          setTimeout(function() {
+            $("li[data-id=" + item.id + "]").flippyReverse();
+          },100 + (i * 160));
+        });
+      }
+
+        //optionally remove nestable classes here
+        // $('.dd').removeClass('dd');
+        // $('.dd-list').removeClass('dd-list');
+      
+    },
+    buttonHoverOn: function(e) {
+      //console.log('sdf');
+      $(e.currentTarget).find('button').css("background-color","#A8A8A8");
+    },
+    buttonHoverOff: function(e) {
+      $(e.currentTarget).find('button').css("background-color","#858585");
     },
 
     //add a new cue to the list
@@ -364,7 +433,7 @@ define([
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
-      console.log(orderToBeDeleted);
+      //console.log(orderToBeDeleted);
       this.prevSelectedModel.destroy();
 
       $.each(this.collection.models,function(i,item) {
@@ -415,7 +484,7 @@ define([
 
       descLength = cueDescription.find('.form-control').val().length;
       desc = cueDescription.find('.form-control');
-      console.log("descLength is: " + descLength);
+      //console.log("descLength is: " + descLength);
       currentDescHeight = parseInt(desc.css("height"));
 
       switch(this.windowWidth) {
@@ -449,7 +518,7 @@ define([
     },
     blurCue: function(e) {
 
-      console.log("on blur");
+      //console.log("on blur");
 
       $('.nestable-selected').removeClass("nestable-selected");
 
@@ -520,6 +589,28 @@ define([
       this.collection.set(model,{remove: false});
 
     },
+    toggleTimer: function(e) {
+
+      e.preventDefault();
+      var that = this;
+
+      if($(e.currentTarget).hasClass('btn-success')) {
+
+        $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
+        startTime = $('#clock').val();
+        var tock1 = new Tock({
+          callback: function () {
+            $('#clock').val(tock1.msToSimpleTime(tock1.lap() + tock1.timeToMS(startTime)));
+          }
+        });
+
+        tock1.start($('#clock').val());
+      }
+      else if($(e.currentTarget).hasClass('btn-danger')) {
+        //console.log("OFF");
+      }
+
+    },
     nl2br: function (str, is_xhtml) {
       // From: http://phpjs.org/functions
       // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -548,6 +639,6 @@ define([
 
   });
 
-  return HomeView;
+  return ListItemsView;
   
 });

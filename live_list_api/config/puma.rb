@@ -11,4 +11,4 @@ state_path 'tmp/pids/puma.state'
 
 # quiet
 threads 0, 16
-bind 'unix:///home/vagrant/live_list.sock'
+#bind 'unix:///home/vagrant/live_list.sock'

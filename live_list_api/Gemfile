@@ -22,6 +22,8 @@ gem 'bson_ext'
 
 gem 'active_model_serializers'
 
+gem 'timers'
+
 group :development, :test do
   gem 'rspec-rails'
   # Factory Girl gem for testing
@@ -30,7 +32,7 @@ group :development, :test do
   # Guard automatically runs rspec tests with file save
   gem 'guard-rspec'
   # On mac it gives you growl notifications in the corner
-  gem 'growl'
+  # gem 'growl'
   # seed dump allows us to dump our DB data to the db/seeds.rb file
   gem 'seed_dump'
   #for selenium testing
