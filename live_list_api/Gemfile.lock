@@ -217,7 +217,6 @@ DEPENDENCIES
   active_model_serializers
   bson_ext
   capybara
-  celluloid
   factory_girl_rails
   firehose
   guard-rspec

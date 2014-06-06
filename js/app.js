@@ -14,6 +14,7 @@ define([
 
   var that = this;
 
+
   //create unique ID for this app instance so that a live list does not respond to it's own calls
   app.uuid = guid();
 
