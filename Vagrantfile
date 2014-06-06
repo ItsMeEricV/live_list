@@ -9,8 +9,9 @@ Vagrant.configure("2") do |config|
   #install latest chef version using vagrant-omnibus
   config.omnibus.chef_version = :latest
 
-  config.vm.define :cue do |cue|
-    cue.vm.box = "precise64"
+  config.vm.define :live_list do |cue|
+    #cue.vm.box = "precise64"
+    cue.vm.box = "hashicorp/precise64"
     #cue.vm.box_url = "http://files.vagrantup.com/precise64.box"
    
     cue.vm.network :private_network, ip: "192.168.60.20"
