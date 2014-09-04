@@ -46,7 +46,7 @@ define([
 
       var that = this;
 
-      // this.listenTo(vent, "goToKeyUp", this.checkKeyUp, this);
+      //listen for keyUps so we can publish them to the backend
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
@@ -59,9 +59,10 @@ define([
         }
       });
 
+      //new item in the list
       var listItem = new ListItem({
         id: 1,
-        //numerical display for items. This number is not used for sections.
+        //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
         index: 0,
         //absolute order in the list. Is not used for display, only for ordering on screen
         order: 0,
@@ -71,17 +72,15 @@ define([
         list_type: "item"
       });
 
-
+      //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
         //localStorage: new Backbone.LocalStorage("CueCollection")
         url: '/lists/' + data.id,
         model: ListItem,
         parse: function(response) {
-          // list_items = response.list_items;
-          // for (var key in list_items) {
-          //   list_items[key]._id = list_items[key]._id['$oid'];
-          // }
-          // console.log(response.list_items);
+
+          //set list title
+          that.listTitle = response.title;
 
           //if timer data has been stored for this list then use the stored data. Otherwise we assume a stopped timer starting at the default value.
           if(!utility.isEmpty(response.timer)) that.timer = response.timer;
@@ -90,6 +89,7 @@ define([
       });
 
       this.collection = new ListItems();
+      this.listId = data.id;
 
       //setup defaults
       this.newCueWasMade = false;
@@ -106,8 +106,8 @@ define([
       this.firehose_consumer = new Firehose.Consumer({
         uri: '//192.168.60.20:7474/live_list/'+data.id,
         message: function(json){
-          console.log(json);
-          // console.log(that.collection);
+
+          //only modify the list you are connected to
           if(json.cid !== app.uuid) {
             switch(json.action) {
 
@@ -140,7 +140,6 @@ define([
 
               case "delete":
 
-                //$('li[data-id="' + json.id + '"]')
                 model = that.collection.where({id:json.id})[0];
                 that.collection.remove(model);
 
@@ -165,8 +164,6 @@ define([
       //connect the Firehose Consumer to the Firehose Server
       this.firehose_consumer.connect();
 
-
-
       //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
@@ -183,9 +180,15 @@ define([
     },
     onRender: function() {
 
+      //set the title of the list in the view
+      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
+
+      //set the "open list in new tab" URL in the view
+      $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
+
     },
     onClose: function(arg1, arg2){
-      //stop the Firehose Consumer so we don't have multiple consumer running at the same time
+      //stop the Firehose Consumer so we don't have multiple consumers running at the same time
       this.firehose_consumer.stop();
     },
 
