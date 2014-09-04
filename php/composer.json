@@ -1,9 +1,0 @@
-{
-    "require": {
-        "mailgun/mailgun-php": "~1.4",
-        "slim/slim": "2.*",
-        "balanced/balanced": "*",
-        "hipchat/hipchat-php": ">=1.0.0",
-        "mobiledetect/mobiledetectlib": ">=2.7.2"
-    }
-}

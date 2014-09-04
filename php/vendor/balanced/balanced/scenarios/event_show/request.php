@@ -1,1 +1,0 @@
-$event = Balanced\Event::get("{{ request.uri }}");

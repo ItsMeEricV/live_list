@@ -1,1 +1,0 @@
-$debit = Balanced\Debit::get("{{ request.uri }}");

@@ -1,1 +1,0 @@
-$card = Balanced\Card::get("{{ request.uri }}");
