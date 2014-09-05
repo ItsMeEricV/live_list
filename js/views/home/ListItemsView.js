@@ -72,6 +72,9 @@ define([
         list_type: "item"
       });
 
+      //setup timer object
+      this.timer = {};
+
       //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
         //localStorage: new Backbone.LocalStorage("CueCollection")
@@ -82,8 +85,15 @@ define([
           //set list title
           that.listTitle = response.title;
 
-          //if timer data has been stored for this list then use the stored data. Otherwise we assume a stopped timer starting at the default value.
-          if(!utility.isEmpty(response.timer)) that.timer = response.timer;
+          //set timer state based on server data
+          // if(!utility.isEmpty(response.timer)) {
+          that.timer = response.timer;
+          // }
+          // else {
+          //   that.timer.state = "stopped";
+          //   that.timer.timerOnServer = false;
+          // }
+
           return response.list_items
         }
       });
@@ -95,8 +105,6 @@ define([
       this.newCueWasMade = false;
       this.switchIsDrawn = false;
       this.switchState = false;
-      this.timer = {};
-      this.timer.state = "stopped";
       this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
@@ -201,17 +209,17 @@ define([
 
       //handle timer state
       if(this.timer.state === "stopped") {
-        $('#toggleTimer').addClass('btn-success').html('GO!!');
+        $('.toggleTimer').addClass('btn-success').html('GO!!');
       }
-      else {
-        $('#toggleTimer').addClass('btn-danger').html('Pause');
-        var tock = new Tock({
+      else if(this.timer.state === "started") {
+        $('.toggleTimer').addClass('btn-danger').html('Pause');
+        this.tock1 = new Tock({
           callback: function () {
-            $('#clock').val(tock.msToSimpleTime(tock.lap() + tock.timeToMS("00:00:01")));
+            $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS("00:00:01")));
           }
         });
 
-        tock.start($('#clock').val());
+        this.tock1.start($('#clock').val());
       }
 
       $('.dd').nestable({ 
@@ -266,9 +274,6 @@ define([
               if(item.get("id") !== idThatMoved && item.get("order") >= newOrder && item.get("order") < oldOrder) {
                 attrs["order"] = (currentOrder + 1);
                 //item.set("order",currentOrder + 1);
-                if(item.get("title") == "carrot") {
-                  //console.log("IT'S A CARROT!");
-                }
                 //console.log("TITLE IS: " +item.get("title") + " and I'm in the order add one if");
               }
 
@@ -596,21 +601,50 @@ define([
 
       e.preventDefault();
       var that = this;
+      
+      //setup timer parameters to be stored on server
+      var timer = {};
+      var date = new Date();
+      timer.action_time = date.getTime();
 
+      //if currently in the OFF state
       if($(e.currentTarget).hasClass('btn-success')) {
 
-        $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
-        startTime = $('#clock').val();
-        var tock1 = new Tock({
-          callback: function () {
-            $('#clock').val(tock1.msToSimpleTime(tock1.lap() + tock1.timeToMS(startTime)));
+        //update server with timer value
+        timer.state = "started";
+        $.ajax({
+          type: 'PUT',
+          url: '/timers/' + this.listId,
+          data: timer,
+          success: function() {
+            //change button from GO to Pause
+            $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
           }
         });
 
-        tock1.start($('#clock').val());
+        startTime = $('#clock').val();
+        this.tock1 = new Tock({
+          callback: function () {
+            $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS(startTime)));
+          }
+        });
+
+        this.tock1.start($('#clock').val());
       }
       else if($(e.currentTarget).hasClass('btn-danger')) {
-        //console.log("OFF");
+        //update server with timer value
+        timer.state = "stopped";
+        $.ajax({
+          type: 'PUT',
+          url: '/timers/' + this.listId,
+          data: timer,
+          success: function() {
+            //change button from Pause to Start
+            $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
+            that.tock1.stop();
+
+          }
+        });
       }
 
     },

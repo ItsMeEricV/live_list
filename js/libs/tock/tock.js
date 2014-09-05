@@ -178,8 +178,6 @@ var Tock = (function(options) {
   function timeToMS(time) {
     var ms = new Date(time).getTime();
 
-    console.log(time);
-
     // if (!ms) {
     //   var time_split = time.split(':');
     //   //console.log(time_split);
