@@ -46,8 +46,14 @@ define([
   app_router.on('route:listItemsView', function (id) {
     
     var listItemsView = new ListItemsView({id: id});
+    listItemsView.collection.fetch({
+      success: function() {
+        listItemsView.collection.sort();
+        app.content.show(listItemsView);
+      }
+    });
     
-    app.content.show(listItemsView);
+    
 
   });
 

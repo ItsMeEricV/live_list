@@ -119,6 +119,7 @@ define([
           if(json.cid !== app.uuid) {
             switch(json.action) {
 
+              //user selects a list item
               case "select":
                 //set all items to white
                 $('li').find('textarea').css("background-color","white");
@@ -126,6 +127,7 @@ define([
                 $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
                 break;
 
+              //user modifies a list item
               case "update":
                 $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
                 
@@ -139,17 +141,26 @@ define([
                   that.onShow();
                 }
 
-
                 break;
 
+              //user adds a new list item
               case "add":
                 that.collection.add(json);
                 break;
 
+              //user deletes a list time
               case "delete":
 
                 model = that.collection.where({id:json.id})[0];
                 that.collection.remove(model);
+
+                break;
+
+              //user toggles the state of the timer
+              case "toggle_timer":
+
+                that.timer = json;
+                that.setTimerState();
 
                 break;
 
@@ -175,24 +186,10 @@ define([
       //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
-      this.collection.fetch({
-        success: function() {
-          that.collection.sort();
-
-          that.render();
-          that.onShow();
-        }
-      });
-
-
     },
     onRender: function() {
 
-      //set the title of the list in the view
-      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
 
-      //set the "open list in new tab" URL in the view
-      $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
 
     },
     onClose: function(arg1, arg2){
@@ -201,34 +198,36 @@ define([
     },
 
     onShow: function(){
-      
+
       var that = this;
 
-      // console.log(typeof $('#clock').val());
-      // console.log(typeof "00:00:01");
+      //set the title of the list in the view
+      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
 
-      //handle timer state
-      if(this.timer.state === "stopped") {
-        $('.toggleTimer').addClass('btn-success').html('GO!!');
-      }
-      else if(this.timer.state === "started") {
-        $('.toggleTimer').addClass('btn-danger').html('Pause');
-        this.tock1 = new Tock({
-          callback: function () {
-            $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS("00:00:01")));
-          }
-        });
+      //set the "open list in new tab" URL in the view
+      $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
 
-        this.tock1.start($('#clock').val());
-      }
+      //create new Tock timer object. Attach to View
+      this.tock1 = new Tock({
+        callback: function () {
+
+          //find lap time: (exact time of timer)  +  1000ms
+          intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
+
+          //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToSimpleTime() function which converts milliseconds to timecode form
+          $('#clock').val(that.tock1.msToSimpleTime(intervalTime));
+
+        }
+      });
+
+      //handle the state of the timer
+      this.setTimerState();
 
       $('.dd').nestable({ 
         
         callback: function(l,e) {
           // l is the main container
           // e is the element that was moved
-
-          //console.log("in nestable callback");
 
           cues = $('.dd').nestable('serialize');
 
@@ -357,6 +356,31 @@ define([
       this.showSwitch();
 
     },
+    setTimerState: function() {
+      
+      //handle timer state
+      if(this.timer.state === "stopped") {
+        $('.toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
+
+        this.tock1.stop();
+
+        //if timer is stopped then just set timer value to the previously saved duration (could be zero)
+        $('#clock').val(this.tock1.msToSimpleTime(this.timer.duration));
+
+      }
+      else if(this.timer.state === "started") {
+        $('.toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
+        //if timer is started then subject current time from the start time to set current timer value.
+        currentTime = Date.now();
+        
+        $('#clock').val(this.tock1.msToSimpleTime(currentTime - this.timer.action_time));
+
+        //if state is started then start the timer on the client
+        //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
+        this.tock1.start(this.timer.action_time);
+      }
+
+    },
     showSwitch: function() {
 
       var that = this;
@@ -369,6 +393,7 @@ define([
           that.toggleState(state);
         });
     },
+    //this is for toggline the Edit/Live state of the overall list
     toggleState: function(state) {
       //state == true then we are in "live" mode
       //state == false then we are in "edit" mode
@@ -403,7 +428,6 @@ define([
       
     },
     buttonHoverOn: function(e) {
-      //console.log('sdf');
       $(e.currentTarget).find('button').css("background-color","#A8A8A8");
     },
     buttonHoverOff: function(e) {
@@ -441,7 +465,6 @@ define([
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
-      //console.log(orderToBeDeleted);
       this.prevSelectedModel.destroy();
 
       $.each(this.collection.models,function(i,item) {
@@ -526,8 +549,6 @@ define([
     },
     blurCue: function(e) {
 
-      //console.log("on blur");
-
       $('.nestable-selected').removeClass("nestable-selected");
 
       if(this.wasEscKey === "no") {
@@ -603,41 +624,53 @@ define([
       var that = this;
       
       //setup timer parameters to be stored on server
-      var timer = {};
-      var date = new Date();
-      timer.action_time = date.getTime();
+      var timerAction = {};
+      
+
+      //this.timer.duration = this.timer.action_time - date.getTime();
 
       //if currently in the OFF state
       if($(e.currentTarget).hasClass('btn-success')) {
 
+        //set action time to (current Unix time - previous time on timer)
+        timerAction.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
+
         //update server with timer value
-        timer.state = "started";
+        timerAction.state = "started";
         $.ajax({
           type: 'PUT',
           url: '/timers/' + this.listId,
-          data: timer,
+          data: timerAction,
           success: function() {
             //change button from GO to Pause
             $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
+
+            ms = that.tock1.timeToMS($('#clock').val());
+            start_time = Date.now() - ms;
+
+            that.tock1.start(start_time);
           }
         });
 
-        startTime = $('#clock').val();
-        this.tock1 = new Tock({
-          callback: function () {
-            $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS(startTime)));
-          }
-        });
+        // startTime = $('#clock').val();
+        // this.tock1 = new Tock({
+        //   callback: function () {
+        //     $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS(startTime)));
+        //   }
+        // });
 
-        this.tock1.start($('#clock').val());
       }
       else if($(e.currentTarget).hasClass('btn-danger')) {
+        
+        //set action time to current Unix time
+        timerAction.action_time = Date.now();
+
         //update server with timer value
-        timer.state = "stopped";
+        timerAction.state = "stopped";
         $.ajax({
           type: 'PUT',
           url: '/timers/' + this.listId,
-          data: timer,
+          data: timerAction,
           success: function() {
             //change button from Pause to Start
             $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');

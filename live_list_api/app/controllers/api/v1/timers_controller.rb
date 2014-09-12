@@ -47,17 +47,22 @@ class API::V1::TimersController < ApplicationController
       timer_params[:state] = "started"
     elsif(timer_edit_params[:state] == "stopped") #stopping a timer
       #set the duration parameter. This says how long the timer has been running since the last reset.
-      #subtract the action_time from the current timer time to find the duration of the current action, then add it to the current stored duration to keep a running total
-      timer_params[:duration] =  (action_time - @list.timer.action_time) + @list.timer.duration
+      #subtract the action_time from the current timer time to find the duration of the current action
+      timer_params[:duration] =  (action_time - @list.timer.action_time) + 1000
       timer_params[:action_time] = action_time
       timer_params[:state] = "stopped"
     end
 
-    #render json: {old_action_time: @list.timer.action_time, new_action_time: action_time} and return
-
     @list.timer_attributes = timer_params
 
     if @list.save
+
+      timer_params[:action] = "toggle_timer"
+      #configure the Firehose Producer
+      firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
+      #fire the pub to the specific list using the list_id. The JS clients will only sub to this specific list_id (i.e. channel)
+      firehose.publish(timer_params.to_json).to("/live_list/"+params[:id])
+
       render json: {duration: timer_params[:duration]}, status: :ok
       #render json: @list, status: :ok
     else
@@ -65,7 +70,6 @@ class API::V1::TimersController < ApplicationController
     end
 
   end
-
 
   private
 
