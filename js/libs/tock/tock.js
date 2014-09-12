@@ -39,7 +39,7 @@ var Tock = (function(options) {
     if (countdown) {
       _startCountdown(time);
     } else {
-      _startTimer();
+      _startTimer(time);
     }
   }
   
@@ -85,9 +85,11 @@ var Tock = (function(options) {
    * Stop the clock.
    */
   function stop() {
-    go = false;
-    final_time = (Date.now() - start_time);
-    window.clearTimeout(timeout.replace(prefix));
+    if(go) {
+      go = false;
+      final_time = (Date.now() - start_time);
+      window.clearTimeout(timeout.replace(prefix));
+    }
   }
   
   /**
@@ -178,8 +180,6 @@ var Tock = (function(options) {
   function timeToMS(time) {
     var ms = new Date(time).getTime();
 
-    console.log(time);
-
     // if (!ms) {
     //   var time_split = time.split(':');
     //   //console.log(time_split);
@@ -223,8 +223,8 @@ var Tock = (function(options) {
   /**
    * Called by Tock internally - use start() instead
    */
-  function _startTimer() {
-    start_time = Date.now();
+  function _startTimer(startTime) {
+    start_time = startTime || Date.now();
     time = 0;
     elapsed = '0.0';
     go = true;
