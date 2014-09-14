@@ -23,7 +23,6 @@
     "marionette": "~1.6.2",
     "requirejs": "~2.1.11",
     "backbone.localstorage": "~1.1.7",
-    "backbone.collectionView": "~0.8.2",
     "jqueryui": "~1.10.4",
     "modernizr": "~2.7.1",
     "jquery-autosize": "~1.18.4",

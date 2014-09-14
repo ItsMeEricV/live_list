@@ -11,7 +11,6 @@ require.config({
     'backbone.wreqr' : 'libs/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.babysitter' : 'libs/backbone.babysitter/lib/amd/backbone.babysitter',
     bootstrap: 'libs/bootstrap/dist/js/bootstrap',
-    //'backbone.collectionView' : 'libs/backbone.collectionView/dist/backbone.collectionView',
     nestable : 'libs/nestable/jquery.nestable',
     modernizr: 'libs/modernizr/modernizr',
     autosize: 'libs/jquery-autosize/jquery.autosize',
@@ -26,7 +25,6 @@ require.config({
   },
   shim: {
     'bootstrap' : ['jquery'],
-    //'backbone.collectionView' : ['backbone'],
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
