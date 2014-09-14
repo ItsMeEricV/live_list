@@ -19,7 +19,7 @@ require.config({
     'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
-    tock: 'libs/tock/tock',
+    tock: 'libs/tock_modified/tock',
     flippy: 'libs/flippy/jquery.flippy',
     templates: '../templates'
   },
