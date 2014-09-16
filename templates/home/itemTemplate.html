@@ -2,16 +2,28 @@
 
 
     <% if(list_type === "item") { %>
-      <div class="dd-handle dd3-handle">
-        Drag
-      </div>
-      <div class="cue-description dd3-content">
-        <h5>
-          <strong><%= index %> :</strong>
-          <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px"><%= title %></textarea>
-        </h5>
-      </div>
+        
+      <% if(list_mode === "edit") { %>
+        
+        <div class="dd-handle dd3-handle">
+          Drag
+        </div>
+        <div class="cue-description dd3-content">
+          <h5>
+            <strong><%= index %> :</strong>
+            <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px"><%= title %></textarea>
+          </h5>
+        </div>
 
+      <% } else { %>
+
+        <div class="panel panel-default live-item" style="height:50px">
+          <div class="panel-body" id='<%= id %>'>
+            <button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id="btn-<%= id %>"><%= title %></button>
+          </div>
+        </div>
+
+      <% } %>
     <% } else { %>
       <div class="dd-handle dd3-section-handle">
         Drag

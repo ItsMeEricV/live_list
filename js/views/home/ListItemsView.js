@@ -12,12 +12,13 @@ define([
   'bootstrap-switch',
   'utility',
   'jquery-cookie',
+  'simpleStorage',
   'views/home/ItemView',
   'text!templates/home/listItemsTemplate.html',
   'fh',
   'tock',
   'flippy'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, ItemView, listItemsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,ItemView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
     itemView: ItemView,
@@ -33,6 +34,7 @@ define([
       "keydown .form-control" : "checkKeyDown",
       "mouseup .bootstrap-switch" : "switchMouseUp",
       "click .toggleTimer" : "toggleTimer",
+      "change .listModeSelect" : "listModeSelect",
       "mouseenter .live-item" : "buttonHoverOn",
       "mouseleave .live-item" : "buttonHoverOff"
       //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
@@ -69,7 +71,9 @@ define([
         //text that shows in the item text body
         title: "Unknown",
         //can be item or section
-        list_type: "item"
+        list_type: "item",
+        //mode of the list
+        list_mode: data.listMode
       });
 
       //setup timer object
@@ -85,14 +89,8 @@ define([
           //set list title
           that.listTitle = response.title;
 
-          //set timer state based on server data
-          // if(!utility.isEmpty(response.timer)) {
+          //set timer data
           that.timer = response.timer;
-          // }
-          // else {
-          //   that.timer.state = "stopped";
-          //   that.timer.timerOnServer = false;
-          // }
 
           return response.list_items
         }
@@ -108,8 +106,25 @@ define([
       this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
+      this.firstOnShow = true;
 
-      
+      //create new Tock timer object. Attach to View
+      this.tock1 = new Tock({
+        callback: function () {
+
+            //find lap time: (exact time of timer)  +  1000ms
+            intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
+
+            //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToSimpleTime() function which converts milliseconds to timecode form
+            $('#clock').val(that.tock1.msToSimpleTime(intervalTime));
+
+        }
+      });
+
+      //set listMode based on localStorage. If this list was not previously viewed then default to Watch mode
+      //TODO install simpleStorage and save the listMode along with the listId in a localStorage hash
+      this.listMode = data.listMode;
+
       //set up the Firehose Consumer
       this.firehose_consumer = new Firehose.Consumer({
         uri: '//192.168.60.20:7474/live_list/'+data.id,
@@ -117,6 +132,7 @@ define([
 
           //only modify the list you are connected to
           if(json.cid !== app.uuid) {
+
             switch(json.action) {
 
               //user selects a list item
@@ -145,7 +161,9 @@ define([
 
               //user adds a new list item
               case "add":
+                json.list_mode=that.listMode;
                 that.collection.add(json);
+
                 break;
 
               //user deletes a list time
@@ -153,6 +171,8 @@ define([
 
                 model = that.collection.where({id:json.id})[0];
                 that.collection.remove(model);
+                that.render();
+                that.onShow();
 
                 break;
 
@@ -195,11 +215,22 @@ define([
     onClose: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
       this.firehose_consumer.stop();
+
+      this.tock1.stop();
     },
 
     onShow: function(){
 
       var that = this;
+
+      //setup UI controls depending on the listMode.
+      this.drawListMode();
+
+      // if the list is in "edit" mode then setup Nestable for the first onShow. After initial onShow setting up nestable is handleded by the switchMode function
+      if(this.listMode === "edit" && this.firstOnShow) {
+        this.setNestable();
+        this.firstOnShow = false;
+      }
 
       //setup the sticky Navbar
       this.setStickyNavbar();
@@ -207,7 +238,7 @@ define([
       //if the window is resized (e.g. phone is rotated to landscape mode) then redraw the Navbar with the new width
       $( window ).resize(function() {
         $('.controlsNavbarClass').css('width',$('.listItemsPanel').width());
-
+        $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
       });
 
       //set the title of the list in the view
@@ -216,21 +247,52 @@ define([
       //set the "open list in new tab" URL in the view
       $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
 
-      //create new Tock timer object. Attach to View
-      this.tock1 = new Tock({
-        callback: function () {
+      //handle the state of the timer
+      this.setTimerState();
 
-          //find lap time: (exact time of timer)  +  1000ms
-          intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
-
-          //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToSimpleTime() function which converts milliseconds to timecode form
-          $('#clock').val(that.tock1.msToSimpleTime(intervalTime));
-
+      //autosize the textarea and its container
+      $('textarea').autosize({
+        callback: function() {
+          $(this).closest('.cue-description').css("height", parseInt($(this).css("height")) + 2 );
         }
       });
 
-      //handle the state of the timer
-      this.setTimerState();
+
+      //set the initial height of the "hiddenBreaks" div that makes the sticky navbar look good
+      $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
+
+    },
+    setTimerState: function() {
+      
+      //handle timer state
+      if(this.timer.state === "stopped") {
+        $('.toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
+
+        this.tock1.stop();
+
+        //if timer is stopped then just set timer value to the previously saved duration (could be zero)
+        $('#clock').val(this.tock1.msToSimpleTime(this.timer.duration));
+
+      }
+      else if(this.timer.state === "started") {
+
+        $('.toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
+
+        //if timer is started then subject current time from the start time to set current timer value.
+        currentTime = Date.now();
+        
+        $('#clock').val(this.tock1.msToSimpleTime(currentTime - this.timer.action_time));
+
+        //if state is started then start the timer on the client
+        //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
+        this.tock1.start(this.timer.action_time);
+      }
+
+    },
+    //call the Nestable library on the list items. This happens during edit mode
+    setNestable: function() {
+
+      var that = this;
 
       $('.dd').nestable({ 
         
@@ -270,7 +332,7 @@ define([
           //console.log(moveDirection);
           count = 0;
           
-          
+          //TODO update changed listItems in bulk instead of one at a time with $.each. This will significantly increase performance on viewer's lists. Current method is crude and slow to update since it will issue a PATCH for each list item modified.
           $.each(that.collection.models,function(i,item) {
             attrs = {};
             currentOrder = item.get("order");
@@ -337,8 +399,6 @@ define([
             //update model if it needs updating
             if(!utility.isEmpty(attrs)) {
               item.save(attrs,{patch:true});
-              // console.log("TITLE IS: " +item.get("title"));
-              // console.log(attrs);
             }
 
           });
@@ -347,46 +407,115 @@ define([
 
           that.render();
           that.onShow();
-          that.showSwitch();
+          that.setNestable();
 
         }
 
         
 
       });
-
-      //autosize the textarea and its container
-      $('textarea').autosize({
-        callback: function() {
-          $(this).closest('.cue-description').css("height", parseInt($(this).css("height")) + 2 );
-        }
-      });
-
-      this.showSwitch();
 
     },
-    setTimerState: function() {
-      
-      //handle timer state
-      if(this.timer.state === "stopped") {
-        $('.toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
+    drawListMode: function() {
 
-        this.tock1.stop();
+      //set the list mode select to the correct value
+      $('.listModeSelect').val(this.listMode);
 
-        //if timer is stopped then just set timer value to the previously saved duration (could be zero)
-        $('#clock').val(this.tock1.msToSimpleTime(this.timer.duration));
+      switch(this.listMode) {
+
+        case "watch":
+          //hide create/delete buttons
+          $('.editButtonType').hide();
+          $('.controlButtonType').hide();
+          break;
+
+        case "control":
+          //hide create/delete buttons
+          $('.editButtonType').hide();
+          $('.controlButtonType').show();
+          break;
+
+        case "edit":
+          //hide create/delete buttons
+          $('.editButtonType').show();
+          $('.controlButtonType').show();
+          break;        
 
       }
-      else if(this.timer.state === "started") {
-        $('.toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
-        //if timer is started then subject current time from the start time to set current timer value.
-        currentTime = Date.now();
-        
-        $('#clock').val(this.tock1.msToSimpleTime(currentTime - this.timer.action_time));
 
-        //if state is started then start the timer on the client
-        //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
-        this.tock1.start(this.timer.action_time);
+
+    },
+    listModeSelect: function(e) {
+
+      var that = this;
+
+      var listModeSelection = $(e.currentTarget).val();
+
+      //if user is actually changing the list mode then change it
+      if(this.listMode !== listModeSelection) {
+
+        this.listMode = listModeSelection;
+
+        this.drawListMode();
+
+        //storage listmode on client side
+        //simpleStorage.set('listMode',listModeSelection);   //global listMode
+        simpleStorage.set(this.listId, {"listMode" : listModeSelection});  //per list specific listMode
+
+        $.each(this.collection.models, function(i,item) {
+          item.set('list_mode',listModeSelection);
+        });
+
+        switch(listModeSelection) {
+
+          case "watch":
+
+            $.each(this.collection.models, function(i,item){
+
+              setTimeout(function() {
+                $("li[data-id=" + item.get("id") + "]").flippy({
+                verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
+                //verso: '<div class="dd-handle dd3-handle">Drag</div><div class="cue-description dd3-content"><h5><strong>' + item.get('index') + '</strong><textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px">' + item.get('title') + '</textarea></h5></div>',
+                direction: "TOP",
+                duration: "200"
+                //depth:"0.09"
+              });
+              },100 + (i * 160));
+
+
+            });
+
+            break;
+
+          case "control":
+
+
+
+            break;
+          case "edit":
+
+            $.each(this.collection.models, function(i,item){
+
+              setTimeout(function() {
+                $("li[data-id=" + item.get("id") + "]").flippy({
+                //verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
+                verso: '<div class="dd-handle dd3-handle">Drag</div><div class="cue-description dd3-content"><h5><strong>' + item.get('index') + '</strong><textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px">' + item.get('title') + '</textarea></h5></div>',
+                direction: "TOP",
+                duration: "200"
+                //depth:"0.09"
+              });
+              },100 + (i * 160));
+
+
+            });
+
+            //invoke Nestable on the listItems
+            this.setNestable();
+
+
+            break;
+
+        }
       }
 
     },
@@ -437,10 +566,14 @@ define([
       
     },
     buttonHoverOn: function(e) {
-      $(e.currentTarget).find('button').css("background-color","#A8A8A8");
+      if(this.listMode === "control") {
+        $(e.currentTarget).find('button').css("background-color","#A8A8A8");
+      }
     },
     buttonHoverOff: function(e) {
-      $(e.currentTarget).find('button').css("background-color","#858585");
+      if(this.listMode === "control") {
+        $(e.currentTarget).find('button').css("background-color","#858585");
+      }
     },
 
     //add a new cue to the list
@@ -451,7 +584,7 @@ define([
       cueCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, title: ""});
+      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, title: "", list_mode: this.listMode});
 
       this.collection.create(item,{
         success: function(item) {
@@ -463,7 +596,6 @@ define([
           $("li[data-id=" + item.id + "]").find('.form-control').focus();
         }
       });
-
 
 
     }, 
@@ -633,16 +765,21 @@ define([
       var that = this;
       
       //setup timer parameters to be stored on server
-      var timerAction = {};
-      
-
-      //this.timer.duration = this.timer.action_time - date.getTime();
+      var timerAction = {};  
 
       //if currently in the OFF state
-      if($(e.currentTarget).hasClass('btn-success')) {
+      if(this.timer.state === "stopped") {
 
         //set action time to (current Unix time - previous time on timer)
         timerAction.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
+        
+        //handle timer state
+        ms = that.tock1.timeToMS($('#clock').val());
+        start_time = Date.now() - ms;
+        this.tock1.start(start_time);
+
+        //change button from GO to Pause
+        $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
 
         //update server with timer value
         timerAction.state = "started";
@@ -651,28 +788,19 @@ define([
           url: '/timers/' + this.listId,
           data: timerAction,
           success: function() {
-            //change button from GO to Pause
-            $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
-
-            ms = that.tock1.timeToMS($('#clock').val());
-            start_time = Date.now() - ms;
-
-            that.tock1.start(start_time);
+            that.timer = timerAction;
           }
         });
 
-        // startTime = $('#clock').val();
-        // this.tock1 = new Tock({
-        //   callback: function () {
-        //     $('#clock').val(that.tock1.msToSimpleTime(that.tock1.lap() + that.tock1.timeToMS(startTime)));
-        //   }
-        // });
-
       }
-      else if($(e.currentTarget).hasClass('btn-danger')) {
-        
+      else if(this.timer.state === "started") {
+
         //set action time to current Unix time
         timerAction.action_time = Date.now();
+        this.tock1.stop();
+
+        //change button from Pause to Start
+        $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
 
         //update server with timer value
         timerAction.state = "stopped";
@@ -681,9 +809,10 @@ define([
           url: '/timers/' + this.listId,
           data: timerAction,
           success: function() {
-            //change button from Pause to Start
-            $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
-            that.tock1.stop();
+
+            
+
+            that.timer = timerAction;
 
           }
         });
@@ -715,6 +844,7 @@ define([
       return str.replace(/<br>/g, "\r");
     },
     setStickyNavbar: function(data) {
+      
       // name your elements here
          var stickyElement   = '.controlsNavbarClass',   // the element you want to make sticky
              bottomElement   = '.fakeFooter'; // the bottom element where you want the sticky element to stop (usually the footer) 
@@ -744,7 +874,14 @@ define([
                              bottom: stopOn
                          }
                      // when the affix get's called then make sure the position is the default (fixed) and it's at the top
-                     }).on('affix.bs.affix', function(){ $( this ).css('top', 0).css('position', ''); });
+                     }).on('affix.bs.affix', function(){ 
+                      $('#hiddenBreaks').show();
+                      $( this ).css('top', 0).css('position', ''); 
+
+                    }).on('affix-top.bs.affix', function() {
+                      $('#hiddenBreaks').hide();
+
+                    });
                  }
                  // trigger the scroll event so it always activates 
                  $( window ).trigger('scroll'); 
