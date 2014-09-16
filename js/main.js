@@ -21,6 +21,7 @@ require.config({
     fh : 'coffee_compiled/fh',
     tock: 'libs/tock_modified/tock',
     flippy: 'libs/flippy/jquery.flippy',
+    simpleStorage: 'libs/simpleStorage/simpleStorage',
     templates: '../templates'
   },
   shim: {

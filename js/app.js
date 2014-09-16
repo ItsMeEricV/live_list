@@ -8,9 +8,11 @@ define([
   'router',
   'vent',
   'bootstrap',
+  'simpleStorage',
+  'utility',
   'views/home/ListsView',
   'views/home/ListItemsView'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, ListsView, ListItemsView){
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView){
 
   var that = this;
 
@@ -45,9 +47,22 @@ define([
 
   app_router.on('route:listItemsView', function (id) {
     
-    var listItemsView = new ListItemsView({id: id});
+    //return the listMode for this list stored on the client. If not previously stored then default is "watch"
+    //var listMode = simpleStorage.get('listMode') || 'watch';  //global listMode
+
+    var listMode = 'watch';
+    if(!utility.isEmpty(simpleStorage.get(id))) {
+      listMode = simpleStorage.get(id).listMode || 'watch';
+    }
+
+    var listItemsView = new ListItemsView({id: id,listMode: listMode});
     listItemsView.collection.fetch({
-      success: function() {
+      success: function(data) {
+        
+        $.each(listItemsView.collection.models, function(i,item) {
+          item.set('list_mode',listMode);
+        });
+
         listItemsView.collection.sort();
         app.content.show(listItemsView);
       }

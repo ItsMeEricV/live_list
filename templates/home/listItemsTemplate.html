@@ -25,35 +25,45 @@
 
     <div class="panel panel-default controlsNavbarClass" id="controlsNavbar">
       <div class="panel-body row">
-        <div class="col-xs-5 col-md-5 col-lg-5">
+        <div class="col-xs-6 col-sm-5 col-md-5 col-lg-5">
           
           <div class="visible-lg">
             <a class="btn btn-info" href="/"><span class="glyphicon glyphicon-arrow-left"></span></a>
-            <button class="btn btn-success newCue">New Item</button>
-            <button class="btn btn-danger deleteCue">Delete Item</button>
-            <button class="btn btn-primary newSection">New Section</button>
+            <button class="btn btn-success newCue editButtonType">New Item</button>
+            <button class="btn btn-danger deleteCue editButtonType">Delete Item</button>
+            <button class="btn btn-primary newSection editButtonType">New Section</button>
           </div>
 
           <div class="hidden-lg">
             <a class="btn btn-info" href="/"><span class="glyphicon glyphicon-arrow-left"></span></a>
-            <button class="btn btn-success newCue"><span class="glyphicon glyphicon-plus"></span></button>
-            <button class="btn btn-danger deleteCue"><span class="glyphicon glyphicon-remove"></span></button>
-            <button class="btn btn-primary newSection"><span class="glyphicon glyphicon-plus"></span></button>
+            <button class="btn btn-success newCue editButtonType"><span class="glyphicon glyphicon-plus"></span></button>
+            <button class="btn btn-danger deleteCue editButtonType"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="btn btn-primary newSection editButtonType"><span class="glyphicon glyphicon-plus"></span></button>
           </div>
         </div>
 
-        <div class="col-xs-5 col-md-4 col-lg-4">
-          <button id="toggleTimer" class="btn toggleTimer"></button>
-          <span class="timerSpan"><input id="clock" value="00:00:00" style="color:#000"></span>
+        <div class="col-xs-3 col-sm-5 col-md-5 col-lg-5">
+          <button id="toggleTimer" class="btn toggleTimer controlButtonType"></button>
+          <span class="timerSpan"><input id="clock" value="00:00:00" style="color:#000;width:78px"></span>
         </div>
 
-        <div class="col-xs-2 col-md-3 col-lg-3">
-          <input class="pull-right" type="checkbox" name="live-edit-switch" id="live-edit-switch" checked data-on-text="Live" data-off-text="Edit" data-off-color="danger" data-on-color="success">
-          <label class="pull-right hidden-xs hidden-sm" for="live-edit-switch" style="font-size:1.2em">Mode: &nbsp;</label>
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+          <!--<input class="pull-right" type="checkbox" name="live-edit-switch" id="live-edit-switch" checked data-on-text="Live" data-off-text="Edit" data-off-color="danger" data-on-color="success">
+          <label class="hidden-xs hidden-sm" for="listModeSelect" style="font-size:1.2em">Mode: &nbsp;</label>-->
+          <select class="pull-right listModeSelect form-control">
+            <option value="watch">Watch</option>
+            <option value="control">Control</option>
+            <option value="edit">Edit</option>
+          </select>
+
+          
         </div>
       </div>
     </div>
 
+    <!-- create space so when the navbar affixes ("affix" class is applied") it doesn't jump down and overlap the first listItems. This div is hidden when the affix is removed ("affix-top" class is applied). 91px looks good -->
+    <div id="hiddenBreaks" style="display:none;">
+    </div>
 
     <div class="panel panel-default listItemsPanel">
       <div class="panel-heading">

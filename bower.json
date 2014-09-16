@@ -28,7 +28,8 @@
     "jquery-autosize": "~1.18.4",
     "jquery-cookie": "~1.4.0",
     "tock": "~1.0.1",
-    "flippy": "*"
+    "flippy": "*",
+    "simpleStorage": "~0.1.2"
   },
   "resolutions": {
     "jquery": ">= 1.9.0"

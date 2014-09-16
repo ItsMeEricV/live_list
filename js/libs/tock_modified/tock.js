@@ -19,6 +19,7 @@ var Tock = (function(options) {
       complete = options.complete,
       prefix = "Tock" + Tock.instances;
 
+
   /**
    * Reset the clock
    */
