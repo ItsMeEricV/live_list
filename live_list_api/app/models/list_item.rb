@@ -10,5 +10,6 @@ class ListItem
   field :order, type: Integer
   field :list_type, type: String
   field :action_id, type: String
+  field :state, type: String
 
 end

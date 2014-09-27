@@ -208,10 +208,66 @@ table.collection-list tr td {
     z-index:10;
 }
 
+/***********
+* Prevent iPhone zoom on text elements that are focused
+***********/
 
- @media screen and (-webkit-min-device-pixel-ratio:0) { 
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
  select:focus, textarea:focus, input:focus {
  font-size: 16px;
  background:#eee;
   }
+ }
+
+ /***********
+ * Button select and hover extensions
+ ***********/
+
+ .list_item_pre_active {
+  background-color: #858585;
+ }
+ .list_item_pre_active:hover {
+  background-color: #A8A8A8;
+ }
+ .list_item_post_active {
+  background-color: #353831;
+  color: #7D7F81;
+ }
+
+ .list_item_active {
+   color: #ffffff;
+   background-color: #5cb85c;
+   border-color: transparent;
+ }
+ .list_item_active:hover,
+ .list_item_active:focus,
+ .list_item_active:active,
+ .list_item_active.active,
+ .open .dropdown-toggle.list_item_active {
+   color: #ffffff;
+   background-color: #47a447;
+   border-color: rgba(0, 0, 0, 0);
+ }
+ .list_item_active:active,
+ .list_item_active.active,
+ .open .dropdown-toggle.list_item_active {
+   background-image: none;
+ }
+ .list_item_active.disabled,
+ .list_item_active[disabled],
+ fieldset[disabled] .list_item_active,
+ .list_item_active.disabled:hover,
+ .list_item_active[disabled]:hover,
+ fieldset[disabled] .list_item_active:hover,
+ .list_item_active.disabled:focus,
+ .list_item_active[disabled]:focus,
+ fieldset[disabled] .list_item_active:focus,
+ .list_item_active.disabled:active,
+ .list_item_active[disabled]:active,
+ fieldset[disabled] .list_item_active:active,
+ .list_item_active.disabled.active,
+ .list_item_active[disabled].active,
+ fieldset[disabled] .list_item_active.active {
+   background-color: #5cb85c;
+   border-color: transparent;
  }

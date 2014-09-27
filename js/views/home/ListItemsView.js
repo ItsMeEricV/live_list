@@ -13,12 +13,13 @@ define([
   'utility',
   'jquery-cookie',
   'simpleStorage',
+  'tock',
   'views/home/ItemView',
   'text!templates/home/listItemsTemplate.html',
   'fh',
-  'tock',
+
   'flippy'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,ItemView, listItemsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ItemView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
     itemView: ItemView,
@@ -36,7 +37,8 @@ define([
       "click .toggleTimer" : "toggleTimer",
       "change .listModeSelect" : "listModeSelect",
       "mouseenter .live-item" : "buttonHoverOn",
-      "mouseleave .live-item" : "buttonHoverOff"
+      "mouseleave .live-item" : "buttonHoverOff",
+      "click .listItemButton" : "selectListItem"
       //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
       //"keyup .cue-description" : "descriptionSize"
       //"click .dd3-content" : "toggleCue",
@@ -113,10 +115,11 @@ define([
         callback: function () {
 
             //find lap time: (exact time of timer)  +  1000ms
-            intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
+            //intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
+            intervalTime = that.tock1.lap();
 
-            //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToSimpleTime() function which converts milliseconds to timecode form
-            $('#clock').val(that.tock1.msToSimpleTime(intervalTime));
+            //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToTimecode() function which converts milliseconds to timecode form
+            $('#clock').val(that.tock1.msToTimecode(intervalTime));
 
         }
       });
@@ -271,7 +274,7 @@ define([
         this.tock1.stop();
 
         //if timer is stopped then just set timer value to the previously saved duration (could be zero)
-        $('#clock').val(this.tock1.msToSimpleTime(this.timer.duration));
+        $('#clock').val(this.tock1.msToTimecode(this.timer.duration));
 
       }
       else if(this.timer.state === "started") {
@@ -281,7 +284,7 @@ define([
         //if timer is started then subject current time from the start time to set current timer value.
         currentTime = Date.now();
         
-        $('#clock').val(this.tock1.msToSimpleTime(currentTime - this.timer.action_time));
+        $('#clock').val(this.tock1.msToTimecode(currentTime - this.timer.action_time));
 
         //if state is started then start the timer on the client
         //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
@@ -531,7 +534,7 @@ define([
           that.toggleState(state);
         });
     },
-    //this is for toggline the Edit/Live state of the overall list
+    //this is for toggline the Edit/Live state of the overal list
     toggleState: function(state) {
       //state == true then we are in "live" mode
       //state == false then we are in "edit" mode
@@ -567,15 +570,56 @@ define([
     },
     buttonHoverOn: function(e) {
       if(this.listMode === "control") {
-        $(e.currentTarget).find('button').css("background-color","#A8A8A8");
+        //$(e.currentTarget).find('button').css("background-color","#A8A8A8");
       }
     },
     buttonHoverOff: function(e) {
       if(this.listMode === "control") {
-        $(e.currentTarget).find('button').css("background-color","#858585");
+        //$(e.currentTarget).find('button').css("background-color","#858585");
       }
     },
+    //user clicks on a list item in control mode. For edit mode see selectCue()
+    selectListItem: function(e) {
 
+      var that = this;
+
+      if(this.listMode === "control") {
+
+        selectedItem = $(e.currentTarget);
+        selectedItemId = selectedItem.data('id');
+
+        //find direction user is moving in. If clicked index is greater than previously clicked index we are moving forward
+        direction = ($('.list_item_active').data('index') < selectedItem.data('index')) ? 'forward' : 'backward';
+
+        if(direction === "forward") {
+          //if moving forward then mark as post_active all items between active and previously active
+          for(i=$('.list_item_active').data('index');i<selectedItem.data('index');i++) {
+            $("button[data-index=" + i + "]").removeClass('list_item_pre_active').removeClass('list_item_active').addClass('list_item_post_active');
+          }
+        }
+        else {
+          //if moving backward then mark as  pre_active all items between active and previously active
+          for(i=$('.list_item_active').data('index');i>selectedItem.data('index');i--) {
+            $("button[data-index=" + i + "]").removeClass('list_item_post_active').removeClass('list_item_active').addClass('list_item_pre_active');
+          }
+        }
+
+        //highlight clicked item
+        selectedItem.removeClass('list_item_pre_active').removeClass('list_item_post_active').addClass('list_item_active');
+        
+        $.ajax({
+          type: 'PATCH',
+          url: '/lists/' + this.listId + '/' + selectedItemId + '/control',
+          data: {"state":"active"},
+          success: function() {
+            
+          }
+
+        });
+
+      }
+
+    },
     //add a new cue to the list
     newCue: function() {
 
@@ -584,7 +628,7 @@ define([
       cueCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", selected: false, title: "", list_mode: this.listMode});
+      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
 
       this.collection.create(item,{
         success: function(item) {
@@ -776,6 +820,7 @@ define([
         //handle timer state
         ms = that.tock1.timeToMS($('#clock').val());
         start_time = Date.now() - ms;
+        console.log("in set toggleTimer");
         this.tock1.start(start_time);
 
         //change button from GO to Pause

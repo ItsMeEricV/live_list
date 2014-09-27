@@ -21,7 +21,7 @@ class API::V1::ListsController < ApplicationController
   def create
 
     #create new list. Setup emebedded Timer object with stopped state and 0 duration
-    @list = List.new(title: params[:title], timer: {state: "stopped", action_time: Time.now.to_i, duration: 0})
+    @list = List.new(title: params[:title], active_list_item: "", timer: {state: "stopped", action_time: Time.now.to_i, duration: 0})
     if @list.save
       render json: @list, status: :created
     else

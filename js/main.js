@@ -19,7 +19,8 @@ require.config({
     'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
-    tock: 'libs/tock_modified/tock',
+    //tock: 'libs/tock_modified/tock',
+    tock: 'tock/tock',
     flippy: 'libs/flippy/jquery.flippy',
     simpleStorage: 'libs/simpleStorage/simpleStorage',
     templates: '../templates'
@@ -29,7 +30,7 @@ require.config({
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
-    'tock' : ['jquery'],
+    //'tock' : ['jquery'],
     'flippy' : ['jquery']
   }
 

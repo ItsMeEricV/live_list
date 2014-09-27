@@ -48,7 +48,7 @@ class API::V1::TimersController < ApplicationController
     elsif(timer_edit_params[:state] == "stopped") #stopping a timer
       #set the duration parameter. This says how long the timer has been running since the last reset.
       #subtract the action_time from the current timer time to find the duration of the current action
-      timer_params[:duration] =  (action_time - @list.timer.action_time) + 1000
+      timer_params[:duration] =  (action_time - @list.timer.action_time)
       timer_params[:action_time] = action_time
       timer_params[:state] = "stopped"
     end

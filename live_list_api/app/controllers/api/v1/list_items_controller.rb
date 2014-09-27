@@ -92,10 +92,45 @@ class API::V1::ListItemsController < ApplicationController
     end
   end
 
+  # PATCH /lists/:list_id/:list_item_id/control
+  def update_control
+    @list = List.find(params[:list_id])
+
+    #active = List.where('list_items.state' => 'active')
+
+    #action_id = SecureRandom.uuid
+    p = Hash.new
+    prev = Hash.new
+
+    p[:id] = params[:list_item_id]
+    p[:state] = params[:state]
+    prev[:id] = @list.active_list_item
+    prev[:state] = "post_active"
+
+    @list.update_attributes(active_list_item: params[:list_item_id])
+
+    #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
+    #p[:action_id] = action_id
+    @list.list_items_attributes = [p,prev]
+    
+    if @list.save
+      p[:cid] = params[:cid]
+      p[:action] = "update_control"
+      json = p.to_json
+      firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
+      firehose.publish(json).to("/live_list/"+params[:list_id])
+
+      render json: p, status: :created
+    else
+      render json: {response: "error"}, status: :unprocessable_entity
+    end
+
+  end
+
   private
 
     def list_item_params
-      params.permit(:index, :order, :title, :list_type, :id)
+      params.permit(:index, :order, :title, :list_type, :id, :state)
     end
 
 

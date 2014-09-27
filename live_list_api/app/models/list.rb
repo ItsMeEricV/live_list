@@ -12,4 +12,5 @@ class List
   
 
   field :title, type: String
+  field :active_list_item, type: String
 end
