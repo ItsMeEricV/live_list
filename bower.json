@@ -29,7 +29,8 @@
     "jquery-cookie": "~1.4.0",
     "tock": "~1.0.1",
     "flippy": "*",
-    "simpleStorage": "~0.1.2"
+    "simpleStorage": "~0.1.2",
+    "jquery-viewport-plugin": "~0.1.0"
   },
   "resolutions": {
     "jquery": ">= 1.9.0"

@@ -14,12 +14,13 @@ define([
   'jquery-cookie',
   'simpleStorage',
   'tock',
+  'ScrollTo',
   'views/home/ItemView',
   'text!templates/home/listItemsTemplate.html',
   'fh',
-
-  'flippy'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ItemView, listItemsTemplate){
+  'flippy',
+  'viewport'
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
     itemView: ItemView,
@@ -83,7 +84,6 @@ define([
 
       //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
-        //localStorage: new Backbone.LocalStorage("CueCollection")
         url: '/lists/' + data.id,
         model: ListItem,
         parse: function(response) {
@@ -94,7 +94,7 @@ define([
           //set timer data
           that.timer = response.timer;
 
-          return response.list_items
+          return response.list_items;
         }
       });
 
@@ -184,6 +184,37 @@ define([
 
                 that.timer = json;
                 that.setTimerState();
+
+                break;
+
+              case "update_control" :
+
+                var active_item = 0;
+
+                //loop through change list items and set their state
+                json.updated_items.forEach(function(value, index) {
+                  item_id = value.id['$oid'];
+                  item = that.collection.where({id: item_id})[0];
+                  item.set("state",value.state);
+
+                  if(value.state === "active") {
+                    active_item = item_id;
+                  }
+                });
+                  
+                that.render();
+                that.onShow();
+
+                //scroll client to active list item if it is outside of the viewport
+                //TODO improve this in order to keep active item always in the center of the view
+                if(that.listMode === "watch") {
+
+                  if(!$('button[data-id="' + active_item + '"]:in-viewport').length) {
+                    $("button[data-id=" + active_item + "]").ScrollTo({
+                      duration: 1000,
+                    });
+                  }
+                }
 
                 break;
 
@@ -457,6 +488,7 @@ define([
       //if user is actually changing the list mode then change it
       if(this.listMode !== listModeSelection) {
 
+        this.previousListMode = this.listMode;
         this.listMode = listModeSelection;
 
         this.drawListMode();
@@ -472,31 +504,47 @@ define([
         switch(listModeSelection) {
 
           case "watch":
+            //check if previous in control mode. If so we don't need to flip
+            if(this.previousListMode !== "control") {
+              
+              $.each(this.collection.models, function(i,item){
 
-            $.each(this.collection.models, function(i,item){
+                setTimeout(function() {
+                  $("li[data-id=" + item.get("id") + "]").flippy({
+                  verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" data-id="' + item.get("id") + '" data-index="' + item.get('index') + '" class="btn btn-grey btn-lg btn-block listItemButton list_item_' + item.get('state') + '" style="text-align: left; padding-left: 10px" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
+                  direction: "TOP",
+                  duration: "200"
+                  //depth:"0.09"
+                });
+                },100 + (i * 160));
 
-              setTimeout(function() {
-                $("li[data-id=" + item.get("id") + "]").flippy({
-                verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
-                //verso: '<div class="dd-handle dd3-handle">Drag</div><div class="cue-description dd3-content"><h5><strong>' + item.get('index') + '</strong><textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px">' + item.get('title') + '</textarea></h5></div>',
-                direction: "TOP",
-                duration: "200"
-                //depth:"0.09"
+
               });
-              },100 + (i * 160));
-
-
-            });
+            }
 
             break;
 
           case "control":
+            //check if previous in control mode. If so we don't need to flip
+            if(this.previousListMode !== "watch") {
+              $.each(this.collection.models, function(i,item){
+
+                setTimeout(function() {
+                  $("li[data-id=" + item.get("id") + "]").flippy({
+                  verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" data-id="' + item.get("id") + '" data-index="' + item.get('index') + '" class="btn btn-grey btn-lg btn-block listItemButton list_item_' + item.get('state') + '" style="text-align: left; padding-left: 10px" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
+                  direction: "TOP",
+                  duration: "200"
+                  //depth:"0.09"
+                });
+                },100 + (i * 160));
 
 
+              });
+            }
 
             break;
-          case "edit":
 
+          case "edit":
             $.each(this.collection.models, function(i,item){
 
               setTimeout(function() {
@@ -820,7 +868,7 @@ define([
         //handle timer state
         ms = that.tock1.timeToMS($('#clock').val());
         start_time = Date.now() - ms;
-        console.log("in set toggleTimer");
+
         this.tock1.start(start_time);
 
         //change button from GO to Pause

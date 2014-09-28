@@ -1,5 +1,3 @@
-// Require.js allows us to configure shortcut alias
-// Their usage will become more apparent futher along in the tutorial.
 require.config({
   waitSeconds: 200,
   paths: {
@@ -19,10 +17,11 @@ require.config({
     'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
-    //tock: 'libs/tock_modified/tock',
-    tock: 'tock/tock',
+    tock: 'libs/tock_modified/tock',
     flippy: 'libs/flippy/jquery.flippy',
     simpleStorage: 'libs/simpleStorage/simpleStorage',
+    ScrollTo: 'libs/jquery-scrollto/jquery-scrollto',
+    viewport: 'libs/jquery-viewport/jquery.viewport',
     templates: '../templates'
   },
   shim: {
@@ -30,8 +29,8 @@ require.config({
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
-    //'tock' : ['jquery'],
-    'flippy' : ['jquery']
+    'flippy' : ['jquery'],
+    'viewport' : ['jquery']
   }
 
 });

@@ -96,31 +96,50 @@ class API::V1::ListItemsController < ApplicationController
   def update_control
     @list = List.find(params[:list_id])
 
-    #active = List.where('list_items.state' => 'active')
-
     #action_id = SecureRandom.uuid
-    p = Hash.new
-    prev = Hash.new
+    action = Hash.new
+    updated_items = []
 
-    p[:id] = params[:list_item_id]
-    p[:state] = params[:state]
-    prev[:id] = @list.active_list_item
-    prev[:state] = "post_active"
+    if(@list.active_list_item != params[:list_item_id])
+      @prev_item = @list.list_items.where(id: @list.active_list_item).first
+      @prev_item.state = "post_active"
+    end
 
+    @active_item = @list.list_items.where(id: params[:list_item_id]).first
+    @active_item.state = params[:state]
+
+    #set the high level active list item
     @list.update_attributes(active_list_item: params[:list_item_id])
+
+    updated_items.push({id: @active_item.id, state: params[:state]})
+
+    if(@prev_item.index < @active_item.index)
+      state = "post_active"
+      #find items between prev_active and newly active
+      @in_between_items = @list.list_items.gte(index: @prev_item.index).lt(index: @active_item.index)
+    elsif(@prev_item.index > @active_item.index)
+      state = "pre_active"
+      #find items between prev_active and newly active
+      @in_between_items = @list.list_items.lte(index: @prev_item.index).gt(index: @active_item.index)
+    end
+
+    @in_between_items.each do |item|
+      updated_items << {id: item.id, state: state}
+    end
 
     #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
     #p[:action_id] = action_id
-    @list.list_items_attributes = [p,prev]
+    @list.list_items_attributes = updated_items
     
     if @list.save
-      p[:cid] = params[:cid]
-      p[:action] = "update_control"
-      json = p.to_json
+      action[:cid] = params[:cid]
+      action[:action] = "update_control"
+      action[:updated_items] = updated_items
+      json = action.to_json
       firehose = Firehose::Client::Producer::Http.new('//127.0.0.1:7474')
       firehose.publish(json).to("/live_list/"+params[:list_id])
 
-      render json: p, status: :created
+      render json: action, status: :created
     else
       render json: {response: "error"}, status: :unprocessable_entity
     end
