@@ -17,7 +17,7 @@ require.config({
     'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
     fh : 'coffee_compiled/fh',
-    tock: 'libs/tock_modified_ejvaudio/tock',
+    tock: 'libs/tock_ejvaudio/tock',
     flippy: 'libs/flippy/jquery.flippy',
     simpleStorage: 'libs/simpleStorage/simpleStorage',
     ScrollTo: 'libs/jquery-scrollto/jquery-scrollto',

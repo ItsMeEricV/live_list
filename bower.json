@@ -1,11 +1,11 @@
 {
-  "name": "cue_tracker",
+  "name": "live_list",
   "version": "0.0.0",
-  "homepage": "https://github.com/ejvaudio/cue_tracker",
+  "homepage": "https://github.com/ejvaudio/live_list",
   "authors": [
     "Eric Vierhaus <ejvaudio@gmail.com>"
   ],
-  "description": "for tracking stage cues",
+  "description": "Keep a list in sync across multiple viewers and track timing information about a live event",
   "license": "MIT",
   "private": true,
   "ignore": [

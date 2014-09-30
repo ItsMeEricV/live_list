@@ -28,11 +28,11 @@ define([
     template: listItemsTemplate,
     events: {
 
-      "click .newCue" : "newCue",
-      "click .deleteCue" : "deleteCue",
+      "click .newListItem" : "newListItem",
+      "click .deleteListItem" : "deleteListItem",
       "click .newSection" : "newSection",
-      "focus .descriptionTextarea" : "selectCue",
-      "blur .cue-description" : "blurCue",
+      "focus .descriptionTextarea" : "selectListItem",
+      "blur .listItemDescription" : "blurListItem",
       "keydown .form-control" : "checkKeyDown",
       "mouseup .bootstrap-switch" : "switchMouseUp",
       "click .toggleTimer" : "toggleTimer",
@@ -40,11 +40,6 @@ define([
       "mouseenter .live-item" : "buttonHoverOn",
       "mouseleave .live-item" : "buttonHoverOff",
       "click .listItemButton" : "selectListItem"
-      //"switchChange.bootstrapSwitch #live-edit-switch" : "switch"
-      //"keyup .cue-description" : "descriptionSize"
-      //"click .dd3-content" : "toggleCue",
-      //"click .dd3-section-content" : "toggleCue"
-
     },
 
     initialize: function(data) {
@@ -60,6 +55,7 @@ define([
         parse: function(response) {
           response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
           delete response._id;
+          response.list_mode = data.listMode;
           return response;
         }
       });
@@ -102,7 +98,7 @@ define([
       this.listId = data.id;
 
       //setup defaults
-      this.newCueWasMade = false;
+      this.newListItemWasMade = false;
       this.switchIsDrawn = false;
       this.switchState = false;
       this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
@@ -287,7 +283,7 @@ define([
       //autosize the textarea and its container
       $('textarea').autosize({
         callback: function() {
-          $(this).closest('.cue-description').css("height", parseInt($(this).css("height")) + 2 );
+          $(this).closest('.listItemDescription').css("height", parseInt($(this).css("height")) + 2 );
         }
       });
 
@@ -334,24 +330,24 @@ define([
           // l is the main container
           // e is the element that was moved
 
-          cues = $('.dd').nestable('serialize');
+          listItems = $('.dd').nestable('serialize');
 
           idThatMoved = e.data('id');
           typeThatMoved = e.data('list_type');
 
-          cueIndexTracker = 0;
-          for (var key in cues) {
+          listItemIndexTracker = 0;
+          for (var key in listItems) {
             // console.log(key);
-            if(cues[key].list_type === "item") {
-              cueIndexTracker += 1;
+            if(listItems[key].list_type === "item") {
+              listItemIndexTracker += 1;
             }
             
-            if(cues[key].id === idThatMoved) {
+            if(listItems[key].id === idThatMoved) {
               
-              newIndex = cueIndexTracker;
-              oldIndex = parseInt(cues[key].index);
+              newIndex = listItemIndexTracker;
+              oldIndex = parseInt(listItems[key].index);
               newOrder = parseInt(key);
-              oldOrder = parseInt(cues[key].order);
+              oldOrder = parseInt(listItems[key].order);
 
               // console.log("newIndex: "+newIndex);
               // console.log("oldIndex: "+oldIndex);
@@ -383,7 +379,7 @@ define([
 
               //if item is a item and a item was moved
               if(item.get("list_type") === "item" && typeThatMoved === "item") {
-                //if item isn't the cue that moved and it's within the reindexing range then change it
+                //if item isn't the listItem that moved and it's within the reindexing range then change it
                 if(item.get("id") !== idThatMoved && item.get("index") >= newIndex && item.get("index") < oldIndex ) {
                   attrs["index"] = (currentIndex + 1);
                   //item.set("index",currentIndex + 1);
@@ -550,7 +546,7 @@ define([
               setTimeout(function() {
                 $("li[data-id=" + item.get("id") + "]").flippy({
                 //verso: '<div class="panel panel-default live-item" style="height:50px"><div class="panel-body" id="' + item.get("id") + '"><button type="button" class="btn btn-default btn-lg btn-block" style="text-align: left; padding-left: 10px; background-color: #858585;" id=btn-' + item.id + '>' + item.get("title") + '</button></div></div>',
-                verso: '<div class="dd-handle dd3-handle">Drag</div><div class="cue-description dd3-content"><h5><strong>' + item.get('index') + '</strong><textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px">' + item.get('title') + '</textarea></h5></div>',
+                verso: '<div class="dd-handle dd3-handle">Drag</div><div class="listItemDescription dd3-content"><h5><strong>' + item.get('index') + '</strong><textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px">' + item.get('title') + '</textarea></h5></div>',
                 direction: "TOP",
                 duration: "200"
                 //depth:"0.09"
@@ -626,7 +622,7 @@ define([
         //$(e.currentTarget).find('button').css("background-color","#858585");
       }
     },
-    //user clicks on a list item in control mode. For edit mode see selectCue()
+    //user clicks on a list item in control mode. For edit mode see selectListItem()
     selectListItem: function(e) {
 
       var that = this;
@@ -668,31 +664,32 @@ define([
       }
 
     },
-    //add a new cue to the list
-    newCue: function() {
+    //add a new listItem to the list
+    newListItem: function() {
 
       var that = this;
 
-      cueCount = this.collection.where({list_type:"item"}).length;
+      listItemCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: cueCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
+      item = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
 
       this.collection.create(item,{
         success: function(item) {
 
           that.render();
           that.onShow();
+          that.setNestable();
 
-          that.newCueWasMade = true;
+          that.newListItemWasMade = true;
           $("li[data-id=" + item.id + "]").find('.form-control').focus();
         }
       });
 
 
     }, 
-    //delete a cue
-    deleteCue: function() {
+    //delete a listItem
+    deleteListItem: function() {
 
       //model = this.collection.where({selected: true})[0];
       orderToBeDeleted = this.prevSelectedModel.get("order");
@@ -725,6 +722,7 @@ define([
       
       this.render();
       this.onShow();
+      this.setNestable();
 
 
     },
@@ -744,10 +742,10 @@ define([
 
     descriptionSize: function(e) {
 
-      cueDescription = $(e.currentTarget);
+      listItemDescription = $(e.currentTarget);
 
-      descLength = cueDescription.find('.form-control').val().length;
-      desc = cueDescription.find('.form-control');
+      descLength = listItemDescription.find('.form-control').val().length;
+      desc = listItemDescription.find('.form-control');
       //console.log("descLength is: " + descLength);
       currentDescHeight = parseInt(desc.css("height"));
 
@@ -758,42 +756,42 @@ define([
           if (currentDescHeight !== optimumSize ) {
             
             desc.css("height", optimumSize);
-            cueDescription.css("height", optimumSize);
+            listItemDescription.css("height", optimumSize);
           }
         break;
       }
 
     },
-    selectCue: function(e) {
+    selectListItem: function(e) {
       
       item = $(e.currentTarget);
       itemId = item.closest("li").data("id");
       item.addClass('nestable-selected');
       model = this.collection.where({id: itemId})[0];
       this.prevSelectedModel = model;
-      //this.setModelById({"id": cueId, values: [{"key": "selected", "value": true}]});
-      if(this.newCueWasMade) {
-        this.newCueWasMade = false;
+
+      if(this.newListItemWasMade) {
+        this.newListItemWasMade = false;
       }
       else {
         this.setModelById(itemId,{"selected": true});
       }
       
     },
-    blurCue: function(e) {
+    blurListItem: function(e) {
 
       $('.nestable-selected').removeClass("nestable-selected");
 
       if(this.wasEscKey === "no") {
 
-        blurredCue = $(e.currentTarget);
-        blurredCueValue = blurredCue.find('.form-control').val();
-        blurredCueId = blurredCue.closest('li').data('id');
-        blurredCueIndex = blurredCue.closest('li').data('index');
-        //this.setModelById({"id": blurredCueId, "values" : [{"key": "selected", "value": false},{"key": "description", "value": blurredCueValue}]});
-        this.setModelById(blurredCueId,{"selected":false, "title":blurredCueValue});
+        blurredListItem = $(e.currentTarget);
+        blurredListItemValue = blurredListItem.find('.form-control').val();
+        blurredListItemId = blurredListItem.closest('li').data('id');
+        blurredListItemIndex = blurredListItem.closest('li').data('index');
 
-        blurredCue.removeClass("nestable-selected");
+        this.setModelById(blurredListItemId,{"selected":false, "title":blurredListItemValue});
+
+        blurredListItem.removeClass("nestable-selected");
 
         this.wasEscKey = "no";
 
@@ -805,11 +803,11 @@ define([
       if(e.keyCode === 27) {
         this.wasEscKey = "yes";
 
-        cue = $(e.currentTarget);
-        cueId = cue.closest('li').data('id');
-        cueIndex = cue.closest('li').data('index');
-        model = this.collection.where({id: cueId})[0];
-        cue.val(model.get("description"));
+        listItem = $(e.currentTarget);
+        listItemId = listItem.closest('li').data('id');
+        listItemIndex = listItem.closest('li').data('index');
+        model = this.collection.where({id: listItemId})[0];
+        listItem.val(model.get("description"));
         $('.nestable-selected').removeClass("nestable-selected");
 
         this.wasEscKey = "no";
@@ -825,11 +823,11 @@ define([
       //78 is n
       //77 is m
 
-      //check if user is currently focused on a textarea. If so then we don't create a new section/cue
+      //check if user is currently focused on a textarea. If so then we don't create a new section/listItem
       if(!$('.form-control').is(":focus")) {
-        //if user hits m then make a new cue
+        //if user hits m then make a new listItem
         if(e.keyCode === 109 || e.keyCode === 77) {
-          this.newCue();
+          this.newListItem();
         }
         else if(e.keyCode === 110 || e.keyCode === 78) {
           this.newSection();
@@ -840,7 +838,7 @@ define([
     //set a model's options based on it's ID
     setModelById: function(id,attrs) {
 
-      //find the model that matches the currently selected cue
+      //find the model that matches the currently selected listItem
       model = this.collection.where({id: id})[0];
       //set new attributes and merge back to the collection. Using remove: false so we don't remove the unmodified models
       // for (var newValue in options.values) {
