@@ -22402,3 +22402,445 @@ Processing by API::V1::ListItemsController#update_control as */*
   MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"active_list_item"=>"5423837976616710cf010000", "updated_at"=>2014-09-28 18:39:45 UTC, "list_items.3.state"=>"post_active", "list_items.3.updated_at"=>2014-09-28 18:39:45 UTC, "list_items.4.state"=>"active", "list_items.4.updated_at"=>2014-09-28 18:39:45 UTC}} flags=[]
                          COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.5218ms
 Completed 201 Created in 479ms (Views: 2.4ms)
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 34.0607ms
+DEPRECATION WARNING: You didn't set config.secret_key_base. Read the upgrade documentation to learn more about this new config option. (called from env_config at /usr/local/rvm/gems/ruby-2.0.0-p481@cue/gems/railties-4.0.4/lib/rails/application.rb:141)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=82faf93f-0e63-2e02-00c5-fa79770f8b85" for 127.0.0.1 at 2014-09-30 03:26:57 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"82faf93f-0e63-2e02-00c5-fa79770f8b85", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.6075ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4417ms
+Completed 200 OK in 101ms (Views: 77.1ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=43076edc-180c-8f75-d509-5f6839ce23a8" for 127.0.0.1 at 2014-09-30 03:27:48 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"43076edc-180c-8f75-d509-5f6839ce23a8", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 1.7015ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.5537ms
+Completed 200 OK in 64ms (Views: 42.1ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=f832092f-c903-01b2-3a7e-1c3702266244" for 127.0.0.1 at 2014-09-30 03:28:02 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"f832092f-c903-01b2-3a7e-1c3702266244", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3027ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3201ms
+Completed 200 OK in 60ms (Views: 36.1ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=ee22ead9-6d9e-9c59-0b49-b14133c6b972" for 127.0.0.1 at 2014-09-30 03:29:00 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"ee22ead9-6d9e-9c59-0b49-b14133c6b972", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3535ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4275ms
+Completed 200 OK in 97ms (Views: 75.0ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=571657e6-306e-f430-e3b0-59c5e6217288" for 127.0.0.1 at 2014-09-30 03:29:26 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"571657e6-306e-f430-e3b0-59c5e6217288", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3288ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3527ms
+Completed 200 OK in 64ms (Views: 39.4ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:00 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3068ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3441ms
+Completed 200 OK in 69ms (Views: 41.6ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf020000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:08 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf020000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3030ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3577ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 228ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf020000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:09 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>false, "title"=>"Cam 7: left", "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf020000"}
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4572ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:31:09 UTC, "list_items.5.action_id"=>"4000ef52-664b-42bb-9690-89164d04e916", "list_items.5.updated_at"=>2014-09-30 03:31:09 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4305ms
+Completed 201 Created in 115ms (Views: 0.4ms)
+
+
+Started DELETE "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf020000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:09 +0000
+Processing by API::V1::ListItemsController#delete as JSON
+  Parameters: {"cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf020000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.6705ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3887ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$pull"=>{"list_items"=>{"_id"=>{"$in"=>[BSON::ObjectId('5423837976616710cf020000')]}}}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.5100ms
+Completed 204 No Content in 81ms
+
+
+Started GET "/api/v1/lists?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:11 +0000
+Processing by API::V1::ListsController#index as JSON
+  Parameters: {"cid"=>"f36bf5f6-b014-8828-e040-de366afcab71"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3125ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 44.3529ms
+Completed 200 OK in 114ms (Views: 89.7ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:12 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3187ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3273ms
+Completed 200 OK in 69ms (Views: 45.5ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5419295b7661670e7c080000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:16 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>2, "index"=>3, "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5419295b7661670e7c080000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3650ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3284ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:31:16 UTC, "list_items.1.index"=>3, "list_items.1.order"=>2, "list_items.1.action_id"=>"873deefd-78be-4555-86bb-315a9e27084c", "list_items.1.updated_at"=>2014-09-30 03:31:16 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4042ms
+Completed 201 Created in 131ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929677661670e7c0a0000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:16 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>3, "index"=>4, "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929677661670e7c0a0000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3817ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3152ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:31:16 UTC, "list_items.2.index"=>4, "list_items.2.order"=>3, "list_items.2.action_id"=>"f6b08cca-49be-4005-89d6-ebc678e5111b", "list_items.2.updated_at"=>2014-09-30 03:31:16 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4410ms
+Completed 201 Created in 81ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837176616710cf000000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:16 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>3, "index"=>5, "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837176616710cf000000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3323ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3722ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:31:16 UTC, "list_items.3.index"=>5, "list_items.3.order"=>3, "list_items.3.action_id"=>"ecf81fec-d004-451e-9d57-de4d204add97", "list_items.3.updated_at"=>2014-09-30 03:31:16 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 2.0535ms
+Completed 201 Created in 132ms (Views: 0.6ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf010000?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:31:16 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"index"=>2, "order"=>1, "cid"=>"f36bf5f6-b014-8828-e040-de366afcab71", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4044ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3765ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:31:16 UTC, "list_items.4.index"=>2, "list_items.4.order"=>1, "list_items.4.action_id"=>"e0bc6628-38c5-4b81-b0ab-0417f78c4d94", "list_items.4.updated_at"=>2014-09-30 03:31:16 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.5410ms
+Completed 201 Created in 84ms (Views: 0.3ms)
+
+
+Started GET "/api/v1/lists?cid=f36bf5f6-b014-8828-e040-de366afcab71" for 127.0.0.1 at 2014-09-30 03:32:26 +0000
+Processing by API::V1::ListsController#index as JSON
+  Parameters: {"cid"=>"f36bf5f6-b014-8828-e040-de366afcab71"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3588ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4970ms
+Completed 200 OK in 86ms (Views: 57.2ms)
+
+
+Started GET "/api/v1/lists?cid=8242b363-91d4-3f58-9101-4a0afc382ddc" for 127.0.0.1 at 2014-09-30 03:33:58 +0000
+Processing by API::V1::ListsController#index as JSON
+  Parameters: {"cid"=>"8242b363-91d4-3f58-9101-4a0afc382ddc"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3225ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4171ms
+Completed 200 OK in 82ms (Views: 53.7ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=8242b363-91d4-3f58-9101-4a0afc382ddc" for 127.0.0.1 at 2014-09-30 03:34:00 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"8242b363-91d4-3f58-9101-4a0afc382ddc", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3161ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3572ms
+Completed 200 OK in 81ms (Views: 53.0ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=64176113-291b-2b4c-8742-9a14134a0000" for 127.0.0.1 at 2014-09-30 03:36:25 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"64176113-291b-2b4c-8742-9a14134a0000", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.5081ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3346ms
+Completed 200 OK in 135ms (Views: 48.4ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=58c4275d-cdfd-42d6-e685-4e07c1ed4b8e" for 127.0.0.1 at 2014-09-30 03:39:08 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"58c4275d-cdfd-42d6-e685-4e07c1ed4b8e", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3430ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3854ms
+Completed 200 OK in 76ms (Views: 47.5ms)
+
+
+Started POST "/api/v1/lists/540ff2ae7661673b4b010000?cid=58c4275d-cdfd-42d6-e685-4e07c1ed4b8e" for 127.0.0.1 at 2014-09-30 03:39:12 +0000
+Processing by API::V1::ListItemsController#create as JSON
+  Parameters: {"index"=>6, "order"=>5, "list_type"=>"item", "state"=>"pre_active", "selected"=>false, "title"=>"", "list_mode"=>"edit", "cid"=>"58c4275d-cdfd-42d6-e685-4e07c1ed4b8e", "list_id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3123ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3233ms
+Unpermitted parameters: selected, list_mode, cid, list_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:39:12 UTC}, "$pushAll"=>{"list_items"=>[{"_id"=>BSON::ObjectId('542a25e07661671d0b000000'), "index"=>6, "order"=>5, "title"=>"", "list_type"=>"item", "state"=>"pre_active", "updated_at"=>2014-09-30 03:39:12 UTC, "created_at"=>2014-09-30 03:39:12 UTC}]}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4654ms
+Completed 201 Created in 145ms (Views: 0.1ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/542a25e07661671d0b000000?cid=58c4275d-cdfd-42d6-e685-4e07c1ed4b8e" for 127.0.0.1 at 2014-09-30 03:39:14 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>false, "title"=>"New cue", "cid"=>"58c4275d-cdfd-42d6-e685-4e07c1ed4b8e", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"542a25e07661671d0b000000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3729ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3323ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:39:14 UTC, "list_items.5.title"=>"New cue", "list_items.5.action_id"=>"9c7587c7-7b4b-4beb-8ba0-6837d10ea49e", "list_items.5.updated_at"=>2014-09-30 03:39:14 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 1.0004ms
+Completed 201 Created in 83ms (Views: 0.3ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:03 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3124ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3040ms
+Completed 200 OK in 83ms (Views: 56.2ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:06 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"index"=>2, "order"=>1, "cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3671ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3129ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:42:06 UTC, "list_items.0.index"=>2, "list_items.0.order"=>1, "list_items.0.action_id"=>"bd50cd0e-98d4-408d-8fc9-4ea124f07fef", "list_items.0.updated_at"=>2014-09-30 03:42:06 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4196ms
+Completed 201 Created in 84ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf010000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:06 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>0, "index"=>1, "cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3119ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3344ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:42:06 UTC, "list_items.4.index"=>1, "list_items.4.order"=>0, "list_items.4.action_id"=>"2baa2e4c-ab8f-4b4e-8213-1160c7c4955c", "list_items.4.updated_at"=>2014-09-30 03:42:06 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4297ms
+Completed 201 Created in 85ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929677661670e7c0a0000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:09 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929677661670e7c0a0000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3366ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3831ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 41ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929677661670e7c0a0000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:10 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>false, "title"=>"BRIGHT stchtuff#", "cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929677661670e7c0a0000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3577ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.7020ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:42:10 UTC, "list_items.2.action_id"=>"38802612-d437-4c8e-b21a-503fb87a16d9", "list_items.2.updated_at"=>2014-09-30 03:42:10 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4807ms
+Completed 201 Created in 90ms (Views: 0.2ms)
+
+
+Started DELETE "/api/v1/lists/540ff2ae7661673b4b010000/541929677661670e7c0a0000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:10 +0000
+Processing by API::V1::ListItemsController#delete as JSON
+  Parameters: {"cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929677661670e7c0a0000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3103ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3145ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$pull"=>{"list_items"=>{"_id"=>{"$in"=>[BSON::ObjectId('541929677661670e7c0a0000')]}}}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4707ms
+Completed 204 No Content in 90ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/542a25e07661671d0b000000?cid=153d3a13-4c1f-80f0-8029-127c88b8dadf" for 127.0.0.1 at 2014-09-30 03:42:10 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>4, "index"=>5, "cid"=>"153d3a13-4c1f-80f0-8029-127c88b8dadf", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"542a25e07661671d0b000000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3165ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3216ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:42:11 UTC, "list_items.4.index"=>5, "list_items.4.order"=>4, "list_items.4.action_id"=>"87ec995d-370a-44e7-bda6-7e62d0afbe21", "list_items.4.updated_at"=>2014-09-30 03:42:11 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.5450ms
+Completed 201 Created in 154ms (Views: 0.3ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:42:57 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4422ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.6498ms
+Completed 200 OK in 93ms (Views: 61.4ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf010000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:43:00 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>1, "index"=>2, "cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4749ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3167ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:43:00 UTC, "list_items.3.index"=>2, "list_items.3.order"=>1, "list_items.3.action_id"=>"495b370a-3f9d-4edb-b0cf-c9e3a3466593", "list_items.3.updated_at"=>2014-09-30 03:43:00 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4070ms
+Completed 201 Created in 158ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:43:00 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"order"=>2, "index"=>3, "cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3488ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3074ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:43:00 UTC, "list_items.0.index"=>3, "list_items.0.order"=>2, "list_items.0.action_id"=>"6ca10cac-36c3-47db-962b-977372e6c5f9", "list_items.0.updated_at"=>2014-09-30 03:43:00 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.4224ms
+Completed 201 Created in 90ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5419295b7661670e7c080000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:43:00 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"index"=>1, "order"=>0, "cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5419295b7661670e7c080000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3448ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.2978ms
+Unpermitted parameters: cid, list_id, list_item_id
+  MOPED: 127.0.0.1:27017 UPDATE       database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} update={"$set"=>{"updated_at"=>2014-09-30 03:43:00 UTC, "list_items.1.index"=>1, "list_items.1.order"=>0, "list_items.1.action_id"=>"7806511c-24e5-45f3-94ce-584bd791f56d", "list_items.1.updated_at"=>2014-09-30 03:43:00 UTC}} flags=[]
+                         COMMAND      database=live_list_api_development command={:getlasterror=>1, :w=>1} runtime: 0.6089ms
+Completed 201 Created in 96ms (Views: 0.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/542a25e07661671d0b000000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:43:02 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"542a25e07661671d0b000000"}
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.6208ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 34ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837176616710cf000000?cid=39b4f8eb-8e21-46e8-5d89-83ae41025479" for 127.0.0.1 at 2014-09-30 03:43:07 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"39b4f8eb-8e21-46e8-5d89-83ae41025479", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837176616710cf000000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3542ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4016ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 41ms
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=8a51fc82-e1d2-14f9-4050-942994776b66" for 127.0.0.1 at 2014-09-30 03:43:10 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"8a51fc82-e1d2-14f9-4050-942994776b66", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3489ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3725ms
+Completed 200 OK in 89ms (Views: 58.7ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=19cb2fbb-fa0c-1fda-cd52-92f34c52d20b" for 127.0.0.1 at 2014-09-30 03:43:30 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"19cb2fbb-fa0c-1fda-cd52-92f34c52d20b", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.4119ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3224ms
+Completed 200 OK in 154ms (Views: 52.8ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837176616710cf000000?cid=19cb2fbb-fa0c-1fda-cd52-92f34c52d20b" for 127.0.0.1 at 2014-09-30 03:43:32 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"19cb2fbb-fa0c-1fda-cd52-92f34c52d20b", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837176616710cf000000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3908ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3345ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 39ms
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=b8b551e6-05a6-44bc-30cf-fa997094f9f3" for 127.0.0.1 at 2014-09-30 03:44:24 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"b8b551e6-05a6-44bc-30cf-fa997094f9f3", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.1709ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3012ms
+Completed 200 OK in 94ms (Views: 64.0ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=b8b551e6-05a6-44bc-30cf-fa997094f9f3" for 127.0.0.1 at 2014-09-30 03:44:25 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"b8b551e6-05a6-44bc-30cf-fa997094f9f3", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3274ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.2947ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 40ms
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=225b6142-3196-7ef4-d447-434ccefc643f" for 127.0.0.1 at 2014-09-30 03:45:07 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"225b6142-3196-7ef4-d447-434ccefc643f", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3395ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3058ms
+Completed 200 OK in 87ms (Views: 55.2ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=225b6142-3196-7ef4-d447-434ccefc643f" for 127.0.0.1 at 2014-09-30 03:45:12 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"225b6142-3196-7ef4-d447-434ccefc643f", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3043ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.2623ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 39ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=225b6142-3196-7ef4-d447-434ccefc643f" for 127.0.0.1 at 2014-09-30 03:46:09 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"225b6142-3196-7ef4-d447-434ccefc643f", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3020ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3454ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 121ms
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/5423837976616710cf010000?cid=225b6142-3196-7ef4-d447-434ccefc643f" for 127.0.0.1 at 2014-09-30 03:46:13 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"225b6142-3196-7ef4-d447-434ccefc643f", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"5423837976616710cf010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3712ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.5605ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 44ms
+
+
+Started GET "/api/v1/lists?cid=225b6142-3196-7ef4-d447-434ccefc643f" for 127.0.0.1 at 2014-09-30 03:46:16 +0000
+Processing by API::V1::ListsController#index as JSON
+  Parameters: {"cid"=>"225b6142-3196-7ef4-d447-434ccefc643f"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3049ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4766ms
+Completed 200 OK in 96ms (Views: 63.3ms)
+
+
+Started GET "/api/v1/lists?cid=28792731-7bda-6e87-74af-de202aa8ff97" for 127.0.0.1 at 2014-09-30 03:46:18 +0000
+Processing by API::V1::ListsController#index as JSON
+  Parameters: {"cid"=>"28792731-7bda-6e87-74af-de202aa8ff97"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3124ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.4171ms
+Completed 200 OK in 190ms (Views: 159.9ms)
+
+
+Started GET "/api/v1/lists/540ff2ae7661673b4b010000?cid=28792731-7bda-6e87-74af-de202aa8ff97" for 127.0.0.1 at 2014-09-30 03:46:19 +0000
+Processing by API::V1::ListsController#show as JSON
+  Parameters: {"cid"=>"28792731-7bda-6e87-74af-de202aa8ff97", "id"=>"540ff2ae7661673b4b010000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3248ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.3662ms
+Completed 200 OK in 109ms (Views: 72.3ms)
+
+
+Started PATCH "/api/v1/lists/540ff2ae7661673b4b010000/541929477661670e7c070000?cid=28792731-7bda-6e87-74af-de202aa8ff97" for 127.0.0.1 at 2014-09-30 03:46:21 +0000
+Processing by API::V1::ListItemsController#update as JSON
+  Parameters: {"selected"=>true, "cid"=>"28792731-7bda-6e87-74af-de202aa8ff97", "list_id"=>"540ff2ae7661673b4b010000", "list_item_id"=>"541929477661670e7c070000"}
+  MOPED: 127.0.0.1:27017 COMMAND      database=admin command={:ismaster=>1} runtime: 0.3251ms
+  MOPED: 127.0.0.1:27017 QUERY        database=live_list_api_development collection=lists selector={"_id"=>BSON::ObjectId('540ff2ae7661673b4b010000')} flags=[] limit=0 skip=0 batch_size=nil fields=nil runtime: 0.2935ms
+Unpermitted parameters: selected, cid, list_id, list_item_id
+Completed 200 OK in 44ms

@@ -2,7 +2,7 @@ Live List
 ===========
 
 - Keep lists in sync in real time across multiple viewers
-- Tracking timing and action cues across multiple viewers
+- Tracking timing and actions across multiple viewers
 
 Ingredients
 ----------------

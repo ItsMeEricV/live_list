@@ -65,6 +65,7 @@ define([
 
         listItemsView.collection.sort();
         app.content.show(listItemsView);
+        
       }
     });
     
