@@ -32,10 +32,6 @@ define([
 
       var that = this;
 
-      // this.listenTo(vent, "goToKeyUp", this.checkKeyUp, this);
-      // _.bindAll(this, 'checkKeyUp');
-      // $(document).bind('keyup', this.checkKeyUp);
-
       var List = Backbone.Model.extend({
         urlRoot: '/lists',
         parse: function(response) {
@@ -53,7 +49,6 @@ define([
 
 
       var Lists = Backbone.Collection.extend({
-        //localStorage: new Backbone.LocalStorage("CueCollection")
         url: '/lists',
         model: List,
         parse: function(response) {
@@ -68,6 +63,7 @@ define([
       });
 
       this.collection = new Lists();
+      this.collection.newLists = 0;
 
       this.collection.fetch({
         reset: true,
@@ -97,7 +93,13 @@ define([
                 });
               },100+(i*160));
 
+              //if has "Untitled List" in name then this is a newly created list that hasn't been edit yet. Track this in order to add a unique counting integer to more new lists.
+              if(item.get('title').indexOf('Untitled List') > -1) {
+                that.collection.newLists += 1;
+              }
+
             });
+
           }
           else {
               
@@ -140,29 +142,33 @@ define([
 
     newList: function() {
 
-      //list = new Backbone.Model({title: "New List"});
-      this.collection.create({title: "new list"}, 
+      var that = this;
+
+      this.collection.create({title: "Untitled List " + (this.collection.newLists + 1)}, 
         {
           wait: true,
           success: function(model) {
-        
-            list = $('div[data-id="' + model.get('id') + '"]');
-              
-              list.animate({
-                // opacity: '1.0',
-                marginLeft: '+=160px',
-                marginRight: '-=160px'
-              },0,function() {
-                
-                $(this).animate({
-                  opacity: '1.0',
-                  // marginLeft: '-=40px',
-                  // marginRight: '+=40px'
-                },300);
 
-              });
-          }}
-        );
+            //increment newLists
+            that.collection.newLists += 1;
+
+            //immediately route to the newly created list
+            Backbone.history.navigate('/lists/' + model.id,{trigger:true});
+        
+            //this code has the new list fade in instead of routing to it
+
+            //list = $('div[data-id="' + model.get('id') + '"]');  
+            // list.animate({
+            //   marginLeft: '+=160px',
+            //   marginRight: '-=160px'
+            // },0,function() {
+            //   $(this).animate({
+            //     opacity: '1.0',
+            //   },300);
+            // });
+
+          }
+        });
 
     },
     goToList: function(e) {

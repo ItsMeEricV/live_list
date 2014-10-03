@@ -30,4 +30,32 @@ class API::V1::ListsController < ApplicationController
 
   end
 
+  #PATCH /lists/:id
+  def update
+    @list = List.find(params[:id])
+
+    if @list.update_attributes(list_edit_params)
+      render json: @list, status: :ok
+    else
+      render json: @list.errors, status: :unprocessable_entity
+    end
+  end
+
+  #DELETE /lists/:id
+  def destroy
+    @list = List.find(params[:id])
+
+    if @list.destroy
+      render json: @list, status: :no_content
+    else
+      render json: @list.errors, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def list_edit_params
+    params.permit(:title)
+  end
+
 end

@@ -16,22 +16,22 @@ define([
   'tock',
   'ScrollTo',
   'views/home/ItemView',
+  'views/home/ListEditView',
   'text!templates/home/listItemsTemplate.html',
   'fh',
   'flippy',
   'viewport'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, listItemsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
     itemView: ItemView,
     itemViewContainer: ".dd-list",
     template: listItemsTemplate,
     events: {
-
       "click .newListItem" : "newListItem",
       "click .deleteListItem" : "deleteListItem",
       "click .newSection" : "newSection",
-      "focus .descriptionTextarea" : "selectListItem",
+      "focus .descriptionTextarea" : "selectListItemEdit",
       "blur .listItemDescription" : "blurListItem",
       "keydown .form-control" : "checkKeyDown",
       "mouseup .bootstrap-switch" : "switchMouseUp",
@@ -39,6 +39,9 @@ define([
       "change .listModeSelect" : "listModeSelect",
       "mouseenter .live-item" : "buttonHoverOn",
       "mouseleave .live-item" : "buttonHoverOff",
+      "mouseenter .listTitle" : "listTitleHoverOn",
+      "mouseleave .listTitle" : "listTitleHoverOff",
+      "click .listTitle" : "listEdit",
       "click .listItemButton" : "selectListItem"
     },
 
@@ -77,6 +80,7 @@ define([
 
       //setup timer object
       this.timer = {};
+      this.listModel = {};
 
       //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
@@ -89,6 +93,9 @@ define([
 
           //set timer data
           that.timer = response.timer;
+
+          //store basic list data in case we need to goto listEditView
+          that.listModel = response;
 
           return response.list_items;
         }
@@ -109,14 +116,12 @@ define([
       //create new Tock timer object. Attach to View
       this.tock1 = new Tock({
         callback: function () {
-
             //find lap time: (exact time of timer)  +  1000ms
             //intervalTime = that.tock1.lap() + that.tock1.timeToMS("00:00:01");
             intervalTime = that.tock1.lap();
 
             //set the timer UI to HH:MM:SS (timecode) of the current lap time. This uses the msToTimecode() function which converts milliseconds to timecode form
             $('#clock').val(that.tock1.msToTimecode(intervalTime));
-
         }
       });
 
@@ -220,13 +225,13 @@ define([
           }
         },
         connected: function(){
-          console.log("Great Scotts!! We're connected!");
+          //console.log("Great Scotts!! We're connected!");
         },
         disconnected: function(){
-          console.log("Well shucks, we're not connected anymore");
+          //console.log("Well shucks, we're not connected anymore");
         },
         error: function(){
-          console.log("Well then, something went horribly wrong.");
+          //console.log("Well then, something went horribly wrong.");
         }
       });
 
@@ -252,6 +257,8 @@ define([
     onShow: function(){
 
       var that = this;
+
+
 
       //setup UI controls depending on the listMode.
       this.drawListMode();
@@ -631,19 +638,26 @@ define([
 
         selectedItem = $(e.currentTarget);
         selectedItemId = selectedItem.data('id');
+        activeItemIndex = $('.list_item_active').data('index');
 
         //find direction user is moving in. If clicked index is greater than previously clicked index we are moving forward
-        direction = ($('.list_item_active').data('index') < selectedItem.data('index')) ? 'forward' : 'backward';
+        if(!utility.isEmpty(activeItemIndex)) {
+          direction = (activeItemIndex < selectedItem.data('index')) ? 'forward' : 'backward';
+        }
+        else {
+          activeItemIndex = 1;
+          direction = 'forward';
+        }
 
         if(direction === "forward") {
           //if moving forward then mark as post_active all items between active and previously active
-          for(i=$('.list_item_active').data('index');i<selectedItem.data('index');i++) {
+          for(i=activeItemIndex;i<selectedItem.data('index');i++) {
             $("button[data-index=" + i + "]").removeClass('list_item_pre_active').removeClass('list_item_active').addClass('list_item_post_active');
           }
         }
         else {
           //if moving backward then mark as  pre_active all items between active and previously active
-          for(i=$('.list_item_active').data('index');i>selectedItem.data('index');i--) {
+          for(i=activeItemIndex;i>selectedItem.data('index');i--) {
             $("button[data-index=" + i + "]").removeClass('list_item_post_active').removeClass('list_item_active').addClass('list_item_pre_active');
           }
         }
@@ -762,7 +776,7 @@ define([
       }
 
     },
-    selectListItem: function(e) {
+    selectListItemEdit: function(e) {
       
       item = $(e.currentTarget);
       itemId = item.closest("li").data("id");
@@ -978,6 +992,23 @@ define([
                  $( window ).trigger('scroll'); 
              }); 
          }
+    },
+    listTitleHoverOn: function() {
+      $('.listTitle').css('color','#0072C6');
+      $('.editListLabel').fadeIn(150);
+    },
+    listTitleHoverOff: function() {
+      $('.listTitle').css('color','#FFFFFF');
+      $('.editListLabel').fadeOut(150);
+    },
+    listEdit: function() {
+      
+      this.listModel.id = this.listId;
+
+      var listEditView = new ListEditView(this.listModel);
+      Backbone.history.navigate('/lists/' + this.listId + '/edit');
+      app.content.show(listEditView);
+
     }
 
 
