@@ -100,10 +100,18 @@ class API::V1::ListItemsController < ApplicationController
     action = Hash.new
     updated_items = []
 
-    if(@list.active_list_item != params[:list_item_id])
-      @prev_item = @list.list_items.where(id: @list.active_list_item).first
-      @prev_item.state = "post_active"
-    end
+    #if(@list.active_list_item != params[:list_item_id])
+      if(!@list.active_list_item.blank?)
+        @prev_item = @list.list_items.where(id: @list.active_list_item).first
+        #render json: @prev_item and return
+      else #previously active item is blank meaning this list was just created. So assign the index 1 as previousl active.
+        #this line find the lowest index in the list. Since there should always be an index 1 we don't need this now
+        #@prev_item = @list.list_items.min(:index)
+        #instead just assume that index one is the "previous active"
+        @prev_item = @list.list_items.where(index: 1).first
+
+      end
+    #end
 
     @active_item = @list.list_items.where(id: params[:list_item_id]).first
     @active_item.state = params[:state]
@@ -123,13 +131,16 @@ class API::V1::ListItemsController < ApplicationController
       @in_between_items = @list.list_items.lte(index: @prev_item.index).gt(index: @active_item.index)
     end
 
-    @in_between_items.each do |item|
-      updated_items << {id: item.id, state: state}
-    end
+    if(!@in_between_items.blank?)
+      render json: @in_between_items and return
+      @in_between_items.each do |item|
+        updated_items << {id: item.id, state: state}
+      end
 
-    #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
-    #p[:action_id] = action_id
-    @list.list_items_attributes = updated_items
+      #random uuid for this particular action. This is used because Firehose will send the most recent message when you reload the page and if we include the ID upon page reload we don't reapply an update that has already been applied. 
+      #p[:action_id] = action_id
+      @list.list_items_attributes = updated_items
+    end
     
     if @list.save
       action[:cid] = params[:cid]

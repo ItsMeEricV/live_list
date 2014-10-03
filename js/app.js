@@ -11,8 +11,9 @@ define([
   'simpleStorage',
   'utility',
   'views/home/ListsView',
-  'views/home/ListItemsView'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView){
+  'views/home/ListItemsView',
+  'views/home/ListEditView'
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView, ListEditView){
 
   var that = this;
 
@@ -70,6 +71,17 @@ define([
     });
     
     
+
+  });
+
+  app_router.on('route:listEditView', function (id) {
+
+    var listEditView = new ListEditView({id: id});
+    listEditView.model.fetch({
+      success: function(data) {
+        app.content.show(listEditView);
+      }
+    });
 
   });
 
