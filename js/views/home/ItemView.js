@@ -3,11 +3,13 @@ define([
   'underscore',
   'backbone',
   'marionette',
-  'text!templates/home/itemTemplate.html'
-], function($, _, Backbone, Marionette, itemTemplate){
+  'myapp',
+  'text!templates/home/itemTemplate.html',
+  'text!templates/home/editItemTemplate.html'
+], function($, _, Backbone, Marionette, app, itemTemplate, editItemTemplate){
 
   var ItemView = Marionette.ItemView.extend({
-    template: itemTemplate,
+    //template: itemTemplate,
     tagName: "li",
     attributes: function() {
       return {
@@ -16,6 +18,14 @@ define([
         "data-list_type" : this.model.get("list_type"),
         "data-order" : this.model.get("order")
       };
+    },
+    //return the correct template based on the mode of the list. Using the app.listMode global array to retrieve this data.
+    getTemplate: function(){
+      if (app.listMode[app.activeList] === "edit"){
+        return editItemTemplate;
+      } else {
+        return itemTemplate;
+      }
     },
     className: function() {
       // if(this.model.get("type") === "cue") {
@@ -37,7 +47,7 @@ define([
     //tagName : "tr",
 
     initialize: function() {
-
+      console.log(app.listMode[app.activeList]);
     }
 
   });

@@ -20,7 +20,9 @@ define([
   'text!templates/home/listItemsTemplate.html',
   'fh',
   'flippy',
-  'viewport'
+  'viewport',
+  'firebase',
+  'backfire'
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
@@ -54,51 +56,61 @@ define([
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        urlRoot: '/lists/' + data.id,
-        parse: function(response) {
-          response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
-          delete response._id;
-          response.list_mode = data.listMode;
-          return response;
+        // urlRoot: '/lists/' + data.id,
+        // parse: function(response) {
+        //   response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
+        //   delete response._id;
+        //   response.list_mode = data.listMode;
+        //   return response;
+        // }
+        defaults: {
+          //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
+          index: 0,
+          //absolute order in the list. Is not used for display, only for ordering on screen
+          order: 0,
+          //text that shows in the item text body
+          title: "Unknown",
+          //can be item or section
+          list_type: "item",
+          //state of item
+          state: "pre_active"
         }
       });
 
-      //new item in the list
-      var listItem = new ListItem({
-        id: 1,
-        //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
-        index: 0,
-        //absolute order in the list. Is not used for display, only for ordering on screen
-        order: 0,
-        //text that shows in the item text body
-        title: "Unknown",
-        //can be item or section
-        list_type: "item",
-        //mode of the list
-        list_mode: data.listMode
-      });
+      this.archivedModel = ListItem;
 
       //setup timer object
       this.timer = {};
       this.listModel = {};
+      app.activeList = data.id;
+
+      //if the listMode was not previously set globablly in app.js (using simpleStorage) then default to "watch" mode.
+      if(utility.isEmpty(app.listMode[data.id])) {
+        app.listMode[data.id] = "watch";
+        this.listMode = "watch";
+      }
+      else {
+        this.listMode = app.listMode[data.id];
+      }
 
       //collection of all the listItems
-      var ListItems = Backbone.Collection.extend({
-        url: '/lists/' + data.id,
+      var ListItems = Backbone.Firebase.Collection.extend({
+        //url: '/lists/' + data.id,
         model: ListItem,
-        parse: function(response) {
+        firebase: new Firebase(app.firebaseURL + '/items/' + data.id).orderByChild("order")
+        // parse: function(response) {
 
-          //set list title
-          that.listTitle = response.title;
+        //   //set list title
+        //   that.listTitle = response.title;
 
-          //set timer data
-          that.timer = response.timer;
+        //   //set timer data
+        //   that.timer = response.timer;
 
-          //store basic list data in case we need to goto listEditView
-          that.listModel = response;
+        //   //store basic list data in case we need to goto listEditView
+        //   that.listModel = response;
 
-          return response.list_items;
-        }
+        //   return response.list_items;
+        // }
       });
 
       this.collection = new ListItems();
@@ -112,6 +124,7 @@ define([
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
       this.firstOnShow = true;
+      this.updated_count = 0;
 
       //create new Tock timer object. Attach to View
       this.tock1 = new Tock({
@@ -126,130 +139,196 @@ define([
       });
 
       //set listMode based on localStorage. If this list was not previously viewed then default to Watch mode
-      //TODO install simpleStorage and save the listMode along with the listId in a localStorage hash
-      this.listMode = data.listMode;
+      //this.listMode = data.listMode;
+      this.listItemsHaveSyncdBoolen = false;
 
-      //set up the Firehose Consumer
-      this.firehose_consumer = new Firehose.Consumer({
-        uri: '//192.168.60.20:7474/live_list/'+data.id,
-        message: function(json){
+      //firebase for overall list
+      this.listData = new Firebase(app.firebaseURL + '/lists/' + data.id);
 
-          //only modify the list you are connected to
-          if(json.cid !== app.uuid) {
+      // //set up the Firehose Consumer
+      // this.firehose_consumer = new Firehose.Consumer({
+      //   uri: '//192.168.60.20:7474/live_list/'+data.id,
+      //   message: function(json){
 
-            switch(json.action) {
+      //     //only modify the list you are connected to
+      //     if(json.cid !== app.uuid) {
 
-              //user selects a list item
-              case "select":
-                //set all items to white
-                $('li').find('textarea').css("background-color","white");
-                //show the selected one
-                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
-                break;
+      //       switch(json.action) {
 
-              //user modifies a list item
-              case "update":
-                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
+      //         //user selects a list item
+      //         case "select":
+      //           //set all items to white
+      //           $('li').find('textarea').css("background-color","white");
+      //           //show the selected one
+      //           $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
+      //           break;
+
+      //         //user modifies a list item
+      //         case "update":
+      //           $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
                 
-                //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
-                model = that.collection.where({id: json.id})[0];
+      //           //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
+      //           model = that.collection.where({id: json.id})[0];
                 
-                if(json.action !== model.get("action_id")) {
-                  model.set(json);
-                  that.collection.sort();
-                  that.render();
-                  that.onShow();
-                }
+      //           if(json.action !== model.get("action_id")) {
+      //             model.set(json);
+      //             that.collection.sort();
+      //             that.render();
+      //             that.onShow();
+      //           }
 
-                break;
+      //           break;
 
-              //user adds a new list item
-              case "add":
-                json.list_mode=that.listMode;
-                that.collection.add(json);
+      //         //user adds a new list item
+      //         case "add":
+      //           json.list_mode=that.listMode;
+      //           that.collection.add(json);
 
-                break;
+      //           break;
 
-              //user deletes a list time
-              case "delete":
+      //         //user deletes a list time
+      //         case "delete":
 
-                model = that.collection.where({id:json.id})[0];
-                that.collection.remove(model);
-                that.render();
-                that.onShow();
+      //           model = that.collection.where({id:json.id})[0];
+      //           that.collection.remove(model);
+      //           that.render();
+      //           that.onShow();
 
-                break;
+      //           break;
 
-              //user toggles the state of the timer
-              case "toggle_timer":
+      //         //user toggles the state of the timer
+      //         case "toggle_timer":
 
-                that.timer = json;
-                that.setTimerState();
+      //           that.timer = json;
+      //           that.setTimerState();
 
-                break;
+      //           break;
 
-              case "update_control" :
+      //         case "update_control" :
 
-                var active_item = 0;
+      //           var active_item = 0;
 
-                //loop through change list items and set their state
-                json.updated_items.forEach(function(value, index) {
-                  item_id = value.id['$oid'];
-                  item = that.collection.where({id: item_id})[0];
-                  item.set("state",value.state);
+      //           //loop through change list items and set their state
+      //           json.updated_items.forEach(function(value, index) {
+      //             item_id = value.id['$oid'];
+      //             item = that.collection.where({id: item_id})[0];
+      //             item.set("state",value.state);
 
-                  if(value.state === "active") {
-                    active_item = item_id;
-                  }
-                });
+      //             if(value.state === "active") {
+      //               active_item = item_id;
+      //             }
+      //           });
                   
-                that.render();
-                that.onShow();
+      //           that.render();
+      //           that.onShow();
 
-                //scroll client to active list item if it is outside of the viewport
-                //TODO improve this in order to keep active item always in the center of the view
-                if(that.listMode === "watch") {
+      //           //scroll client to active list item if it is outside of the viewport
+      //           //TODO improve this in order to keep active item always in the center of the view
+      //           if(that.listMode === "watch") {
 
-                  if(!$('button[data-id="' + active_item + '"]:in-viewport').length) {
-                    $("button[data-id=" + active_item + "]").ScrollTo({
-                      duration: 1000,
-                    });
-                  }
-                }
+      //             if(!$('button[data-id="' + active_item + '"]:in-viewport').length) {
+      //               $("button[data-id=" + active_item + "]").ScrollTo({
+      //                 duration: 1000,
+      //               });
+      //             }
+      //           }
 
-                break;
+      //           break;
 
-            }
+      //       }
 
             
-          }
-        },
-        connected: function(){
-          //console.log("Great Scotts!! We're connected!");
-        },
-        disconnected: function(){
-          //console.log("Well shucks, we're not connected anymore");
-        },
-        error: function(){
-          //console.log("Well then, something went horribly wrong.");
-        }
-      });
+      //     }
+      //   },
+      //   connected: function(){
+      //     //console.log("Great Scotts!! We're connected!");
+      //   },
+      //   disconnected: function(){
+      //     //console.log("Well shucks, we're not connected anymore");
+      //   },
+      //   error: function(){
+      //     //console.log("Well then, something went horribly wrong.");
+      //   }
+      // });
 
       //connect the Firehose Consumer to the Firehose Server
-      this.firehose_consumer.connect();
+      // this.firehose_consumer.connect();
 
       //specify the Backbone comparator so each list is sorted by the "order" attribute
-      this.collection.comparator = "order"; 
+      // this.collection.comparator = "order"; 
+      // this.collection.sort();
+
+      //NEED THIS ONE TO UPDATE LIST AFTER A CHANGE
+      //this.listenTo(this.collection, 'change', this.render,this);
+      
+      this.listenTo(this.collection,"change",this.fart,this);
+      //this.listenTo(this.collection,"sync",this.listModeSelect,this);
+      //this.listenTo(this.collection,"sync",this.listItemsHaveSyncd,this);
+      
+      this.eric = new Firebase(app.firebaseURL + '/items/' + data.id);
+      this.blah = new Firebase(app.firebaseURL + '/items/' + data.id);
+
+      this.initialLoad = true;
+
+      this.eric.orderByChild("order").on("value", function(snapshot) {
+        
+        if(that.updated_count == 2) {        
+          console.log(snapshot.val());
+
+          count = 0;
+          updated_items = snapshot.val();
+          updated_items_keys = _.keys(updated_items);
+          a = [];
+          $.each(updated_items,function(i,item) {
+            a.push(item);
+          });
+
+          // sort by name:
+          complexArray = [{ Name: 'Xander', IQ: 100 }, { Name: 'Sarah', IQ: 3000 }];
+          sortedArray = _.sortBy(a, function (obj) { 
+           return obj.order;
+          });
+
+          $('li.dd3-item').each(function(i,item) {
+            //console.log(updated_items[updated_items_keys[count]]);
+            
+            $(item).find("#index_text_" + sortedArray[count].id).html(sortedArray[count].index);
+            
+            $(item).attr('data-index',sortedArray[count].index);
+            $(item).attr('data-order',sortedArray[count].order);
+            $(item).attr('data-id',sortedArray[count].id);
+            $(item).find(".descriptionTextarea").val(sortedArray[count].title);
+            count += 1;
+          });
+        }
+
+      });
+
+      // this.eric.orderByChild("child_moved").on("value", function(snapshot) {
+      //   console.log(snapshot.val());
+      // });
+
+    },
+    listItemsHaveSyncd: function() {
+      this.listItemsHaveSyncdBoolen = true;
+    },
+    fart: function(e) {
+      if(this.updated_count == 2) {
+
+      }
+
 
     },
     onRender: function() {
+      //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
+      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
 
-
-
+    
     },
     onClose: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
-      this.firehose_consumer.stop();
+      // this.firehose_consumer.stop();
+      this.listData.off('value');
 
       this.tock1.stop();
     },
@@ -258,7 +337,13 @@ define([
 
       var that = this;
 
+      this.collection.sort();
 
+      this.listData.on('value',function(dataSnapshot) {
+        //set the title of the list in the view
+        that.listTitle = dataSnapshot.val().title;
+        $('.listTitle').html('<strong>'+dataSnapshot.val().title+'</strong>');
+      });
 
       //setup UI controls depending on the listMode.
       this.drawListMode();
@@ -277,9 +362,6 @@ define([
         $('.controlsNavbarClass').css('width',$('.listItemsPanel').width());
         $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
       });
-
-      //set the title of the list in the view
-      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
 
       //set the "open list in new tab" URL in the view
       $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
@@ -337,7 +419,10 @@ define([
           // l is the main container
           // e is the element that was moved
 
+          that.updated_count = 0;
+
           listItems = $('.dd').nestable('serialize');
+          console.log(listItems);
 
           idThatMoved = e.data('id');
           typeThatMoved = e.data('list_type');
@@ -356,12 +441,12 @@ define([
               newOrder = parseInt(key);
               oldOrder = parseInt(listItems[key].order);
 
-              // console.log("newIndex: "+newIndex);
-              // console.log("oldIndex: "+oldIndex);
-              // console.log("newOrder: "+newOrder);
-              // console.log("oldOrder: "+oldOrder);
-              // console.log("idThatMoved: "+idThatMoved);
-              // console.log("typeThatMoved: "+typeThatMoved);
+              console.log("newIndex: "+newIndex);
+              console.log("oldIndex: "+oldIndex);
+              console.log("newOrder: "+newOrder);
+              console.log("oldOrder: "+oldOrder);
+              console.log("idThatMoved: "+idThatMoved);
+              console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
@@ -435,15 +520,17 @@ define([
 
             //update model if it needs updating
             if(!utility.isEmpty(attrs)) {
-              item.save(attrs,{patch:true});
+              that.updated_count += 1;
+              item.set(attrs);
+              
             }
 
           });
 
-          that.collection.sort();
+          //that.collection.sort();
 
-          that.render();
-          that.onShow();
+          //that.render();
+          // that.onShow();
           that.setNestable();
 
         }
@@ -480,19 +567,24 @@ define([
 
       }
 
-
     },
     listModeSelect: function(e) {
 
       var that = this;
 
-      var listModeSelection = $(e.currentTarget).val();
+      if (e.type === "change") {
+        listModeSelection = $(e.currentTarget).val();
+      }
+      else {
+        listModeSelection = this.listMode;
+      }
 
       //if user is actually changing the list mode then change it
-      if(this.listMode !== listModeSelection) {
+      //if(this.listMode !== listModeSelection) {
 
         this.previousListMode = this.listMode;
         this.listMode = listModeSelection;
+        app.listMode[this.listId] = listModeSelection;
 
         this.drawListMode();
 
@@ -500,9 +592,9 @@ define([
         //simpleStorage.set('listMode',listModeSelection);   //global listMode
         simpleStorage.set(this.listId, {"listMode" : listModeSelection});  //per list specific listMode
 
-        $.each(this.collection.models, function(i,item) {
-          item.set('list_mode',listModeSelection);
-        });
+        // $.each(this.collection.models, function(i,item) {
+        //   item.set('list_mode',listModeSelection);
+        // });
 
         switch(listModeSelection) {
 
@@ -570,7 +662,7 @@ define([
             break;
 
         }
-      }
+      //}
 
     },
     showSwitch: function() {
@@ -686,19 +778,16 @@ define([
       listItemCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
+      // this.newListItem = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
 
-      this.collection.create(item,{
-        success: function(item) {
+      newListItem = this.collection.create({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""})
 
-          that.render();
-          that.onShow();
-          that.setNestable();
+      //that.render();
+      this.onShow();
+      this.setNestable();
 
-          that.newListItemWasMade = true;
-          $("li[data-id=" + item.id + "]").find('.form-control').focus();
-        }
-      });
+      this.newListItemWasMade = true;
+      $("li[data-id=" + newListItem.id + "]").find('.form-control').focus();
 
 
     }, 
@@ -709,7 +798,8 @@ define([
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
-      this.prevSelectedModel.destroy();
+      //this.prevSelectedModel.destroy({});
+      this.collection.remove(this.prevSelectedModel);
 
       $.each(this.collection.models,function(i,item) {
 
@@ -725,12 +815,8 @@ define([
             attrs = {"order":newOrder, "index": newIndex};
           }
 
-          item.save(attrs, {patch: true});
+          item.set(attrs);
         }
-
-
-        //item.save();
-        
 
       });
       
@@ -788,7 +874,7 @@ define([
         this.newListItemWasMade = false;
       }
       else {
-        this.setModelById(itemId,{"selected": true});
+        //this.setModelById(itemId,{"selected": true});
       }
       
     },
@@ -859,8 +945,8 @@ define([
       //   model.set(options.values[newValue].key, options.values[newValue].value);
       // }
       // console.log(model);
-      model.save(attrs, {patch: true});
-      this.collection.set(model,{remove: false});
+      model.set(attrs);
+      //this.collection.set(model,{remove: false});
 
     },
     toggleTimer: function(e) {

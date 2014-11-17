@@ -8,12 +8,13 @@ gem 'rails-api'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3'
 
-gem 'rainbows', '4.4.3'
+#gem 'rainbows', '4.4.3'
 gem 'puma'
 #gem 'thin'
 
 # for real time io
-gem 'firehose'
+#gem 'firehose'
+gem 'rest-firebase'
 
 # our database
 gem 'mongoid', git: 'https://github.com/mongoid/mongoid.git'
@@ -22,7 +23,7 @@ gem 'bson_ext'
 
 gem 'active_model_serializers'
 
-gem 'timers'
+#gem 'timers'
 
 group :development, :test do
   gem 'rspec-rails'

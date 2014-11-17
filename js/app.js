@@ -12,7 +12,9 @@ define([
   'utility',
   'views/home/ListsView',
   'views/home/ListItemsView',
-  'views/home/ListEditView'
+  'views/home/ListEditView',
+  'firebase',
+  'backfire'
 ], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView, ListEditView){
 
   var that = this;
@@ -20,6 +22,9 @@ define([
 
   //create unique ID for this app instance so that a live list does not respond to it's own calls
   app.uuid = guid();
+
+  //firebase connection URL
+  app.firebaseURL = 'https://sizzling-heat-3224.firebaseio.com';
 
   app.on("initialize:before", function(){
 
@@ -42,6 +47,13 @@ define([
     });
   });
 
+  //set the different listModes globabally so that we can access them inside the itemViews individually.
+  //TODO improve this 
+  app.listMode = [];
+  indices = simpleStorage.index();
+  for (i = 0; i < simpleStorage.index().length; i++) {
+    app.listMode[indices[i]] = simpleStorage.get(indices[i]).listMode;
+  }
 
   //DEFINE ROUTES
   var app_router = new AppRouter();
@@ -52,36 +64,39 @@ define([
     //var listMode = simpleStorage.get('listMode') || 'watch';  //global listMode
 
     var listMode = 'watch';
-    if(!utility.isEmpty(simpleStorage.get(id))) {
-      listMode = simpleStorage.get(id).listMode || 'watch';
-    }
+    // if(!utility.isEmpty(simpleStorage.get(id))) {
+    //   listMode = simpleStorage.get(id).listMode || 'watch';
+    // }
 
     var listItemsView = new ListItemsView({id: id,listMode: listMode});
-    listItemsView.collection.fetch({
-      success: function(data) {
-        
-        $.each(listItemsView.collection.models, function(i,item) {
-          item.set('list_mode',listMode);
-        });
+    app.content.show(listItemsView);
 
-        listItemsView.collection.sort();
-        app.content.show(listItemsView);
+    // listItemsView.collection.fetch({
+    //   success: function(data) {
         
-      }
-    });
-    
-    
+    //     $.each(listItemsView.collection.models, function(i,item) {
+    //       item.set('list_mode',listMode);
+    //     });
 
+    //     listItemsView.collection.sort();
+    //     app.content.show(listItemsView);
+        
+    //   }
+    // });
+    
+  
   });
 
   app_router.on('route:listEditView', function (id) {
 
     var listEditView = new ListEditView({id: id});
-    listEditView.model.fetch({
-      success: function(data) {
-        app.content.show(listEditView);
-      }
-    });
+    app.content.show(listEditView);
+
+    // listEditView.model.fetch({
+    //   success: function(data) {
+    //     app.content.show(listEditView);
+    //   }
+    // });
 
   });
 
