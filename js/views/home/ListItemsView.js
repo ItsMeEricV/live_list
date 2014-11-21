@@ -94,10 +94,11 @@ define([
       }
 
       //collection of all the listItems
-      var ListItems = Backbone.Firebase.Collection.extend({
+      var ListItems = Backbone.Collection.extend({
         //url: '/lists/' + data.id,
         model: ListItem,
-        firebase: new Firebase(app.firebaseURL + '/items/' + data.id).orderByChild("order")
+        //firebase: new Firebase(app.firebaseURL + '/items/' + data.id)
+        //firebase: new Firebase(app.firebaseURL + '/items/' + data.id).orderByChild("order")
         // parse: function(response) {
 
         //   //set list title
@@ -124,7 +125,7 @@ define([
       this.defaultDescHeight = 40;
       this.wasEscKey = "no";
       this.firstOnShow = true;
-      this.updated_count = 0;
+
 
       //create new Tock timer object. Attach to View
       this.tock1 = new Tock({
@@ -143,7 +144,7 @@ define([
       this.listItemsHaveSyncdBoolen = false;
 
       //firebase for overall list
-      this.listData = new Firebase(app.firebaseURL + '/lists/' + data.id);
+      this.listData = new Firebase(app.firebaseURL + '/lists/' + this.listId);
 
       // //set up the Firehose Consumer
       // this.firehose_consumer = new Firehose.Consumer({
@@ -255,54 +256,88 @@ define([
       // this.firehose_consumer.connect();
 
       //specify the Backbone comparator so each list is sorted by the "order" attribute
-      // this.collection.comparator = "order"; 
+      this.collection.comparator = "order"; 
       // this.collection.sort();
+
+
 
       //NEED THIS ONE TO UPDATE LIST AFTER A CHANGE
       //this.listenTo(this.collection, 'change', this.render,this);
       
-      this.listenTo(this.collection,"change",this.fart,this);
+      //this.listenTo(this.collection,"change",this.fart,this);
       //this.listenTo(this.collection,"sync",this.listModeSelect,this);
       //this.listenTo(this.collection,"sync",this.listItemsHaveSyncd,this);
-      
-      this.eric = new Firebase(app.firebaseURL + '/items/' + data.id);
-      this.blah = new Firebase(app.firebaseURL + '/items/' + data.id);
 
-      this.initialLoad = true;
 
-      this.eric.orderByChild("order").on("value", function(snapshot) {
-        
-        if(that.updated_count == 2) {        
-          console.log(snapshot.val());
+      //TRY USING PRIORITY
 
-          count = 0;
-          updated_items = snapshot.val();
-          updated_items_keys = _.keys(updated_items);
-          a = [];
-          $.each(updated_items,function(i,item) {
-            a.push(item);
-          });
-
-          // sort by name:
-          complexArray = [{ Name: 'Xander', IQ: 100 }, { Name: 'Sarah', IQ: 3000 }];
-          sortedArray = _.sortBy(a, function (obj) { 
-           return obj.order;
-          });
-
-          $('li.dd3-item').each(function(i,item) {
-            //console.log(updated_items[updated_items_keys[count]]);
-            
-            $(item).find("#index_text_" + sortedArray[count].id).html(sortedArray[count].index);
-            
-            $(item).attr('data-index',sortedArray[count].index);
-            $(item).attr('data-order',sortedArray[count].order);
-            $(item).attr('data-id',sortedArray[count].id);
-            $(item).find(".descriptionTextarea").val(sortedArray[count].title);
-            count += 1;
-          });
-        }
-
+      this.listItemsData = new Firebase(app.firebaseURL + '/items/' + data.id);
+      this.listItemsData.on("value", function(snapshot) {
+        snapshot.forEach(function(element) {
+          console.log(element.val().title + " is order " + element.val().order);
+          that.collection.add(element.val(),{merge:true});
+        });
+        that.collection.sort();
+        that.render();
+        that.setNestable();
       });
+
+
+
+      this.listItemsData.on('child_removed', function(oldChildSnapshot) {
+        console.log(oldChildSnapshot.key());
+        model = that.collection.where({id: oldChildSnapshot.key()})[0];
+        that.collection.remove(model);
+
+        that.render();
+        that.setNestable();
+      });
+
+
+
+
+
+
+
+      
+      // this.eric = new Firebase(app.firebaseURL + '/items/' + data.id);
+      // this.blah = new Firebase(app.firebaseURL + '/items/' + data.id);
+
+      // this.initialLoad = true;
+
+      // this.eric.orderByChild("order").on("value", function(snapshot) {
+        
+      //   if(that.updated_count == 2) {        
+      //     console.log(snapshot.val());
+
+      //     count = 0;
+      //     updated_items = snapshot.val();
+      //     updated_items_keys = _.keys(updated_items);
+      //     a = [];
+      //     $.each(updated_items,function(i,item) {
+      //       a.push(item);
+      //     });
+
+      //     // sort by name:
+      //     complexArray = [{ Name: 'Xander', IQ: 100 }, { Name: 'Sarah', IQ: 3000 }];
+      //     sortedArray = _.sortBy(a, function (obj) { 
+      //      return obj.order;
+      //     });
+
+      //     $('li.dd3-item').each(function(i,item) {
+      //       //console.log(updated_items[updated_items_keys[count]]);
+            
+      //       $(item).find("#index_text_" + sortedArray[count].id).html(sortedArray[count].index);
+            
+      //       $(item).attr('data-index',sortedArray[count].index);
+      //       $(item).attr('data-order',sortedArray[count].order);
+      //       $(item).attr('data-id',sortedArray[count].id);
+      //       $(item).find(".descriptionTextarea").val(sortedArray[count].title);
+      //       count += 1;
+      //     });
+      //   }
+
+      // });
 
       // this.eric.orderByChild("child_moved").on("value", function(snapshot) {
       //   console.log(snapshot.val());
@@ -312,17 +347,11 @@ define([
     listItemsHaveSyncd: function() {
       this.listItemsHaveSyncdBoolen = true;
     },
-    fart: function(e) {
-      if(this.updated_count == 2) {
-
-      }
-
-
-    },
     onRender: function() {
       //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
       $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
-
+      console.log('RENDER!!!');
+      this.drawListMode();
     
     },
     onClose: function(arg1, arg2){
@@ -419,10 +448,7 @@ define([
           // l is the main container
           // e is the element that was moved
 
-          that.updated_count = 0;
-
           listItems = $('.dd').nestable('serialize');
-          console.log(listItems);
 
           idThatMoved = e.data('id');
           typeThatMoved = e.data('list_type');
@@ -520,8 +546,11 @@ define([
 
             //update model if it needs updating
             if(!utility.isEmpty(attrs)) {
-              that.updated_count += 1;
               item.set(attrs);
+              itemRef = new Firebase(app.firebaseURL + '/items/' + that.listId + '/' + item.id);
+              itemRef.setWithPriority(item.toJSON(),attrs.order);
+              console.log(attrs);
+              console.log(item);
               
             }
 
@@ -780,10 +809,15 @@ define([
 
       // this.newListItem = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
 
-      newListItem = this.collection.create({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""})
+      //item = new Firebase(app.firebaseURL + '/items/' + this.listId);
+      newItem = this.listItemsData.push();
+      newItem.setWithPriority({id: newItem.key(), index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""},this.collection.length);
+
+      newListItem = this.collection.add({id: newItem.key(), index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""});
+      //newListItem = this.collection.add({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""});
 
       //that.render();
-      this.onShow();
+      //this.onShow();
       this.setNestable();
 
       this.newListItemWasMade = true;
@@ -794,12 +828,17 @@ define([
     //delete a listItem
     deleteListItem: function() {
 
+      var that = this;
+
       //model = this.collection.where({selected: true})[0];
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
       //this.prevSelectedModel.destroy({});
       this.collection.remove(this.prevSelectedModel);
+
+      deleteItem = new Firebase(app.firebaseURL + '/items/' + this.listId + '/' + model.id);
+      deleteItem.remove();
 
       $.each(this.collection.models,function(i,item) {
 
@@ -816,6 +855,8 @@ define([
           }
 
           item.set(attrs);
+          itemRef = new Firebase(app.firebaseURL + '/items/' + that.listId + '/' + item.id);
+          itemRef.setWithPriority(item.toJSON(),attrs.order);
         }
 
       });
@@ -946,6 +987,8 @@ define([
       // }
       // console.log(model);
       model.set(attrs);
+      updateItem = new Firebase(app.firebaseURL + '/items/' + this.listId + '/' + model.id);
+      updateItem.update(attrs);
       //this.collection.set(model,{remove: false});
 
     },
