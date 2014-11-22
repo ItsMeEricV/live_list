@@ -139,137 +139,14 @@ define([
         }
       });
 
-      //set listMode based on localStorage. If this list was not previously viewed then default to Watch mode
-      //this.listMode = data.listMode;
-      this.listItemsHaveSyncdBoolen = false;
-
       //firebase for overall list
       this.listData = new Firebase(app.firebaseURL + '/lists/' + this.listId);
 
-      // //set up the Firehose Consumer
-      // this.firehose_consumer = new Firehose.Consumer({
-      //   uri: '//192.168.60.20:7474/live_list/'+data.id,
-      //   message: function(json){
-
-      //     //only modify the list you are connected to
-      //     if(json.cid !== app.uuid) {
-
-      //       switch(json.action) {
-
-      //         //user selects a list item
-      //         case "select":
-      //           //set all items to white
-      //           $('li').find('textarea').css("background-color","white");
-      //           //show the selected one
-      //           $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
-      //           break;
-
-      //         //user modifies a list item
-      //         case "update":
-      //           $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
-                
-      //           //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
-      //           model = that.collection.where({id: json.id})[0];
-                
-      //           if(json.action !== model.get("action_id")) {
-      //             model.set(json);
-      //             that.collection.sort();
-      //             that.render();
-      //             that.onShow();
-      //           }
-
-      //           break;
-
-      //         //user adds a new list item
-      //         case "add":
-      //           json.list_mode=that.listMode;
-      //           that.collection.add(json);
-
-      //           break;
-
-      //         //user deletes a list time
-      //         case "delete":
-
-      //           model = that.collection.where({id:json.id})[0];
-      //           that.collection.remove(model);
-      //           that.render();
-      //           that.onShow();
-
-      //           break;
-
-      //         //user toggles the state of the timer
-      //         case "toggle_timer":
-
-      //           that.timer = json;
-      //           that.setTimerState();
-
-      //           break;
-
-      //         case "update_control" :
-
-      //           var active_item = 0;
-
-      //           //loop through change list items and set their state
-      //           json.updated_items.forEach(function(value, index) {
-      //             item_id = value.id['$oid'];
-      //             item = that.collection.where({id: item_id})[0];
-      //             item.set("state",value.state);
-
-      //             if(value.state === "active") {
-      //               active_item = item_id;
-      //             }
-      //           });
-                  
-      //           that.render();
-      //           that.onShow();
-
-      //           //scroll client to active list item if it is outside of the viewport
-      //           //TODO improve this in order to keep active item always in the center of the view
-      //           if(that.listMode === "watch") {
-
-      //             if(!$('button[data-id="' + active_item + '"]:in-viewport').length) {
-      //               $("button[data-id=" + active_item + "]").ScrollTo({
-      //                 duration: 1000,
-      //               });
-      //             }
-      //           }
-
-      //           break;
-
-      //       }
-
-            
-      //     }
-      //   },
-      //   connected: function(){
-      //     //console.log("Great Scotts!! We're connected!");
-      //   },
-      //   disconnected: function(){
-      //     //console.log("Well shucks, we're not connected anymore");
-      //   },
-      //   error: function(){
-      //     //console.log("Well then, something went horribly wrong.");
-      //   }
-      // });
-
-      //connect the Firehose Consumer to the Firehose Server
-      // this.firehose_consumer.connect();
-
       //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
-      // this.collection.sort();
 
-
-
-      //NEED THIS ONE TO UPDATE LIST AFTER A CHANGE
-      //this.listenTo(this.collection, 'change', this.render,this);
-      
-      //this.listenTo(this.collection,"change",this.fart,this);
-      //this.listenTo(this.collection,"sync",this.listModeSelect,this);
-      //this.listenTo(this.collection,"sync",this.listItemsHaveSyncd,this);
-
-
-      //TRY USING PRIORITY
+      //UPDATE LIST AFTER A CHANGE
+      //this.listenTo(this.collection, 'add ch', this.render,this);
 
       this.listItemsData = new Firebase(app.firebaseURL + '/items/' + data.id);
       this.listItemsData.on("value", function(snapshot) {
@@ -282,8 +159,6 @@ define([
         that.setNestable();
       });
 
-
-
       this.listItemsData.on('child_removed', function(oldChildSnapshot) {
         console.log(oldChildSnapshot.key());
         model = that.collection.where({id: oldChildSnapshot.key()})[0];
@@ -293,64 +168,10 @@ define([
         that.setNestable();
       });
 
-
-
-
-
-
-
-      
-      // this.eric = new Firebase(app.firebaseURL + '/items/' + data.id);
-      // this.blah = new Firebase(app.firebaseURL + '/items/' + data.id);
-
-      // this.initialLoad = true;
-
-      // this.eric.orderByChild("order").on("value", function(snapshot) {
-        
-      //   if(that.updated_count == 2) {        
-      //     console.log(snapshot.val());
-
-      //     count = 0;
-      //     updated_items = snapshot.val();
-      //     updated_items_keys = _.keys(updated_items);
-      //     a = [];
-      //     $.each(updated_items,function(i,item) {
-      //       a.push(item);
-      //     });
-
-      //     // sort by name:
-      //     complexArray = [{ Name: 'Xander', IQ: 100 }, { Name: 'Sarah', IQ: 3000 }];
-      //     sortedArray = _.sortBy(a, function (obj) { 
-      //      return obj.order;
-      //     });
-
-      //     $('li.dd3-item').each(function(i,item) {
-      //       //console.log(updated_items[updated_items_keys[count]]);
-            
-      //       $(item).find("#index_text_" + sortedArray[count].id).html(sortedArray[count].index);
-            
-      //       $(item).attr('data-index',sortedArray[count].index);
-      //       $(item).attr('data-order',sortedArray[count].order);
-      //       $(item).attr('data-id',sortedArray[count].id);
-      //       $(item).find(".descriptionTextarea").val(sortedArray[count].title);
-      //       count += 1;
-      //     });
-      //   }
-
-      // });
-
-      // this.eric.orderByChild("child_moved").on("value", function(snapshot) {
-      //   console.log(snapshot.val());
-      // });
-
-    },
-    listItemsHaveSyncd: function() {
-      this.listItemsHaveSyncdBoolen = true;
     },
     onRender: function() {
       //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
       $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
-      console.log('RENDER!!!');
       this.drawListMode();
     
     },
@@ -774,27 +595,31 @@ define([
           //if moving forward then mark as post_active all items between active and previously active
           for(i=activeItemIndex;i<selectedItem.data('index');i++) {
             $("button[data-index=" + i + "]").removeClass('list_item_pre_active').removeClass('list_item_active').addClass('list_item_post_active');
+            this.setModelById($('button[data-index=' + i + ']').data('id'),{"state":"post_active"});
           }
         }
         else {
           //if moving backward then mark as  pre_active all items between active and previously active
           for(i=activeItemIndex;i>selectedItem.data('index');i--) {
             $("button[data-index=" + i + "]").removeClass('list_item_post_active').removeClass('list_item_active').addClass('list_item_pre_active');
+            this.setModelById($('button[data-index=' + i + ']').data('id'),{"state":"pre_active"});
           }
         }
 
         //highlight clicked item
         selectedItem.removeClass('list_item_pre_active').removeClass('list_item_post_active').addClass('list_item_active');
         
-        $.ajax({
-          type: 'PATCH',
-          url: '/lists/' + this.listId + '/' + selectedItemId + '/control',
-          data: {"state":"active"},
-          success: function() {
+        // $.ajax({
+        //   type: 'PATCH',
+        //   url: '/lists/' + this.listId + '/' + selectedItemId + '/control',
+        //   data: {"state":"active"},
+        //   success: function() {
             
-          }
+        //   }
 
-        });
+        // });
+
+        this.setModelById(selectedItemId,{"state":"active"});
 
       }
 
@@ -861,7 +686,7 @@ define([
 
       });
       
-      this.render();
+      //this.render();
       this.onShow();
       this.setNestable();
 
