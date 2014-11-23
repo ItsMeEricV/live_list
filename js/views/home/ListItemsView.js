@@ -51,18 +51,11 @@ define([
 
       var that = this;
 
-      //listen for keyUps so we can publish them to the backend
+      //listen for keyUps for making new list items and sections
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        // urlRoot: '/lists/' + data.id,
-        // parse: function(response) {
-        //   response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
-        //   delete response._id;
-        //   response.list_mode = data.listMode;
-        //   return response;
-        // }
         defaults: {
           //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
           index: 0,
@@ -77,9 +70,6 @@ define([
         }
       });
 
-      this.archivedModel = ListItem;
-
-      //setup timer object
       this.timer = {};
       this.listModel = {};
       app.activeList = data.id;
@@ -95,23 +85,8 @@ define([
 
       //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
-        //url: '/lists/' + data.id,
         model: ListItem,
         //firebase: new Firebase(app.firebaseURL + '/items/' + data.id)
-        //firebase: new Firebase(app.firebaseURL + '/items/' + data.id).orderByChild("order")
-        // parse: function(response) {
-
-        //   //set list title
-        //   that.listTitle = response.title;
-
-        //   //set timer data
-        //   that.timer = response.timer;
-
-        //   //store basic list data in case we need to goto listEditView
-        //   that.listModel = response;
-
-        //   return response.list_items;
-        // }
       });
 
       this.collection = new ListItems();
@@ -126,7 +101,6 @@ define([
       this.wasEscKey = "no";
       this.firstOnShow = true;
 
-
       //create new Tock timer object. Attach to View
       this.tock1 = new Tock({
         callback: function () {
@@ -139,28 +113,31 @@ define([
         }
       });
 
-      //firebase for overall list
-      this.listData = new Firebase(app.firebaseURL + '/lists/' + this.listId);
-
       //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
       //UPDATE LIST AFTER A CHANGE
       //this.listenTo(this.collection, 'add ch', this.render,this);
 
-      this.listItemsData = new Firebase(app.firebaseURL + '/items/' + data.id);
+      //Init Firebase connectors
+      this.listData = new Firebase(app.firebaseURL + '/lists/' + this.listId); //for the whole list
+      this.listItemsData = new Firebase(app.firebaseURL + '/items/' + this.listId); //for the list items
+      this.timersData = new Firebase(app.firebaseURL + '/timers/' + this.listId); //for the timers associated with this list
+
+      //fire each time list item state is changed
       this.listItemsData.on("value", function(snapshot) {
         snapshot.forEach(function(element) {
-          console.log(element.val().title + " is order " + element.val().order);
+          //add each item back into the collection with new changes ({merge: true} is set)
           that.collection.add(element.val(),{merge:true});
         });
+        //sort the collection by the comparator, which is "order"
         that.collection.sort();
+        //force a render
         that.render();
         that.setNestable();
       });
-
+      //fire each time list item is removed
       this.listItemsData.on('child_removed', function(oldChildSnapshot) {
-        console.log(oldChildSnapshot.key());
         model = that.collection.where({id: oldChildSnapshot.key()})[0];
         that.collection.remove(model);
 
@@ -168,17 +145,62 @@ define([
         that.setNestable();
       });
 
+      //fire when timers change
+      this.timersData.once('value', function(childSnapshot) {
+        if(utility.isEmpty(childSnapshot.val())) {
+
+          newTimer = {state: "stopped", action_time: 0, duration: 0};
+          fbTimerObj = that.timersData.push(newTimer);
+          $('.toggleTimer').data('id',fbTimerObj.key());
+          //handle the state of the timer
+          that.setTimerState(newTimer);
+          //set the timer object for the view. This is used later in toggleTimer()
+          that.timers = {};
+          that.timers[fbTimerObj.key()] = newTimer;
+          $('#toggleTimer').data('id',fbTimerObj.key());
+
+        }
+        else {
+          //TODO extend this accept multiple timers in the future
+          that.timers = childSnapshot.val();
+          $.each(that.timers, function (key, timer) {
+            that.setTimerState(timer);
+
+            $('#toggleTimer').data('id',key);
+          });
+          
+        }
+      });
+
+      //fire when timers change
+      this.timersData.on('child_changed', function(childSnapshot) {
+        that.setTimerState(childSnapshot.val());
+      });
+
     },
     onRender: function() {
+      var that = this;
       //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
       $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
       this.drawListMode();
+
+      if(!utility.isEmpty(this.timers)) {
+        $.each(this.timers, function (key, timer) {
+          that.setTimerState(timer);
+
+          $('#toggleTimer').data('id',key);
+        });
+      }
+
     
     },
     onClose: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
       // this.firehose_consumer.stop();
       this.listData.off('value');
+      this.listItemsData.off('value');
+      this.listItemsData.off('child_removed');
+      this.timersData.off('child_changed');
 
       this.tock1.stop();
     },
@@ -216,9 +238,6 @@ define([
       //set the "open list in new tab" URL in the view
       $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
 
-      //handle the state of the timer
-      this.setTimerState();
-
       //autosize the textarea and its container
       $('textarea').autosize({
         callback: function() {
@@ -231,30 +250,31 @@ define([
       $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
 
     },
-    setTimerState: function() {
+    setTimerState: function(timer) {
       
       //handle timer state
-      if(this.timer.state === "stopped") {
+      if(timer.state === "stopped") {
         $('.toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
 
         this.tock1.stop();
 
         //if timer is stopped then just set timer value to the previously saved duration (could be zero)
-        $('#clock').val(this.tock1.msToTimecode(this.timer.duration));
+        $('#clock').val(this.tock1.msToTimecode(timer.duration));
 
       }
-      else if(this.timer.state === "started") {
+      else if(timer.state === "started") {
 
         $('.toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
 
         //if timer is started then subject current time from the start time to set current timer value.
         currentTime = Date.now();
         
-        $('#clock').val(this.tock1.msToTimecode(currentTime - this.timer.action_time));
+        //$('#clock').val(this.tock1.msToTimecode(currentTime - this.timer.action_time));
+        //$('#clock').val(this.tock1.msToTimecode(timer.duration));
 
         //if state is started then start the timer on the client
-        //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
-        this.tock1.start(this.timer.action_time);
+        //custom modification to Tock.js library allows us to pass milliseconds as a start_time for the timer. In this case we pass the time that is saved on the server
+        this.tock1.start(currentTime - timer.action_time) + timer.duration;
       }
 
     },
@@ -822,59 +842,49 @@ define([
       e.preventDefault();
       var that = this;
       
+      timerId = $(e.currentTarget).data("id");
+      //retrieve the clicked timer from all the timers associated with this list. They were previously attached to the Backbone view in initialize() after querying the Firebase server for all timers stored in this list
+      timer = this.timers[timerId];
+      
       //setup timer parameters to be stored on server
       var timerAction = {};  
+      timerFirebase = new Firebase(app.firebaseURL + '/timers/' + this.listId + '/' + timerId);
 
       //if currently in the OFF state
-      if(this.timer.state === "stopped") {
+      if(timer.state === "stopped") {
 
         //set action time to (current Unix time - previous time on timer)
-        timerAction.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
+        timer.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
         
         //handle timer state
-        ms = that.tock1.timeToMS($('#clock').val());
-        start_time = Date.now() - ms;
+        timer.duration = that.tock1.timeToMS($('#clock').val());
+        //start_time = Date.now() - ms;
 
-        this.tock1.start(start_time);
+        //this.tock1.start(start_time);
+        this.tock1.start(timer.duration);
 
         //change button from GO to Pause
         $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
 
         //update server with timer value
-        timerAction.state = "started";
-        $.ajax({
-          type: 'PUT',
-          url: '/timers/' + this.listId,
-          data: timerAction,
-          success: function() {
-            that.timer = timerAction;
-          }
-        });
+        timer.state = "started";
+        timerFirebase.update(timer);
 
       }
-      else if(this.timer.state === "started") {
+      else if(timer.state === "started") {
 
         //set action time to current Unix time
-        timerAction.action_time = Date.now();
+        currentTime = Date.now();
         this.tock1.stop();
 
         //change button from Pause to Start
         $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
 
         //update server with timer value
-        timerAction.state = "stopped";
-        $.ajax({
-          type: 'PUT',
-          url: '/timers/' + this.listId,
-          data: timerAction,
-          success: function() {
-
-            
-
-            that.timer = timerAction;
-
-          }
-        });
+        timer.state = "stopped";
+        timer.duration = currentTime - timer.action_time;
+        timer.action_time = Date.now();
+        timerFirebase.update(timer);
       }
 
     },

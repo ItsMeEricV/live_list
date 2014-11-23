@@ -28,28 +28,18 @@ define([
       }
     },
     className: function() {
-      // if(this.model.get("type") === "cue") {
+      //if this is a list item
+      if(this.model.get("type") === "item") {
         return "dd-item dd3-item";
-      // }
-      // else {
-      //   return "dd-item";
-      // }
+      }
+      else { //a list section
+        return "dd-item";
+      }
     },
     defaults: {
       index: 0,
       description: "Description"
-    },
-
-    events: {
-
-    },
-    //if using a table must uncomment out next line
-    //tagName : "tr",
-
-    initialize: function() {
-      console.log(app.listMode[app.activeList]);
     }
-
   });
 
   return ItemView;
