@@ -39,8 +39,10 @@ define([
     initialize: function() {
 
     },
-    newList: function() {
 
+    onClose: function() {
+      //TODO implement some notification when a List is destroyed
+      //console.log('destroyed');
     }
 
   });

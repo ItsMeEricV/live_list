@@ -20,7 +20,9 @@ define([
   'text!templates/home/listItemsTemplate.html',
   'fh',
   'flippy',
-  'viewport'
+  'viewport',
+  'firebase',
+  'backfire'
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
@@ -49,56 +51,42 @@ define([
 
       var that = this;
 
-      //listen for keyUps so we can publish them to the backend
+      //listen for keyUps for making new list items and sections
       _.bindAll(this, 'checkKeyUp');
       $(document).bind('keyup', this.checkKeyUp);
 
       var ListItem = Backbone.Model.extend({
-        urlRoot: '/lists/' + data.id,
-        parse: function(response) {
-          response.id = (utility.isEmpty(response._id)) ? response.id : response._id['$oid']
-          delete response._id;
-          response.list_mode = data.listMode;
-          return response;
+        defaults: {
+          //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
+          index: 0,
+          //absolute order in the list. Is not used for display, only for ordering on screen
+          order: 0,
+          //text that shows in the item text body
+          title: "Unknown",
+          //can be item or section
+          list_type: "item",
+          //state of item
+          state: "pre_active"
         }
       });
 
-      //new item in the list
-      var listItem = new ListItem({
-        id: 1,
-        //numerical display for items, shows up to the left of each listItem. This number is not used for sections.
-        index: 0,
-        //absolute order in the list. Is not used for display, only for ordering on screen
-        order: 0,
-        //text that shows in the item text body
-        title: "Unknown",
-        //can be item or section
-        list_type: "item",
-        //mode of the list
-        list_mode: data.listMode
-      });
-
-      //setup timer object
       this.timer = {};
       this.listModel = {};
+      app.activeList = data.id;
+
+      //if the listMode was not previously set globablly in app.js (using simpleStorage) then default to "watch" mode.
+      if(utility.isEmpty(app.listMode[data.id])) {
+        app.listMode[data.id] = "watch";
+        this.listMode = "watch";
+      }
+      else {
+        this.listMode = app.listMode[data.id];
+      }
 
       //collection of all the listItems
       var ListItems = Backbone.Collection.extend({
-        url: '/lists/' + data.id,
         model: ListItem,
-        parse: function(response) {
-
-          //set list title
-          that.listTitle = response.title;
-
-          //set timer data
-          that.timer = response.timer;
-
-          //store basic list data in case we need to goto listEditView
-          that.listModel = response;
-
-          return response.list_items;
-        }
+        //firebase: new Firebase(app.firebaseURL + '/items/' + data.id)
       });
 
       this.collection = new ListItems();
@@ -125,131 +113,94 @@ define([
         }
       });
 
-      //set listMode based on localStorage. If this list was not previously viewed then default to Watch mode
-      //TODO install simpleStorage and save the listMode along with the listId in a localStorage hash
-      this.listMode = data.listMode;
-
-      //set up the Firehose Consumer
-      this.firehose_consumer = new Firehose.Consumer({
-        uri: '//192.168.60.20:7474/live_list/'+data.id,
-        message: function(json){
-
-          //only modify the list you are connected to
-          if(json.cid !== app.uuid) {
-
-            switch(json.action) {
-
-              //user selects a list item
-              case "select":
-                //set all items to white
-                $('li').find('textarea').css("background-color","white");
-                //show the selected one
-                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#c79595");
-                break;
-
-              //user modifies a list item
-              case "update":
-                $('li[data-id="' + json.id + '"]').find('textarea').css("background-color","#FFF");
-                
-                //do check to make sure that this is not a "last message in the pipe" from Firehose. This protects double messages upload page reload
-                model = that.collection.where({id: json.id})[0];
-                
-                if(json.action !== model.get("action_id")) {
-                  model.set(json);
-                  that.collection.sort();
-                  that.render();
-                  that.onShow();
-                }
-
-                break;
-
-              //user adds a new list item
-              case "add":
-                json.list_mode=that.listMode;
-                that.collection.add(json);
-
-                break;
-
-              //user deletes a list time
-              case "delete":
-
-                model = that.collection.where({id:json.id})[0];
-                that.collection.remove(model);
-                that.render();
-                that.onShow();
-
-                break;
-
-              //user toggles the state of the timer
-              case "toggle_timer":
-
-                that.timer = json;
-                that.setTimerState();
-
-                break;
-
-              case "update_control" :
-
-                var active_item = 0;
-
-                //loop through change list items and set their state
-                json.updated_items.forEach(function(value, index) {
-                  item_id = value.id['$oid'];
-                  item = that.collection.where({id: item_id})[0];
-                  item.set("state",value.state);
-
-                  if(value.state === "active") {
-                    active_item = item_id;
-                  }
-                });
-                  
-                that.render();
-                that.onShow();
-
-                //scroll client to active list item if it is outside of the viewport
-                //TODO improve this in order to keep active item always in the center of the view
-                if(that.listMode === "watch") {
-
-                  if(!$('button[data-id="' + active_item + '"]:in-viewport').length) {
-                    $("button[data-id=" + active_item + "]").ScrollTo({
-                      duration: 1000,
-                    });
-                  }
-                }
-
-                break;
-
-            }
-
-            
-          }
-        },
-        connected: function(){
-          //console.log("Great Scotts!! We're connected!");
-        },
-        disconnected: function(){
-          //console.log("Well shucks, we're not connected anymore");
-        },
-        error: function(){
-          //console.log("Well then, something went horribly wrong.");
-        }
-      });
-
-      //connect the Firehose Consumer to the Firehose Server
-      this.firehose_consumer.connect();
-
       //specify the Backbone comparator so each list is sorted by the "order" attribute
       this.collection.comparator = "order"; 
 
+      //UPDATE LIST AFTER A CHANGE
+      //this.listenTo(this.collection, 'add ch', this.render,this);
+
+      //Init Firebase connectors
+      this.listData = new Firebase(app.firebaseURL + '/lists/' + this.listId); //for the whole list
+      this.listItemsData = new Firebase(app.firebaseURL + '/items/' + this.listId); //for the list items
+      this.timersData = new Firebase(app.firebaseURL + '/timers/' + this.listId); //for the timers associated with this list
+
+      //fire each time list item state is changed
+      this.listItemsData.on("value", function(snapshot) {
+        snapshot.forEach(function(element) {
+          //add each item back into the collection with new changes ({merge: true} is set)
+          that.collection.add(element.val(),{merge:true});
+        });
+        //sort the collection by the comparator, which is "order"
+        that.collection.sort();
+        //force a render
+        that.render();
+        that.setNestable();
+      });
+      //fire each time list item is removed
+      this.listItemsData.on('child_removed', function(oldChildSnapshot) {
+        model = that.collection.where({id: oldChildSnapshot.key()})[0];
+        that.collection.remove(model);
+
+        that.render();
+        that.setNestable();
+      });
+
+      //fire when timers change
+      this.timersData.once('value', function(childSnapshot) {
+        if(utility.isEmpty(childSnapshot.val())) {
+
+          newTimer = {state: "stopped", action_time: 0, duration: 0};
+          fbTimerObj = that.timersData.push(newTimer);
+          $('.toggleTimer').data('id',fbTimerObj.key());
+          //handle the state of the timer
+          that.setTimerState(newTimer);
+          //set the timer object for the view. This is used later in toggleTimer()
+          that.timers = {};
+          that.timers[fbTimerObj.key()] = newTimer;
+          $('#toggleTimer').data('id',fbTimerObj.key());
+
+        }
+        else {
+          //TODO extend this accept multiple timers in the future
+          that.timers = childSnapshot.val();
+          $.each(that.timers, function (key, timer) {
+            that.setTimerState(timer);
+
+            $('#toggleTimer').data('id',key);
+          });
+          
+        }
+      });
+
+      //fire when timers change
+      this.timersData.on('child_changed', function(childSnapshot) {
+        that.setTimerState(childSnapshot.val());
+      });
+
     },
     onRender: function() {
+      var that = this;
+      //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
+      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
+      this.drawListMode();
 
+      if(!utility.isEmpty(this.timers)) {
+        $.each(this.timers, function (key, timer) {
+          that.setTimerState(timer);
 
+          $('#toggleTimer').data('id',key);
+        });
+      }
 
+    
     },
     onClose: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
-      this.firehose_consumer.stop();
+      // this.firehose_consumer.stop();
+      this.listData.off('value');
+      this.listItemsData.off('value');
+      this.listItemsData.off('child_removed');
+      this.timersData.off('child_changed');
 
       this.tock1.stop();
     },
@@ -258,7 +209,13 @@ define([
 
       var that = this;
 
+      this.collection.sort();
 
+      this.listData.on('value',function(dataSnapshot) {
+        //set the title of the list in the view
+        that.listTitle = dataSnapshot.val().title;
+        $('.listTitle').html('<strong>'+dataSnapshot.val().title+'</strong>');
+      });
 
       //setup UI controls depending on the listMode.
       this.drawListMode();
@@ -278,14 +235,8 @@ define([
         $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
       });
 
-      //set the title of the list in the view
-      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
-
       //set the "open list in new tab" URL in the view
       $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
-
-      //handle the state of the timer
-      this.setTimerState();
 
       //autosize the textarea and its container
       $('textarea').autosize({
@@ -299,30 +250,31 @@ define([
       $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
 
     },
-    setTimerState: function() {
+    setTimerState: function(timer) {
       
       //handle timer state
-      if(this.timer.state === "stopped") {
+      if(timer.state === "stopped") {
         $('.toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
 
         this.tock1.stop();
 
         //if timer is stopped then just set timer value to the previously saved duration (could be zero)
-        $('#clock').val(this.tock1.msToTimecode(this.timer.duration));
+        $('#clock').val(this.tock1.msToTimecode(timer.duration));
 
       }
-      else if(this.timer.state === "started") {
+      else if(timer.state === "started") {
 
         $('.toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
 
         //if timer is started then subject current time from the start time to set current timer value.
         currentTime = Date.now();
         
-        $('#clock').val(this.tock1.msToTimecode(currentTime - this.timer.action_time));
+        //$('#clock').val(this.tock1.msToTimecode(currentTime - this.timer.action_time));
+        //$('#clock').val(this.tock1.msToTimecode(timer.duration));
 
         //if state is started then start the timer on the client
-        //custom modification to Tock.js library allows us to pass Unix time as a start_time for the timer. In this case we pass the time that the timer was started at (action_time)
-        this.tock1.start(this.timer.action_time);
+        //custom modification to Tock.js library allows us to pass milliseconds as a start_time for the timer. In this case we pass the time that is saved on the server
+        this.tock1.start(currentTime - timer.action_time) + timer.duration;
       }
 
     },
@@ -356,12 +308,12 @@ define([
               newOrder = parseInt(key);
               oldOrder = parseInt(listItems[key].order);
 
-              // console.log("newIndex: "+newIndex);
-              // console.log("oldIndex: "+oldIndex);
-              // console.log("newOrder: "+newOrder);
-              // console.log("oldOrder: "+oldOrder);
-              // console.log("idThatMoved: "+idThatMoved);
-              // console.log("typeThatMoved: "+typeThatMoved);
+              console.log("newIndex: "+newIndex);
+              console.log("oldIndex: "+oldIndex);
+              console.log("newOrder: "+newOrder);
+              console.log("oldOrder: "+oldOrder);
+              console.log("idThatMoved: "+idThatMoved);
+              console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
@@ -435,15 +387,20 @@ define([
 
             //update model if it needs updating
             if(!utility.isEmpty(attrs)) {
-              item.save(attrs,{patch:true});
+              item.set(attrs);
+              itemRef = new Firebase(app.firebaseURL + '/items/' + that.listId + '/' + item.id);
+              itemRef.setWithPriority(item.toJSON(),attrs.order);
+              console.log(attrs);
+              console.log(item);
+              
             }
 
           });
 
-          that.collection.sort();
+          //that.collection.sort();
 
-          that.render();
-          that.onShow();
+          //that.render();
+          // that.onShow();
           that.setNestable();
 
         }
@@ -480,19 +437,24 @@ define([
 
       }
 
-
     },
     listModeSelect: function(e) {
 
       var that = this;
 
-      var listModeSelection = $(e.currentTarget).val();
+      if (e.type === "change") {
+        listModeSelection = $(e.currentTarget).val();
+      }
+      else {
+        listModeSelection = this.listMode;
+      }
 
       //if user is actually changing the list mode then change it
-      if(this.listMode !== listModeSelection) {
+      //if(this.listMode !== listModeSelection) {
 
         this.previousListMode = this.listMode;
         this.listMode = listModeSelection;
+        app.listMode[this.listId] = listModeSelection;
 
         this.drawListMode();
 
@@ -500,9 +462,9 @@ define([
         //simpleStorage.set('listMode',listModeSelection);   //global listMode
         simpleStorage.set(this.listId, {"listMode" : listModeSelection});  //per list specific listMode
 
-        $.each(this.collection.models, function(i,item) {
-          item.set('list_mode',listModeSelection);
-        });
+        // $.each(this.collection.models, function(i,item) {
+        //   item.set('list_mode',listModeSelection);
+        // });
 
         switch(listModeSelection) {
 
@@ -570,7 +532,7 @@ define([
             break;
 
         }
-      }
+      //}
 
     },
     showSwitch: function() {
@@ -653,27 +615,31 @@ define([
           //if moving forward then mark as post_active all items between active and previously active
           for(i=activeItemIndex;i<selectedItem.data('index');i++) {
             $("button[data-index=" + i + "]").removeClass('list_item_pre_active').removeClass('list_item_active').addClass('list_item_post_active');
+            this.setModelById($('button[data-index=' + i + ']').data('id'),{"state":"post_active"});
           }
         }
         else {
           //if moving backward then mark as  pre_active all items between active and previously active
           for(i=activeItemIndex;i>selectedItem.data('index');i--) {
             $("button[data-index=" + i + "]").removeClass('list_item_post_active').removeClass('list_item_active').addClass('list_item_pre_active');
+            this.setModelById($('button[data-index=' + i + ']').data('id'),{"state":"pre_active"});
           }
         }
 
         //highlight clicked item
         selectedItem.removeClass('list_item_pre_active').removeClass('list_item_post_active').addClass('list_item_active');
         
-        $.ajax({
-          type: 'PATCH',
-          url: '/lists/' + this.listId + '/' + selectedItemId + '/control',
-          data: {"state":"active"},
-          success: function() {
+        // $.ajax({
+        //   type: 'PATCH',
+        //   url: '/lists/' + this.listId + '/' + selectedItemId + '/control',
+        //   data: {"state":"active"},
+        //   success: function() {
             
-          }
+        //   }
 
-        });
+        // });
+
+        this.setModelById(selectedItemId,{"state":"active"});
 
       }
 
@@ -686,30 +652,38 @@ define([
       listItemCount = this.collection.where({list_type:"item"}).length;
       // newOrder = (this.collection.length) ? this.collection.length + 1 : 0;
 
-      item = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
+      // this.newListItem = new Backbone.Model({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: "", list_mode: this.listMode});
 
-      this.collection.create(item,{
-        success: function(item) {
+      //item = new Firebase(app.firebaseURL + '/items/' + this.listId);
+      newItem = this.listItemsData.push();
+      newItem.setWithPriority({id: newItem.key(), index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""},this.collection.length);
 
-          that.render();
-          that.onShow();
-          that.setNestable();
+      newListItem = this.collection.add({id: newItem.key(), index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""});
+      //newListItem = this.collection.add({index: listItemCount+1, order: this.collection.length, list_type: "item", state: "pre_active", selected: false, title: ""});
 
-          that.newListItemWasMade = true;
-          $("li[data-id=" + item.id + "]").find('.form-control').focus();
-        }
-      });
+      //that.render();
+      //this.onShow();
+      this.setNestable();
+
+      this.newListItemWasMade = true;
+      $("li[data-id=" + newListItem.id + "]").find('.form-control').focus();
 
 
     }, 
     //delete a listItem
     deleteListItem: function() {
 
+      var that = this;
+
       //model = this.collection.where({selected: true})[0];
       orderToBeDeleted = this.prevSelectedModel.get("order");
       typeToBeDeleted = this.prevSelectedModel.get("list_type");
 
-      this.prevSelectedModel.destroy();
+      //this.prevSelectedModel.destroy({});
+      this.collection.remove(this.prevSelectedModel);
+
+      deleteItem = new Firebase(app.firebaseURL + '/items/' + this.listId + '/' + model.id);
+      deleteItem.remove();
 
       $.each(this.collection.models,function(i,item) {
 
@@ -725,16 +699,14 @@ define([
             attrs = {"order":newOrder, "index": newIndex};
           }
 
-          item.save(attrs, {patch: true});
+          item.set(attrs);
+          itemRef = new Firebase(app.firebaseURL + '/items/' + that.listId + '/' + item.id);
+          itemRef.setWithPriority(item.toJSON(),attrs.order);
         }
-
-
-        //item.save();
-        
 
       });
       
-      this.render();
+      //this.render();
       this.onShow();
       this.setNestable();
 
@@ -788,7 +760,7 @@ define([
         this.newListItemWasMade = false;
       }
       else {
-        this.setModelById(itemId,{"selected": true});
+        //this.setModelById(itemId,{"selected": true});
       }
       
     },
@@ -859,8 +831,10 @@ define([
       //   model.set(options.values[newValue].key, options.values[newValue].value);
       // }
       // console.log(model);
-      model.save(attrs, {patch: true});
-      this.collection.set(model,{remove: false});
+      model.set(attrs);
+      updateItem = new Firebase(app.firebaseURL + '/items/' + this.listId + '/' + model.id);
+      updateItem.update(attrs);
+      //this.collection.set(model,{remove: false});
 
     },
     toggleTimer: function(e) {
@@ -868,59 +842,49 @@ define([
       e.preventDefault();
       var that = this;
       
+      timerId = $(e.currentTarget).data("id");
+      //retrieve the clicked timer from all the timers associated with this list. They were previously attached to the Backbone view in initialize() after querying the Firebase server for all timers stored in this list
+      timer = this.timers[timerId];
+      
       //setup timer parameters to be stored on server
       var timerAction = {};  
+      timerFirebase = new Firebase(app.firebaseURL + '/timers/' + this.listId + '/' + timerId);
 
       //if currently in the OFF state
-      if(this.timer.state === "stopped") {
+      if(timer.state === "stopped") {
 
         //set action time to (current Unix time - previous time on timer)
-        timerAction.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
+        timer.action_time = Date.now() - that.tock1.timeToMS($('#clock').val());
         
         //handle timer state
-        ms = that.tock1.timeToMS($('#clock').val());
-        start_time = Date.now() - ms;
+        timer.duration = that.tock1.timeToMS($('#clock').val());
+        //start_time = Date.now() - ms;
 
-        this.tock1.start(start_time);
+        //this.tock1.start(start_time);
+        this.tock1.start(timer.duration);
 
         //change button from GO to Pause
         $('#toggleTimer').removeClass('btn-success').addClass('btn-danger').html('Pause');
 
         //update server with timer value
-        timerAction.state = "started";
-        $.ajax({
-          type: 'PUT',
-          url: '/timers/' + this.listId,
-          data: timerAction,
-          success: function() {
-            that.timer = timerAction;
-          }
-        });
+        timer.state = "started";
+        timerFirebase.update(timer);
 
       }
-      else if(this.timer.state === "started") {
+      else if(timer.state === "started") {
 
         //set action time to current Unix time
-        timerAction.action_time = Date.now();
+        currentTime = Date.now();
         this.tock1.stop();
 
         //change button from Pause to Start
         $('#toggleTimer').removeClass('btn-danger').addClass('btn-success').html('Start');
 
         //update server with timer value
-        timerAction.state = "stopped";
-        $.ajax({
-          type: 'PUT',
-          url: '/timers/' + this.listId,
-          data: timerAction,
-          success: function() {
-
-            
-
-            that.timer = timerAction;
-
-          }
-        });
+        timer.state = "stopped";
+        timer.duration = currentTime - timer.action_time;
+        timer.action_time = Date.now();
+        timerFirebase.update(timer);
       }
 
     },
