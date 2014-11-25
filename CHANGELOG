@@ -1,0 +1,63 @@
+977e61e (HEAD, origin/feature/preparing-grunt, release/0.9.0, develop) Add Grunt deployment, fix sticky navbar, Firebase port complete
+ed0c9d1 (origin/develop) Merge branch 'feature/firebase' into develop
+4cbe1be Port Timer functionality. Update Tock library
+636522d Remove firehose code, add active/post_activate code with Firebase
+d49e2b9 Removed Firebase.collection. Changed to standard Firebase CRUD and standard Backbone collections
+651a90e Initial port to using Firebase for real time updates and storage
+9c7cff2 (origin/rails-firehose-backend, origin/master, origin/HEAD, rails-firehose-backend, master) Merge branch 'list-rename'
+fe56ade List management, listItem state improvement
+023ce8d Remove log
+7da98e7 Merge branch 'rename-functions'
+36a7e44 Updating functions and variables
+a953e2e Adding forked Tock as submodule
+bd47ad8 Remove
+8571f74 Updating Tock references
+87e3609 Forked and modified Tock
+4258535 Real time UI updates controlling listItem status
+77d38ea Updated Tock, Control UI works
+55a12b6 Remove unneeded file
+dc19d51 Merge branch 'improving-modes'
+055c8e3 Basic view modes complete
+5f22852 resolving dependencies
+746d8f8 Removing unecessary dependencies
+4721a68 Merge branch 'sticky-bavbar'
+758d337 Sticky navbar and navbar UI improvements
+d88d0e4 Merge branch 'timer'
+a25b878 Timer completed
+5ef4f7f Adding timer logic
+f54f7c4 Merge branch 'open-new-tab-button'
+942fa74 List name and open new tab
+e06ca69 Removing PHP
+7ae81cc Removing VM files
+a2a1890 Updating Berkshelf and Grunt
+bbfac31 Merge branch 'add_lists_function'
+6c080b8 Create master lists
+0f67a60 adding Grunt
+33cc211 Added list hierarchy, list animation
+b688eb7 reverting nestable to original
+0031198 adding flip animation
+46ad8f6 Adding client and server side timers
+a4e48bf Changed to Puma, fixed another reordering bug
+e517c8c Fixed reordering bug
+649d033 modifying reodering code
+e5bacfd Working on order updating
+725b42f Live updating and selecting works with DB storage
+8147f95 Adding items with Mongo works
+a203ddc Trying mongodb
+88fb7c4 updating readme
+803f9ec Firehose working, added Rails scaffolding
+238a168 adding firehose
+879c144 Updating jquery, modernizer, and jquery-autosize
+7b81bd9 Adding RVM, Rails-API, and Redis
+9f4189d Added localstorage
+66e5833 Adding number reordering, keyboard shortcuts
+d3a1318 Change panel contents to textarea. Add more libs
+f3abc93 Added nestable and add, select functions
+dd254a9 Adding Jquery UI and backbone.collectionView
+8c035b4 removing
+e6037b2 adding devops files
+dad895f Adding basic vendor libraries with Bower
+966b759 moving php files
+3f2b765 resetting main
+5976292 Initial commit
+41a3778 Initial commit

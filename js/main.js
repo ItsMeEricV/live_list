@@ -14,14 +14,14 @@ require.config({
     autosize: 'libs/jquery-autosize/jquery.autosize',
     //localstorage: 'libs/backbone.localstorage/backbone.localStorage',
     'bootstrap-switch' : 'libs/bootstrap-switch/dist/js/bootstrap-switch',
-    'jquery-cookie' : 'libs/jquery-cookie/jquery.cookie',
     utility: 'libs/utilities/utilities',
-    fh : 'coffee_compiled/fh',
     tock: 'libs/tock_ejvaudio/tock',
     flippy: 'libs/flippy/jquery.flippy',
     simpleStorage: 'libs/simpleStorage/simpleStorage',
     ScrollTo: 'libs/jquery-scrollto/jquery-scrollto',
     viewport: 'libs/jquery-viewport/jquery.viewport',
+    firebase: 'https://cdn.firebase.com/js/client/2.0.3/firebase',
+    backfire: 'https://cdn.firebase.com/libs/backfire/0.4.0/backfire',
     templates: '../templates'
   },
   shim: {
@@ -30,7 +30,9 @@ require.config({
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
     'flippy' : ['jquery'],
-    'viewport' : ['jquery']
+    'viewport' : ['jquery'],
+    'firebase' : ['jquery'],
+    'backfire' : ['jquery']
   }
 
 });

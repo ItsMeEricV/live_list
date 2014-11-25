@@ -1,13 +1,17 @@
-<script id="cueTemplate" type="text/template">
+<script id="editItemTemplate" type="text/template">
 
 
     <% if(list_type === "item") { %>
         
-        <div class="panel panel-default live-item" data-listMode="watch" style="height:50px">
-          <div class="panel-body">
-            <button type="button" data-id='<%= id %>' data-index='<%= index %>' class="btn btn-grey btn-lg btn-block listItemButton list_item_<%= state %>" style="text-align: left; padding-left: 10px; " id="btn-<%= id %>"><%= title %></button>
-          </div>
-        </div>
+      <div class="dd-handle dd3-handle">
+        Drag
+      </div>
+      <div class="listItemDescription dd3-content">
+        <h5>
+          <strong><span id="index_text_<%= id %>"><%= index %></span> :</strong>
+          <textarea class="form-control descriptionTextarea" rows="1" style="width: 98%; margin-left: 16px; margin-top: -27px"><%= title %></textarea>
+        </h5>
+      </div>
 
     <% } else { %>
       <div class="dd-handle dd3-section-handle">
