@@ -11,19 +11,17 @@ define([
   'autosize',
   'bootstrap-switch',
   'utility',
-  'jquery-cookie',
   'simpleStorage',
   'tock',
   'ScrollTo',
   'views/home/ItemView',
   'views/home/ListEditView',
   'text!templates/home/listItemsTemplate.html',
-  'fh',
   'flippy',
   'viewport',
   'firebase',
   'backfire'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, jqueryCookie, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
     itemView: ItemView,
@@ -192,7 +190,28 @@ define([
         });
       }
 
-    
+      //setup the sticky Navbar
+      this.setStickyNavbar();
+
+      //if the window is resized (e.g. phone is rotated to landscape mode) then redraw the Navbar with the new width
+      $( window ).resize(function() {
+        $('.controlsNavbarClass').css('width',$('.listItemsPanel').width());
+        $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
+      });
+
+      //set the "open list in new tab" URL in the view
+      $('#listInNewTab').attr('href',"http://" + document.domain + "/lists/" + this.id);
+
+      //autosize the textarea and its container
+      $('textarea').autosize({
+        callback: function() {
+          $(this).closest('.listItemDescription').css("height", parseInt($(this).css("height")) + 2 );
+        }
+      });
+
+
+      //set the initial height of the "hiddenBreaks" div that makes the sticky navbar look good
+      $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
     },
     onClose: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
@@ -209,7 +228,7 @@ define([
 
       var that = this;
 
-      this.collection.sort();
+      //this.collection.sort();
 
       this.listData.on('value',function(dataSnapshot) {
         //set the title of the list in the view
@@ -226,28 +245,7 @@ define([
         this.firstOnShow = false;
       }
 
-      //setup the sticky Navbar
-      this.setStickyNavbar();
 
-      //if the window is resized (e.g. phone is rotated to landscape mode) then redraw the Navbar with the new width
-      $( window ).resize(function() {
-        $('.controlsNavbarClass').css('width',$('.listItemsPanel').width());
-        $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
-      });
-
-      //set the "open list in new tab" URL in the view
-      $('#listInNewTab').attr('href',"http://192.168.60.20/lists/" + this.id);
-
-      //autosize the textarea and its container
-      $('textarea').autosize({
-        callback: function() {
-          $(this).closest('.listItemDescription').css("height", parseInt($(this).css("height")) + 2 );
-        }
-      });
-
-
-      //set the initial height of the "hiddenBreaks" div that makes the sticky navbar look good
-      $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
 
     },
     setTimerState: function(timer) {
@@ -308,12 +306,12 @@ define([
               newOrder = parseInt(key);
               oldOrder = parseInt(listItems[key].order);
 
-              console.log("newIndex: "+newIndex);
-              console.log("oldIndex: "+oldIndex);
-              console.log("newOrder: "+newOrder);
-              console.log("oldOrder: "+oldOrder);
-              console.log("idThatMoved: "+idThatMoved);
-              console.log("typeThatMoved: "+typeThatMoved);
+              // console.log("newIndex: "+newIndex);
+              // console.log("oldIndex: "+oldIndex);
+              // console.log("newOrder: "+newOrder);
+              // console.log("oldOrder: "+oldOrder);
+              // console.log("idThatMoved: "+idThatMoved);
+              // console.log("typeThatMoved: "+typeThatMoved);
             }
           }
 
@@ -390,9 +388,6 @@ define([
               item.set(attrs);
               itemRef = new Firebase(app.firebaseURL + '/items/' + that.listId + '/' + item.id);
               itemRef.setWithPriority(item.toJSON(),attrs.order);
-              console.log(attrs);
-              console.log(item);
-              
             }
 
           });

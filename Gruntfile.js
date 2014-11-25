@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
       //define files to lint
-      files: ['js/**.js','!js/text.js','!js/libs','!js/coffee_compiled','!js/coffee_source'],
+      files: ['js/**.js','!js/text.js','!js/libs'],
       //configure JSHint
       options: {
         globals: {
@@ -31,20 +31,9 @@ module.exports = function(grunt) {
         },
         files: {
           'dist/css/styles.css': [
-            'css/style.css',
-            'css/bootstrap-min.css',
-            'css/footable/footable-0.1.css',
-            'css/jplayer/midnightBlack/jplayer.midnight.black.css',
-            'css/jplayer/circle.player.css',
-            'css/videojs/videojs.min.css',
-            'css/fancybox/jquery.fancybox.css',
-            'css/ace/font-awesome.min.css',
-            'css/ace/ace-fonts.css',
-            'css/ace/ace.min.css',
-            'css/ace/ace-rtl.min.css',
-            'css/ace/ace-skins.min.css',
-            'css/ace/jquery-ui-1.10.3.custom.min.css',
-            'js/libs/ladda/dist/ladda.min.css'
+            'css/custom.css',
+            'js/libs/bootstrap/dist/css/bootstrap_superhero.css',
+            'js/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css'
           ]
         }
       }
@@ -117,26 +106,14 @@ module.exports = function(grunt) {
         dest: 'dist/index.html',
       }
     },
-    "regex-replace": {
-      // console: { //specify a target with any name
-      //   src: ['dist/js/*.main.cache.js'],
-      //   actions: [
-      //     {
-      //       name: 'console-log-comment',
-      //       search: '(^|\\s)console.log',
-      //       replace: '//console.log',
-      //       flags: 'g'
-      //     }
-      //   ]
-      // },
-    },
+    //remove files in dist folder
     clean: {
       build: {
-        src: ["dist/*", "!dist/php"]
+        src: ["dist/*"]
       }
     },
     rsync: {
-      deploy_staging: {
+      staging_deploy: {
         files: 'dist/',
         options: {
           host      : "tbd",
@@ -145,12 +122,12 @@ module.exports = function(grunt) {
           clean     : true
         }
       },
-      deploy_production: {
+      production_deploy: {
         files: 'dist/',
         options: {
-          host      : "tbd",
+          host      : "livelist.ericvierhaus.com",
           user      : "deploy",
-          remoteBase: "/srv/website"
+          remoteBase: "/srv/live_list_website"
         }
       }
     },
@@ -165,14 +142,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-notify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-hashres');
-  //grunt.loadNpmTasks('grunt-regex-replace');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-rsync-2');
 
   grunt.registerTask('default', ['jshint','notify:build']);
-  grunt.registerTask('deploy_staging', ['clean:build','requirejs','cssmin','copy','hashres:prod_css','rsync:deploy_staging','notify:build']);
-  grunt.registerTask('deploy_production', ['clean:build','requirejs','cssmin','copy','hashres:prod_css','rsync:deploy_production','notify:build']);
+  grunt.registerTask('staging_deploy', ['clean:build','requirejs','cssmin','copy','hashres:prod_css','rsync:staging_deploy','notify:build']);
+  grunt.registerTask('production_deploy', ['clean:build','requirejs','cssmin','copy','hashres:prod_css','rsync:production_deploy','notify:build']);
   grunt.registerTask('build_css', ['requirejs','cssmin','notify:build']);
+  grunt.registerTask('build', ['clean:build','requirejs','cssmin','notify:build','copy','hashres:prod_css']);
   // grunt.registerTask('sync_staging',['rsync:deploy_staging']);
   // grunt.registerTask('sync_production',['rsync:deploy_production']);
 }

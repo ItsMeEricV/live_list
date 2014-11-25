@@ -10,12 +10,11 @@ define([
   'modernizr',
   'autosize',
   'utility',
-  'jquery-cookie',
   'views/home/ListView',
   'text!templates/home/listsTemplate.html',
   'firebase',
   'backfire'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, jqueryCookie, ListView, listsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, ListView, listsTemplate){
 
   var ListsView = Marionette.CompositeView.extend({
     itemView: ListView,
@@ -141,7 +140,7 @@ define([
       this.collection.newLists += 1;;
 
       //immediately route to the newly created list
-      //Backbone.history.navigate('/lists/' + model.id,{trigger:true});
+      Backbone.history.navigate('/lists/' + list.id,{trigger:true});
 
     },
     goToList: function(e) {
