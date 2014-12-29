@@ -17,8 +17,8 @@ define([
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, ListView, listsTemplate){
 
   var ListsView = Marionette.CompositeView.extend({
-    itemView: ListView,
-    itemViewContainer: ".lists",
+    childView: ListView,
+    childViewContainer: ".lists",
     template: listsTemplate,
     events: {
 

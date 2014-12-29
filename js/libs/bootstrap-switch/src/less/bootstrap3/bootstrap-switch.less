@@ -83,8 +83,16 @@
     }
   }
 
+  &.@{bootstrap-switch-base}-indeterminate {
+
+    .@{bootstrap-switch-base}-container {
+      margin-left: -25%;
+    }
+  }
+
   &.@{bootstrap-switch-base}-disabled,
-  &.@{bootstrap-switch-base}-readonly {
+  &.@{bootstrap-switch-base}-readonly,
+  &.@{bootstrap-switch-base}-indeterminate {
     .opacity(.5);
     cursor: default !important;
 
@@ -185,5 +193,9 @@
     left: 0;
     .opacity(0);
     z-index: -1;
+
+    &.form-control {
+      height: auto;
+    }
   }
 }

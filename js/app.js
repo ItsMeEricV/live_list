@@ -26,7 +26,7 @@ define([
   //firebase connection URL
   app.firebaseURL = 'https://sizzling-heat-3224.firebaseio.com';
 
-  app.on("initialize:before", function(){
+  app.on("before:start", function(){
 
     app.slideListsIn = true;
 
@@ -47,7 +47,7 @@ define([
     });
   });
 
-  //set the different listModes globabally so that we can access them inside the itemViews individually.
+  //set the different listModes globabally so that we can access them inside the childViews individually.
   //TODO improve this 
   app.listMode = [];
   indices = simpleStorage.index();

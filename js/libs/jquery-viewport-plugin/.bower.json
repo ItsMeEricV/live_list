@@ -1,0 +1,34 @@
+{
+  "name": "jquery-viewport-plugin",
+  "version": "0.1.0",
+  "homepage": "https://github.com/julien-sarazin/jquery-viewport-plugin",
+  "authors": [
+    "Julien Sarazin <julien.sarazin@gmail.com>",
+    "Anila niaz <anila.niaz@gmail.com>",
+    "Duc Dang Vu <duc.dangvu@gmail.com>"
+  ],
+  "description": "Helps you to manage automatic scroll from a DOM Element to another.",
+  "keywords": [
+    "jquery",
+    "viewport",
+    "scroll",
+    "animation"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.0",
+    "commit": "1002c5a3879d79a72f66094bfd61e6578281d30a"
+  },
+  "_source": "git://github.com/julien-sarazin/jquery-viewport-plugin.git",
+  "_target": "~0.1.0",
+  "_originalSource": "jquery-viewport-plugin"
+}

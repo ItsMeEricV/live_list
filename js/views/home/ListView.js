@@ -40,7 +40,7 @@ define([
 
     },
 
-    onClose: function() {
+    onDestroy: function() {
       //TODO implement some notification when a List is destroyed
       //console.log('destroyed');
     }
