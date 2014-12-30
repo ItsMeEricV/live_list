@@ -13,9 +13,10 @@ define([
   'views/home/ListsView',
   'views/home/ListItemsView',
   'views/home/ListEditView',
+  'views/list/ListLayout',
   'firebase',
   'backfire'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView, ListEditView){
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView, ListEditView, ListLayout){
 
   var that = this;
 
@@ -63,26 +64,35 @@ define([
     //return the listMode for this list stored on the client. If not previously stored then default is "watch"
     //var listMode = simpleStorage.get('listMode') || 'watch';  //global listMode
 
-    var listMode = 'watch';
+    //var listMode = 'watch';
     // if(!utility.isEmpty(simpleStorage.get(id))) {
     //   listMode = simpleStorage.get(id).listMode || 'watch';
     // }
 
-    var listItemsView = new ListItemsView({id: id,listMode: listMode});
-    app.content.show(listItemsView);
+    //var listItemsView = new ListItemsView({id: id,listMode: listMode});
+    
 
-    // listItemsView.collection.fetch({
-    //   success: function(data) {
-        
-    //     $.each(listItemsView.collection.models, function(i,item) {
-    //       item.set('list_mode',listMode);
-    //     });
-
-    //     listItemsView.collection.sort();
-    //     app.content.show(listItemsView);
-        
+    // var ListLayout = Marionette.LayoutView.extend({
+    //   template: listLayoutTemplate,
+    //   regions: {
+    //     title: ".listTitle",
+    //     controls: ".listControls",
+    //     contents: ".listContents",
+    //   },
+    //   onBeforeShow: function() {
+    //     this.getRegion('title').show(new ListTitleView({id: id}));
+    //     this.getRegion('controls').show(new ListControlsView({id: id}));
+    //     this.getRegion('contents').show(new ListContentsView({id: id}));
     //   }
     // });
+
+    var listLayout = new ListLayout({id: id});
+    app.content.show(listLayout);
+    listLayout.setStickyNavbar();
+
+
+
+    //app.content.show(listItemsView);
     
   
   });
@@ -91,12 +101,6 @@ define([
 
     var listEditView = new ListEditView({id: id});
     app.content.show(listEditView);
-
-    // listEditView.model.fetch({
-    //   success: function(data) {
-    //     app.content.show(listEditView);
-    //   }
-    // });
 
   });
 

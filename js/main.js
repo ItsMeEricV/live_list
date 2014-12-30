@@ -26,13 +26,15 @@ require.config({
   },
   shim: {
     'bootstrap' : ['jquery'],
+    'bootstrap-switch' : ['jquery'],
     'nestable' : ['jquery'],
     'modernizr' : ['jquery'],
     'autosize' : ['jquery'],
     'flippy' : ['jquery'],
     'viewport' : ['jquery'],
     'firebase' : ['jquery'],
-    'backfire' : ['jquery']
+    'backfire' : ['jquery'],
+    'ScrollTo' : ['jquery']
   }
 
 });
