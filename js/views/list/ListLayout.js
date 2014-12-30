@@ -36,11 +36,8 @@ define([
          var stickyElement   = '.controlsNavbarClass',   // the element you want to make sticky
              bottomElement   = '.fakeFooter'; // the bottom element where you want the sticky element to stop (usually the footer) 
          // make sure the element exists on the page before trying to initalize
-         console.log($(stickyElement));
          if($( stickyElement ).length){
-          console.log("esdf");
              $( stickyElement ).each(function(){
-                 console.log($(this));
                  // let's save some messy code in clean variables
                  // when should we start affixing? (the amount of pixels to the top from the element)
                  var fromTop = $( this ).offset().top, 
@@ -49,9 +46,8 @@ define([
                      // where should we stop? (the amount of pixels from the top where the bottom element is)
                      // also add the outer height mismatch to the height of the element to account for padding and borders
                      stopOn = $( document ).height()-( $( bottomElement ).offset().top)+($( this ).outerHeight() - $( this ).height()); 
-                     console.log(fromTop);
                  // if the element doesn't need to get sticky, then skip it so it won't mess up your layout
-                 if( (fromBottom-stopOn) > 60 ){
+                 if( (fromBottom-stopOn) > 70 ){
 
                      // let's put a sticky width on the element and assign it to the top
                      $( this ).css('width', $( this ).width()).css('top', 0).css('position', '');

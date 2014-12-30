@@ -178,7 +178,6 @@ define([
     },
     onRender: function() {
 
-      console.log("onRender");
       var that = this;
       //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
       //$('.listTitle').html('<strong>'+this.listTitle+'</strong>');
