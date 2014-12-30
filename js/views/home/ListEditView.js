@@ -4,9 +4,8 @@ define([
   'backbone',
   'marionette',
   'myapp',
-  'views/home/ListItemsView',
   'text!templates/home/listEditTemplate.html'
-], function($, _, Backbone, Marionette, app, ListItemsView, listEditTemplate){
+], function($, _, Backbone, Marionette, app, listEditTemplate){
 
   var ListEditView = Marionette.ItemView.extend({
     template: listEditTemplate,

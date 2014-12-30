@@ -1,0 +1,42 @@
+<script id="modalDemoTemplate" type="text/template">
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" aria-hidden="true">×</button>
+        <h3 id="userLoginModalLabel">Welcome to LIVE LIST</h3>
+      </div>
+      <div class="modal-body well">
+  
+      A lightweight web application for realtime, multi-client coordination using lists. Built using Backbone.js and Firebase.
+      
+      <br />
+      <br />
+      <h4><strong>Premise</strong></h4>
+      Live events require coordination between multiple members, often between many teams. Traditionally this is done using voice intercom, scripts, or expensive software. Live List allows coordination of live events using a simple list interface, and is easily viewable on any desktop or mobile device.
+      
+      <br />
+      <br />
+      <h4><strong>Functionality</strong></h4>
+      All list features update in realtime, without the need for page reloading. <br />
+      In addition to basic text, list items can be marked as active by the list controller so that all viewers know which list item is the currently active item. In a live theatre event, list items can be used as cues. In addition, each list has a controllable and shared system-accurate <strong>timer</strong> so that all list viewers are referencing the same time. 
+      <br />
+      <br />
+      There are three list modes. <strong>Watch, Control,</strong> and <strong>Edit</strong>.
+      <ul>
+        <li>Watch: Viewers see the timer, list item text and status. No control functionality is exposed</li>
+        <li>Control: Used when the event is "live." The list controller activates the currently active list item.</li>
+        <li>Edit: For building and reordering the list.</li>
+      </ul>
+
+      <br />
+      <h4><strong>List Sharing</strong></h4>
+      Lists can be shared by sending the list URL. Additionally, the "open in new tab" button can be used for simple testing of realtime functionality. In the future, more convenient sharing via email and other means will be added.
+
+      <div class="modal-footer">
+        <button class="btn btn-success termsOk" aria-hidden="true">Ok</button>
+      </div>
+    </div>
+  </div>
+
+</script>

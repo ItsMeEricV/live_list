@@ -10,11 +10,14 @@ define([
   'modernizr',
   'autosize',
   'utility',
+  'simpleStorage',
   'views/home/ListView',
+  'views/modals/ModalDemoRegion',
+  'views/modals/ModalDemoView',
   'text!templates/home/listsTemplate.html',
   'firebase',
   'backfire'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, ListView, listsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, simpleStorage, ListView, ModalDemoRegion, ModalDemoView, listsTemplate){
 
   var ListsView = Marionette.CompositeView.extend({
     childView: ListView,
@@ -24,7 +27,8 @@ define([
 
       "click .newList" : "newList",
       "click .deleteList" : "deleteList",
-      "click .listButton" : "goToList"
+      "click .listButton" : "goToList",
+      "click .list_help_button" : "showModalDemo"
 
     },
     initialize: function() {
@@ -80,6 +84,17 @@ define([
 
       $('.live_list').css('opacity','1.0');
 
+      app.modalDemo = new ModalDemoRegion();
+      modalDemoView = new ModalDemoView();
+
+      if(!simpleStorage.get("live_list_demo_modal")) {
+        app.modalDemo.show(modalDemoView);        
+      }
+
+    },
+    showModalDemo: function() {
+      modalDemoView = new ModalDemoView();
+      app.modalDemo.show(modalDemoView);
     },
     slideIn: function() {
       if(!this.collection.length) this.initialLoadComplete = true;

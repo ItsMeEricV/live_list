@@ -23,7 +23,7 @@ define([
   'backfire'
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listContentsTemplate){
 
-  var ListItemsView = Marionette.CompositeView.extend({
+  var ListContentsView = Marionette.CompositeView.extend({
     childView: ItemView,
     childViewContainer: ".dd-list",
     template: listContentsTemplate,
@@ -772,6 +772,6 @@ define([
 
   });
 
-  return ListItemsView;
+  return ListContentsView;
   
 });
