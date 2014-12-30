@@ -1,5 +1,7 @@
 # Tock #
 
+[![Bower version](https://badge.fury.io/bo/tock.svg)](http://badge.fury.io/bo/tock)
+
 A javscript timer/countdown clock. 
 
 [View Demo](http://deviouschimp.co.uk/misc/tock)
@@ -9,6 +11,18 @@ http://sitepoint.com/creating-accurate-timers-in-javascript/
 
  > Note: I have renamed the repo from Tock to tock. Sorry for any inconvenience.
 
+
+# Readme Contents #
+
+ * [What's so good about it?](#whats-so-good-about-it)
+ * [When would I use it?](#when-would-i-use-it)
+ * [How do I use it?](#how-do-i-use-it)
+ * [Options](#options)
+ * [Callbacks](#callbacks)
+ * [Methods](#methods)
+ * [License](#license)
+
+
 # What's so good about it? #
 
 * Pure Javascript - no dependencies
@@ -17,11 +31,13 @@ http://sitepoint.com/creating-accurate-timers-in-javascript/
 * It can call a callback function every tick (10 milliseconds) and (for countdown clocks) when the clock reaches 0:00.
 * It's about as accurate a clock as you can get with Javascript.
 
+
 # When would I use it? #
 
  * Countdown counters, e.g. "site will launch in..."
  * Timers
  * Accurate timing of any repeated action
+
 
 # How do I use it? #
 
@@ -44,38 +60,14 @@ This will give you a clock that will count up from 00:00 when the start() method
 
 For more control we can pass in some options. *Note that all options are... optional.*
 
-    var options = {
-        countdown: true,
-        interval: 10,
-        callback: someCallbackFunction,
-        complete: someCompleteFunction
-    }
-    var timer = new Tock(options);
+    var timer = new Tock({
+      countdown: true,
+      interval: 10,
+      callback: someCallbackFunction,
+      complete: someCompleteFunction
+    });
 
-
-#### Options ####
-
-  * **countdown** *boolean*  Default: false. If true, the clock will count down from a given time, otherwise it will count up from 0:00.
-  * **interval** *integer* Default: 10. How often, in milliseconds, that the clock will tick.
-  * **callback** *function* Default: null (see below)
-  * **complete** *function* Default: null (see below)
-
-#### Callback functions ####
-
-The callback option is a function that will be called once every *interval* milliseconds.
-
-Here we'll use the *lap()* method to get the current clock time (in milliseconds). We'll then pass that through *msToTime()* to format it nicely before displaying it in the *input* field.
-
-    callback: function () {
-        var current_time = timer.msToTime(timer.lap());
-        $('#clock').val(current_time);
-    }
-
-As we are have set *countdown* to *true* we can also pass in a function to call once the countdown reaches zero.
-
-    complete: function () {
-        alert("Time's up!");
-    }
+[See available options below](#options)
 
 ### 2) Add some controls ###
 
@@ -99,18 +91,55 @@ If you're not using a countdown clock you can make a reset button, too.
 
 You could also create a reset button if you *are* using a countdown clock, but that's beyond the scope of this walkthrough. The tools are there. Do with them what you can. After this next section you're on your own. Good luck. We're all counting on you.
 
+
+# Options #
+
+  * **countdown** *boolean*  Default: false. If true, the clock will count down from a given time, otherwise it will count up from 0:00.
+  * **interval** *integer* Default: 10. How often, in milliseconds, that the clock will tick.
+  * **callback** *function* Default: null (see below)
+  * **complete** *function* Default: null (see below)
+
+
+# Callbacks #
+
+The callback option is a function that will be called once every `interval` milliseconds.
+
+Here we'll use the `lap()` method to get the current clock time (in milliseconds). We'll then pass that through `msToTime()` to format it nicely before displaying it in the `input` field.
+
+    callback: function () {
+        var current_time = timer.msToTime(timer.lap());
+        $('#clock').val(current_time);
+    }
+
+As we are have set `countdown` to `true` we can also pass in a function to call once the countdown reaches zero.
+
+    complete: function () {
+        alert("Time's up!");
+    }
+
+
 # Methods #
 
- * reset()
  * start(time)
    * *time* is only needed if using countdown clock.
       Should be an integer in milliseconds.
  * stop()
+   * Stops the clock.
+ * pause()
+   * Stop the clock if it's running, continue clock if paused.
+ * reset()
+   * Restart times to zero. Countdown clocks still need a duration to be passed to `start()` after `reset()` is called.
  * lap()
+   * Returns elapsed time in milliseconds.
  * msToTime(ms)
    * Note: this is rudimentary - won't handle > 1 hour
  * timeToMS(time)
-   * Time should be a string of form:
+   Time should be a string of form:
    * "MM:SS"
    * "MM:SS:ms"
    * "yyyy-mm-dd HH:MM:SS.ms"
+
+
+# License #
+
+MIT License.

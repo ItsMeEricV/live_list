@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.13 - August 5, 2014
+
+- Forgot a comma, broke it for bower.
+
+## 1.1.10 - August 4, 2014
+
+- Various fixes, thanks everybody
+
 ## 1.1.7 - October 4, 2013
 
 - Fix CommonJS requiring (Brandon Dimcheff)

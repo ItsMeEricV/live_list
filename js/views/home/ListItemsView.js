@@ -24,8 +24,8 @@ define([
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, bootstrapSwitch, utility, simpleStorage,Tock, ScrollTo, ItemView, ListEditView, listItemsTemplate){
 
   var ListItemsView = Marionette.CompositeView.extend({
-    itemView: ItemView,
-    itemViewContainer: ".dd-list",
+    childView: ItemView,
+    childViewContainer: ".dd-list",
     template: listItemsTemplate,
     events: {
       "click .newListItem" : "newListItem",
@@ -177,9 +177,10 @@ define([
 
     },
     onRender: function() {
+
       var that = this;
       //set the listTitle here in onRender so that when the view is rerendered the title doesn't dissappear
-      $('.listTitle').html('<strong>'+this.listTitle+'</strong>');
+      //$('.listTitle').html('<strong>'+this.listTitle+'</strong>');
       this.drawListMode();
 
       if(!utility.isEmpty(this.timers)) {
@@ -213,7 +214,7 @@ define([
       //set the initial height of the "hiddenBreaks" div that makes the sticky navbar look good
       $('#hiddenBreaks').css('height',$('.controlsNavbarClass').height() + 19);
     },
-    onClose: function(arg1, arg2){
+    onDestroy: function(arg1, arg2){
       //stop the Firehose Consumer so we don't have multiple consumers running at the same time
       // this.firehose_consumer.stop();
       this.listData.off('value');

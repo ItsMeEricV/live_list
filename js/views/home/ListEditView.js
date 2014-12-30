@@ -42,7 +42,7 @@ define([
       this.setAttributes();
 
     },
-    onClose: function() {
+    onDestroy: function() {
 
     },
     setAttributes: function() {

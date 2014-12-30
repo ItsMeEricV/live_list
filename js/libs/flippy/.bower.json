@@ -1,14 +1,13 @@
 {
   "name": "flippy",
   "homepage": "https://github.com/lepixel/flippy",
-  "_release": "99af84c707",
+  "_release": "af0f419d0d",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "99af84c70776953a90d79c4e2458f20e99d8a978"
+    "commit": "af0f419d0d864a4b049e134f8a110c277b5f0521"
   },
   "_source": "git://github.com/lepixel/flippy.git",
   "_target": "*",
-  "_originalSource": "flippy",
-  "_direct": true
+  "_originalSource": "flippy"
 }

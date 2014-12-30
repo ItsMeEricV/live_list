@@ -1,0 +1,42 @@
+<script id="listControlsTemplate" type="text/template">
+
+
+    <div class="panel panel-default controlsNavbarClass" id="controlsNavbar">
+      <div class="panel-body row">
+        <div class="col-xs-6 col-sm-5 col-md-5 col-lg-5">
+          
+          <div class="visible-lg">
+            <a class="btn btn-info" href="/"><span class="glyphicon glyphicon-arrow-left"></span></a>
+            <button class="btn btn-success newListItem editButtonType" style="display:none">New Item</button>
+            <button class="btn btn-danger deleteListItem editButtonType" style="display:none">Delete Item</button>
+            <button class="btn btn-primary newSection editButtonType" style="display:none">New Section</button>
+          </div>
+
+          <div class="hidden-lg">
+            <a class="btn btn-info" href="/"><span class="glyphicon glyphicon-arrow-left"></span></a>
+            <button class="btn btn-success newListItem editButtonType" style="display:none"><span class="glyphicon glyphicon-plus"></span></button>
+            <button class="btn btn-danger deleteListItem editButtonType" style="display:none"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="btn btn-primary newSection editButtonType" style="display:none"><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+        <div class="col-xs-3 col-sm-5 col-md-5 col-lg-5">
+          <button id="toggleTimer" class="btn toggleTimer controlButtonType" style="display:none"></button>
+          <span class="timerSpan"><input id="clock" value="00:00:00" style="color:#000;width:78px"></span>
+        </div>
+
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+          <select class="pull-right listModeSelect form-control">
+            <option value="watch">Watch</option>
+            <option value="control">Control</option>
+            <option value="edit">Edit</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- create space so when the navbar affixes ("affix" class is applied") it doesn't jump down and overlap the first listItems. This div is hidden when the affix is removed ("affix-top" class is applied). 91px looks good -->
+    <div id="hiddenBreaks" style="display:none;">
+    </div>
+
+</script>

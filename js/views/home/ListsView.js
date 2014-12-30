@@ -17,8 +17,8 @@ define([
 ], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, ListView, listsTemplate){
 
   var ListsView = Marionette.CompositeView.extend({
-    itemView: ListView,
-    itemViewContainer: ".lists",
+    childView: ListView,
+    childViewContainer: ".lists",
     template: listsTemplate,
     events: {
 
@@ -67,7 +67,7 @@ define([
       this.listenTo(this.collection, "sync", this.slideIn, this);
       this.listenTo( this.collection, 'add', _.debounce(_.bind(this.listAdded, this), 250) );
 
-      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
+      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 };
 
 
     },
@@ -137,7 +137,7 @@ define([
       list = this.collection.create({title: "Untitled List " + (this.collection.newLists + 1)});
 
       //increment newLists
-      this.collection.newLists += 1;;
+      this.collection.newLists += 1;
 
       //immediately route to the newly created list
       Backbone.history.navigate('/lists/' + list.id,{trigger:true});
