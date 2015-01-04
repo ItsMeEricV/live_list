@@ -1,0 +1,134 @@
+{
+  "items" : {
+    "-Jeqd11HjhmyfUWBFzf5" : {
+      "-JeqflWDTrYA-MJ_-pfV" : {
+        ".priority" : 0.0,
+        "id" : "-JeqflWDTrYA-MJ_-pfV",
+        "index" : 1,
+        "list_type" : "item",
+        "order" : 0,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Introit: Camera 1 on orchestra"
+      },
+      "-JeqpEvrUueg1_vVZK9Q" : {
+        ".priority" : 1.0,
+        "id" : "-JeqpEvrUueg1_vVZK9Q",
+        "index" : 2,
+        "list_type" : "item",
+        "order" : 1,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Curtain raises: Camera 1 stage left, Camera 2 stage right"
+      },
+      "-JeqpJ2C5duvODx2TAhP" : {
+        ".priority" : 2.0,
+        "id" : "-JeqpJ2C5duvODx2TAhP",
+        "index" : 3,
+        "list_type" : "item",
+        "order" : 2,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Act I, Scene 1: Camera 1 on Orpheus, Camera 2 wide"
+      },
+      "-JeqpOvg4S1fgy7LC2HI" : {
+        ".priority" : 3.0,
+        "id" : "-JeqpOvg4S1fgy7LC2HI",
+        "index" : 4,
+        "list_type" : "item",
+        "order" : 3,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Camera 2: Stage right on Calliope"
+      },
+      "-JeqpSn26ITQioIbPyPf" : {
+        ".priority" : 4.0,
+        "id" : "-JeqpSn26ITQioIbPyPf",
+        "index" : 5,
+        "list_type" : "item",
+        "order" : 4,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Camera 1: Upstage left, close on Pluto's entrance\nCamera 2: Stay on Calliope"
+      },
+      "-JeqpWRv0E9z3loazx0j" : {
+        ".priority" : 5.0,
+        "id" : "-JeqpWRv0E9z3loazx0j",
+        "index" : 6,
+        "list_type" : "item",
+        "order" : 5,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "FX: Offstage thunder"
+      },
+      "-JeqpdPAVLFtKMF2PCRV" : {
+        ".priority" : 6.0,
+        "id" : "-JeqpdPAVLFtKMF2PCRV",
+        "index" : 7,
+        "list_type" : "item",
+        "order" : 6,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Camera 1: Downstage left, stay close on Pluto during aria."
+      }
+    },
+    "-JeqfRBPqx9uw3_JuzOJ" : {
+      "-JeqpnCfpnV_Ma1t7RSl" : {
+        ".priority" : 0.0,
+        "id" : "-JeqpnCfpnV_Ma1t7RSl",
+        "index" : 1,
+        "list_type" : "item",
+        "order" : 0,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "A thing in the list. Change me."
+      },
+      "-JeqpqblkO4otiDD2KJ1" : {
+        ".priority" : 1.0,
+        "id" : "-JeqpqblkO4otiDD2KJ1",
+        "index" : 2,
+        "list_type" : "item",
+        "order" : 1,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "More things in the list\nWith a newline!"
+      },
+      "-JeqpsNPPZh8nFB4DT8m" : {
+        ".priority" : 2.0,
+        "id" : "-JeqpsNPPZh8nFB4DT8m",
+        "index" : 3,
+        "list_type" : "item",
+        "order" : 2,
+        "selected" : false,
+        "state" : "pre_active",
+        "title" : "Another thing in the list. Go into EDIT mode and move me around in the list!"
+      }
+    }
+  },
+  "lists" : {
+    "-Jeqd11HjhmyfUWBFzf5" : {
+      "id" : "-Jeqd11HjhmyfUWBFzf5",
+      "title" : "DEMO - Orpheus camera cues"
+    },
+    "-JeqfRBPqx9uw3_JuzOJ" : {
+      "id" : "-JeqfRBPqx9uw3_JuzOJ",
+      "title" : "DEMO - Sample list"
+    }
+  },
+  "timers" : {
+    "-Jeqd11HjhmyfUWBFzf5" : {
+      "-Jeqd12IbIj4MuXLOCt7" : {
+        "action_time" : 1420406978336,
+        "duration" : 4922409,
+        "state" : "stopped"
+      }
+    },
+    "-JeqfRBPqx9uw3_JuzOJ" : {
+      "-JeqfRCO4foaZLgK0w0s" : {
+        "action_time" : 1420406858479,
+        "duration" : 929,
+        "state" : "stopped"
+      }
+    }
+  }
+}

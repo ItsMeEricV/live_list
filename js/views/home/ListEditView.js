@@ -72,6 +72,13 @@ define([
         $('.deleteList').addClass('disabled');
         $('.deleteListLabel').fadeOut(350);
 
+        //remove the timer data for this list
+        timers = new Firebase(app.firebaseURL + '/timers/' + this.model.id);
+        timers.remove();
+        //remove the items data for this list
+        timers = new Firebase(app.firebaseURL + '/items/' + this.model.id);
+        timers.remove();
+
         this.model.destroy({});
         Backbone.history.navigate('/', {trigger: true});
       }
