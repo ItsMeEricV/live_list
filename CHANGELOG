@@ -1,10 +1,18 @@
-977e61e (HEAD, origin/feature/preparing-grunt, release/0.9.0, develop) Add Grunt deployment, fix sticky navbar, Firebase port complete
-ed0c9d1 (origin/develop) Merge branch 'feature/firebase' into develop
+611cc95 (HEAD, release/0.9.1, develop) List name auto-updates, update README
+30d30c0 (origin/develop) Modal help dialog with overview.
+95963a6 Merge branch 'feature/refactor-list-view' into develop
+8dd4a7f Finish ListItems refactoring
+cce195c Changed ListItemsView to a Marionette Layout.
+f3a0abf Update Marionette to 2.3.0 and it's dependencies
+a7bea24 Merge branch 'release/0.9.0' into develop
+319c88d Release 0.9.0, First release!
+977e61e Add Grunt deployment, fix sticky navbar, Firebase port complete
+ed0c9d1 Merge branch 'feature/firebase' into develop
 4cbe1be Port Timer functionality. Update Tock library
 636522d Remove firehose code, add active/post_activate code with Firebase
 d49e2b9 Removed Firebase.collection. Changed to standard Firebase CRUD and standard Backbone collections
 651a90e Initial port to using Firebase for real time updates and storage
-9c7cff2 (origin/rails-firehose-backend, origin/master, origin/HEAD, rails-firehose-backend, master) Merge branch 'list-rename'
+9c7cff2 (origin/rails-firehose-backend, rails-firehose-backend) Merge branch 'list-rename'
 fe56ade List management, listItem state improvement
 023ce8d Remove log
 7da98e7 Merge branch 'rename-functions'
