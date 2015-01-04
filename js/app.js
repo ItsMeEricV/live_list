@@ -11,11 +11,11 @@ define([
   'simpleStorage',
   'utility',
   'views/home/ListsView',
-  'views/home/ListItemsView',
   'views/home/ListEditView',
+  'views/list/ListLayout',
   'firebase',
   'backfire'
-], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListItemsView, ListEditView){
+], function($, _, Backbone, Marionette, app, AppRouter, vent, bootstrap, simpleStorage, utility, ListsView, ListEditView, ListLayout){
 
   var that = this;
 
@@ -26,7 +26,7 @@ define([
   //firebase connection URL
   app.firebaseURL = 'https://sizzling-heat-3224.firebaseio.com';
 
-  app.on("initialize:before", function(){
+  app.on("before:start", function(){
 
     app.slideListsIn = true;
 
@@ -47,7 +47,7 @@ define([
     });
   });
 
-  //set the different listModes globabally so that we can access them inside the itemViews individually.
+  //set the different listModes globabally so that we can access them inside the childViews individually.
   //TODO improve this 
   app.listMode = [];
   indices = simpleStorage.index();
@@ -58,48 +58,24 @@ define([
   //DEFINE ROUTES
   var app_router = new AppRouter();
 
-  app_router.on('route:listItemsView', function (id) {
+  //view a specific list
+  app_router.on('route:listView', function (id) {
     
-    //return the listMode for this list stored on the client. If not previously stored then default is "watch"
-    //var listMode = simpleStorage.get('listMode') || 'watch';  //global listMode
-
-    var listMode = 'watch';
-    // if(!utility.isEmpty(simpleStorage.get(id))) {
-    //   listMode = simpleStorage.get(id).listMode || 'watch';
-    // }
-
-    var listItemsView = new ListItemsView({id: id,listMode: listMode});
-    app.content.show(listItemsView);
-
-    // listItemsView.collection.fetch({
-    //   success: function(data) {
-        
-    //     $.each(listItemsView.collection.models, function(i,item) {
-    //       item.set('list_mode',listMode);
-    //     });
-
-    //     listItemsView.collection.sort();
-    //     app.content.show(listItemsView);
-        
-    //   }
-    // });
-    
+    var listLayout = new ListLayout({id: id});
+    app.content.show(listLayout);
+    listLayout.setStickyNavbar();
   
   });
 
+  //edit a specific list
   app_router.on('route:listEditView', function (id) {
 
     var listEditView = new ListEditView({id: id});
     app.content.show(listEditView);
 
-    // listEditView.model.fetch({
-    //   success: function(data) {
-    //     app.content.show(listEditView);
-    //   }
-    // });
-
   });
 
+  //DEFAULT - view all lists
   app_router.on('route:defaultAction', function (actions,params) {
 
     // We have no matching route, lets display the home page and home navbar

@@ -12,7 +12,7 @@ define([
     routes: {
       // Define URL routes
       
-      'lists/:id': 'listItemsView',
+      'lists/:id': 'listView',
       'lists/:id/edit': 'listEditView',
       // Default
       '*actions': 'defaultAction'

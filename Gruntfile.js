@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
       //define files to lint
-      files: ['js/**.js','!js/text.js','!js/libs'],
+      files: ['js/**.js','js/views/**/*.js','!js/text.js','!js/libs'],
       //configure JSHint
       options: {
         globals: {

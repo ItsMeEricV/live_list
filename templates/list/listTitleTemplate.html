@@ -1,0 +1,23 @@
+<script id="listTitleTemplate" type="text/template">
+
+    <div class="row listTitleDiv">
+      <!--Name of list goes here -->
+      <div class="col-xs-10 col-sm-8 col-md-8 col-lg-8">
+        
+        <div class="bs-component">
+        <button class="btn btn-default listTitleButton"><%= title %></button>
+
+        <span class="label label-default editListLabel" style="display:none">Edit list</span>
+        </div>
+      </div>
+
+      <div class="col-xs-2 col-sm-4 col-md-4 col-lg-4">
+        
+        <a href="<%= url %>" id="listInNewTab" target="_blank" type="button" class="btn btn-default pull-right" data-bypass="true">
+          <span class="hidden-xs">Open List in New Tab &nbsp;</span>
+          <span class="glyphicon glyphicon-new-window"></span>
+        </a>
+      </div>
+    </div>
+
+</script>

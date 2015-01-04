@@ -4,9 +4,8 @@ define([
   'backbone',
   'marionette',
   'myapp',
-  'views/home/ListItemsView',
   'text!templates/home/listEditTemplate.html'
-], function($, _, Backbone, Marionette, app, ListItemsView, listEditTemplate){
+], function($, _, Backbone, Marionette, app, listEditTemplate){
 
   var ListEditView = Marionette.ItemView.extend({
     template: listEditTemplate,
@@ -42,7 +41,7 @@ define([
       this.setAttributes();
 
     },
-    onClose: function() {
+    onDestroy: function() {
 
     },
     setAttributes: function() {
@@ -72,6 +71,13 @@ define([
         
         $('.deleteList').addClass('disabled');
         $('.deleteListLabel').fadeOut(350);
+
+        //remove the timer data for this list
+        timers = new Firebase(app.firebaseURL + '/timers/' + this.model.id);
+        timers.remove();
+        //remove the items data for this list
+        timers = new Firebase(app.firebaseURL + '/items/' + this.model.id);
+        timers.remove();
 
         this.model.destroy({});
         Backbone.history.navigate('/', {trigger: true});

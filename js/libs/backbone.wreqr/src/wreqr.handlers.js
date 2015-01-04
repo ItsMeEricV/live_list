@@ -63,12 +63,11 @@ Wreqr.Handlers = (function(Backbone, _){
       var config = this._wreqrHandlers[name];
 
       if (!config){
-        throw new Error("Handler not found for '" + name + "'");
+        return;
       }
 
       return function(){
-        var args = Array.prototype.slice.apply(arguments);
-        return config.callback.apply(config.context, args);
+        return config.callback.apply(config.context, arguments);
       };
     },
 

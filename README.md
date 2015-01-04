@@ -1,16 +1,25 @@
 Live List
 ===========
 
-Live events require coordination between many people. **Live List** allows many users to stay in sync with a list that updates in realtime across all viewers.
+Live events require coordination between multiple members, often between many teams. Traditionally this is done using voice intercom, scripts, or expensive software. Live List allows coordination of live events using a simple list interface, and is easily viewable on any desktop or mobile device.
 
-- 3 modes for lists, Watch, Control, and Edit. A single editor/controller can create the list, edit in real time, and then control the events in the list. Other viewers can watch and their lists will update in realtime
-- A system accurate timer is unique for each list, allowing all viewers to have the same time reference
+**[LIVE DEMO](http://livelist.ericvierhaus.com)**
+
+All list features update in realtime, without the need for page reloading.
+In addition to basic text, list items can be marked as active by the list controller so that all viewers know which list item is the currently active item. In a live theatre event, list items can be used as cues. In addition, each list has a controllable and shared system-accurate **timer** so that all list viewers are referencing the same time. 
+
+There are three list modes. **Watch**, **Control**, and **Edit**.
+
+ 1. Watch: Viewers see the timer, list item text and status. No control functionality is exposed
+ 1. Control: Used when the event is "live." The list controller activates the currently active list item.
+ 1. Edit: For building and reordering the list.
 
 Ingredients
 ----------------
 
 - Backbone.js
-- Firebase
+- [Firebase](https://www.firebase.com/)
+- [Tock](https://github.com/mrchimp/tock)
 
 Future features
 ----------------
@@ -22,11 +31,12 @@ Future features
 Known Issues
 ----------------
 
-1. Shifting list item placement while the timer is running causes the displayed time to get off.
 1. Mobile viewing could use further optimization.
+1. "Sections" are not implemented yet
+1. Internet Explorer == untested
 
 
 Local/On Premise support?
 ----------------
 
-Originally this application used a Rails backend with Firehose and MongoDB. This is significantly more complex that Firebase and has slightly degraded performance, but allows for a local setup where Internet connectivity is poor or security is a major concern. This code is 95% working and lives in the rails-firehose-backend branch.
+Originally this application used a Rails backend with Firehose and MongoDB. This is significantly more complex that Firebase and has slightly degraded performance, but allows for a local setup where Internet connectivity is poor or security is a major concern. This code is 95% working and lives in the [rails-firehose-backend](https://github.com/ejvaudio/live_list/tree/rails-firehose-backend) branch.

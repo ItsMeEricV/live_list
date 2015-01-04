@@ -1,3 +1,9 @@
+@media screen and (min-width: 768px) {
+  
+  #modal_demo .modal-dialog  {width:900px;}
+
+}
+
 ul.collection-list {
   margin: 0;
   padding: 0;

@@ -37,12 +37,27 @@ define([
     //tagName : "tr",
 
     initialize: function() {
+      this.listenTo(this.model,"change",this.listChanged);
 
     },
+    onRender: function() {
 
-    onClose: function() {
+    },
+    listChanged: function(item) {
+      list = $(this.el).find('button[data-id="' + item.id + '"]');
+      list.css("background-color","grey");
+      list.animate({
+        "background-color" : "grey"
+      },300,function() {
+        $(this).html(item.get("title"));
+        $(this).animate({
+          "background-color" : "#df691a"
+      },300);
+      });
+    },
+
+    onDestroy: function() {
       //TODO implement some notification when a List is destroyed
-      //console.log('destroyed');
     }
 
   });

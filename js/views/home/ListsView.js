@@ -10,21 +10,25 @@ define([
   'modernizr',
   'autosize',
   'utility',
+  'simpleStorage',
   'views/home/ListView',
+  'views/modals/ModalDemoRegion',
+  'views/modals/ModalDemoView',
   'text!templates/home/listsTemplate.html',
   'firebase',
   'backfire'
-], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, ListView, listsTemplate){
+], function($, jqueryui, _, Backbone, Marionette, vent, app, nestable, modernizr, autosize, utility, simpleStorage, ListView, ModalDemoRegion, ModalDemoView, listsTemplate){
 
   var ListsView = Marionette.CompositeView.extend({
-    itemView: ListView,
-    itemViewContainer: ".lists",
+    childView: ListView,
+    childViewContainer: ".lists",
     template: listsTemplate,
     events: {
 
       "click .newList" : "newList",
       "click .deleteList" : "deleteList",
-      "click .listButton" : "goToList"
+      "click .listButton" : "goToList",
+      "click .list_help_button" : "showModalDemo"
 
     },
     initialize: function() {
@@ -62,12 +66,10 @@ define([
       this.collection = new Lists();
       this.collection.newLists = 0;
       this.count = 0;
-      this.initialLoadComplete = false;
 
-      this.listenTo(this.collection, "sync", this.slideIn, this);
-      this.listenTo( this.collection, 'add', _.debounce(_.bind(this.listAdded, this), 250) );
+      //this.listenTo( this.collection, 'add', _.debounce(_.bind(this.listAdded, this), 250) );
 
-      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 }
+      this.windoWidthBreakPoints = { "xs" : 20, "sm" : 40, "md" : 80, "lg" : 115 };
 
 
     },
@@ -80,64 +82,64 @@ define([
 
       $('.live_list').css('opacity','1.0');
 
+      app.modalDemo = new ModalDemoRegion();
+      modalDemoView = new ModalDemoView();
+
+      if(!simpleStorage.get("live_list_demo_modal")) {
+        app.modalDemo.show(modalDemoView);        
+      }
+
     },
+    showModalDemo: function() {
+      modalDemoView = new ModalDemoView();
+      app.modalDemo.show(modalDemoView);
+    },
+    //optional animation for sliding lists in. Not currently used.
     slideIn: function() {
-      if(!this.collection.length) this.initialLoadComplete = true;
 
-        $.each(this.collection.models,function(i,item) {
+      $.each(this.collection.models,function(i,item) {
 
-          setTimeout(function() {
-          
-            list = $('div[data-id="' + item.get('id') + '"]');
-            list.animate({
+        setTimeout(function() {
+        
+          list = $('div[data-id="' + item.get('id') + '"]');
+          list.animate({
+            opacity: '1.0',
+            // marginLeft: '+=200px',
+            // marginRight: '-=200px'
+          },500,function() {
+            
+            $(this).animate({
               opacity: '1.0',
-              // marginLeft: '+=200px',
-              // marginRight: '-=200px'
-            },500,function() {
-              
-              $(this).animate({
-                opacity: '1.0',
-                // marginLeft: '-=40px',
-                // marginRight: '+=40px'
-              },200);
+              // marginLeft: '-=40px',
+              // marginRight: '+=40px'
+            },200);
 
-              //don't do full slide animation next time
-              app.slideListsIn = false;
+            //don't do full slide animation next time
+            app.slideListsIn = false;
 
-            });
-          },100+(i*160));
+          });
+        },100+(i*160));
 
-          //if has "Untitled List" in name then this is a newly created list this hasn't been edit yet. Track this in order to add a unique counting integer to more new lists.
-          if(item.get('title').indexOf('Untitled List') > -1) {
-            this.collection.newLists += 1;
-          }
 
-        });
 
-      // }
-      // else {
-      //   $('.live_list').animate({
-      //     marginLeft: '+=160px',
-      //     marginRight: '-=160px'
-      //   },0,function() {
-          
-      //     $(this).animate({
-      //       opacity: '1.0'
-      //     },200);
-
-      //   });
-      // }
-
+      });
 
     },
     newList: function() {
 
       var that = this;
 
+      $.each(this.collection.models,function(i,item) {
+        //if has "Untitled List" in name then this is a newly created list this hasn't been edit yet. Track this in order to add a unique counting integer to more new lists.
+        if(item.get('title').indexOf('Untitled List') > -1) {
+          that.collection.newLists += 1;
+        }
+      });
+
       list = this.collection.create({title: "Untitled List " + (this.collection.newLists + 1)});
 
       //increment newLists
-      this.collection.newLists += 1;;
+      this.collection.newLists += 1;
 
       //immediately route to the newly created list
       Backbone.history.navigate('/lists/' + list.id,{trigger:true});
@@ -159,21 +161,7 @@ define([
 
     },
     listAdded: function(item) {
-      //check if initial load from Firebase is done. This is needed so that the FINAL model from firebase doesn't not inadvertently call the listAdded function
-      if(this.initialLoadComplete) {
-        list = $('div[data-id="' + item.id + '"]');
-        list.animate({
-          // marginLeft: '+=160px',
-          // marginRight: '-=160px'
-        },0,function() {
-          $(this).animate({
-          opacity: '1.0',
-        },300);
-        });
-      }
-      else {
-        this.initialLoadComplete = true;
-      }
+
     }
 
 
